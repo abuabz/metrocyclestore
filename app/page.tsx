@@ -1,0 +1,590 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import {
+  ChevronLeft,
+  ChevronRight,
+  Star,
+  Wrench,
+  Palette,
+  Truck,
+  Shield,
+  Phone,
+  Mail,
+  MapPin,
+  Clock,
+  MessageCircle,
+} from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent } from "@/components/ui/card"
+import { VideoModal, VideoThumbnail } from "@/components/video-modal"
+import Header from "@/components/header"
+import Footer from "@/components/footer"
+import Image from "next/image"
+import Link from "next/link"
+
+const heroSlides = [
+  {
+    id: 1,
+    title: "Adventure Awaits!",
+    subtitle: "Discover our amazing collection of cycles and toys",
+    image: "/placeholder.svg?height=600&width=1200",
+    cta: "Shop Now",
+  },
+  {
+    id: 2,
+    title: "Premium Cycles",
+    subtitle: "Quality bikes for every age and adventure",
+    image: "/placeholder.svg?height=600&width=1200",
+    cta: "View Cycles",
+  },
+  {
+    id: 3,
+    title: "Fun Toys Collection",
+    subtitle: "Bringing joy to children everywhere",
+    image: "/placeholder.svg?height=600&width=1200",
+    cta: "Explore Toys",
+  },
+  {
+    id: 4,
+    title: "Special Offers",
+    subtitle: "Up to 30% off on selected items",
+    image: "/placeholder.svg?height=600&width=1200",
+    cta: "Get Deals",
+  },
+]
+
+const featuredProducts = [
+  {
+    id: "1",
+    name: "Mountain Explorer Bike",
+    price: 299,
+    image: "/placeholder.svg?height=300&width=300",
+    rating: 5,
+  },
+  {
+    id: "2",
+    name: "Racing Car Toy Set",
+    price: 49,
+    image: "/placeholder.svg?height=300&width=300",
+    rating: 4,
+  },
+  {
+    id: "3",
+    name: "Kids Safety Helmet",
+    price: 25,
+    image: "/placeholder.svg?height=300&width=300",
+    rating: 5,
+  },
+  {
+    id: "4",
+    name: "Educational Building Blocks",
+    price: 35,
+    image: "/placeholder.svg?height=300&width=300",
+    rating: 4,
+  },
+  {
+    id: "5",
+    name: "Electric Scooter",
+    price: 199,
+    image: "/placeholder.svg?height=300&width=300",
+    rating: 5,
+  },
+  {
+    id: "6",
+    name: "Puzzle Game Collection",
+    price: 29,
+    image: "/placeholder.svg?height=300&width=300",
+    rating: 4,
+  },
+]
+
+const services = [
+  {
+    icon: <Wrench className="w-8 h-8" />,
+    title: "Repair Services",
+    description: "Professional bike and toy repair services",
+  },
+  {
+    icon: <Palette className="w-8 h-8" />,
+    title: "Customization",
+    description: "Personalize your bikes and toys",
+  },
+  {
+    icon: <Truck className="w-8 h-8" />,
+    title: "Free Delivery",
+    description: "Free delivery on orders over $50",
+  },
+  {
+    icon: <Shield className="w-8 h-8" />,
+    title: "Warranty",
+    description: "1-year warranty on all products",
+  },
+]
+
+const galleryItems = [
+  {
+    type: "image",
+    src: "/placeholder.svg?height=300&width=300",
+    alt: "Gallery image 1",
+  },
+  {
+    type: "video",
+    videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    thumbnailSrc: "/placeholder.svg?height=300&width=300",
+    title: "Product Demo Video",
+  },
+  {
+    type: "image",
+    src: "/placeholder.svg?height=300&width=300",
+    alt: "Gallery image 2",
+  },
+  {
+    type: "video",
+    videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+    thumbnailSrc: "/placeholder.svg?height=300&width=300",
+    title: "Customer Review Video",
+  },
+  {
+    type: "image",
+    src: "/placeholder.svg?height=300&width=300",
+    alt: "Gallery image 3",
+  },
+  {
+    type: "video",
+    videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    thumbnailSrc: "/placeholder.svg?height=300&width=300",
+    title: "Store Tour Video",
+  },
+]
+
+export default function HomePage() {
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [isVisible, setIsVisible] = useState({})
+  const [selectedVideo, setSelectedVideo] = useState<{ src: string; title: string } | null>(null)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
+    }, 5000)
+    return () => clearInterval(timer)
+  }, [])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible((prev) => ({ ...prev, [entry.target.id]: true }))
+          }
+        })
+      },
+      { threshold: 0.1 },
+    )
+
+    const elements = document.querySelectorAll("[data-animate]")
+    elements.forEach((el) => observer.observe(el))
+
+    return () => observer.disconnect()
+  }, [])
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
+  }
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20">
+      <Header />
+
+      {/* Hero Carousel */}
+      <section className="relative h-screen overflow-hidden">
+        {heroSlides.map((slide, index) => (
+          <div
+            key={slide.id}
+            className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
+              index === currentSlide
+                ? "opacity-100 transform translate-x-0"
+                : index < currentSlide
+                  ? "opacity-0 transform -translate-x-full"
+                  : "opacity-0 transform translate-x-full"
+            }`}
+          >
+            <div className="relative h-full">
+              <Image
+                src={slide.image || "/placeholder.svg"}
+                alt={slide.title}
+                fill
+                className="object-cover"
+                priority={index === 0}
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-900/70 to-pink-900/50" />
+              <div className="absolute inset-0 flex items-center justify-center text-center text-white">
+                <div className="max-w-4xl px-4">
+                  <h1
+                    className={`text-3xl md:text-5xl lg:text-7xl font-bold mb-6 transition-all duration-1000 delay-300 mobile-text-3xl ${
+                      index === currentSlide
+                        ? "opacity-100 transform translate-y-0"
+                        : "opacity-0 transform translate-y-8"
+                    }`}
+                  >
+                    {slide.title}
+                  </h1>
+                  <p
+                    className={`text-lg md:text-xl lg:text-2xl mb-8 transition-all duration-1000 delay-500 mobile-text-lg ${
+                      index === currentSlide
+                        ? "opacity-100 transform translate-y-0"
+                        : "opacity-0 transform translate-y-8"
+                    }`}
+                  >
+                    {slide.subtitle}
+                  </p>
+                  <Button
+                    size="lg"
+                    className={`bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-8 py-4 text-lg rounded-full transform transition-all duration-1000 delay-700 hover:scale-105 mobile-text-base ${
+                      index === currentSlide ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                    }`}
+                  >
+                    {slide.cta}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* Navigation Arrows */}
+        <button
+          onClick={prevSlide}
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-300 hover:scale-110"
+        >
+          <ChevronLeft className="w-6 h-6" />
+        </button>
+        <button
+          onClick={nextSlide}
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-300 hover:scale-110"
+        >
+          <ChevronRight className="w-6 h-6" />
+        </button>
+
+        {/* Slide Indicators */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
+          {heroSlides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                index === currentSlide ? "bg-white scale-125" : "bg-white/50 hover:bg-white/75"
+              }`}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* Mini About Us */}
+      <section
+        id="about-mini"
+        data-animate
+        className={`py-20 px-4 transition-all duration-1000 ${
+          isVisible["about-mini"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+        }`}
+      >
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-2xl md:text-4xl font-bold text-gray-800 dark:text-gray-200 mb-6 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
+            Welcome to Cycles & Toys Paradise
+          </h2>
+          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed mobile-text-base">
+            For over a decade, we've been bringing joy and adventure to families through our carefully curated
+            collection of premium cycles and educational toys. Our mission is to inspire outdoor activities and creative
+            play for children of all ages.
+          </p>
+        </div>
+      </section>
+
+      {/* Featured Products */}
+      <section
+        id="featured-products"
+        data-animate
+        className={`py-20 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
+          isVisible["featured-products"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
+            Featured Products
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {featuredProducts.map((product, index) => (
+              <Link key={product.id} href={`/products/${product.id}`}>
+                <Card
+                  className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 overflow-hidden cursor-pointer ${
+                    isVisible["featured-products"]
+                      ? `opacity-100 transform translate-y-0 transition-delay-[${index * 100}ms]`
+                      : "opacity-0 transform translate-y-8"
+                  }`}
+                >
+                  <CardContent className="p-0">
+                    <div className="relative overflow-hidden">
+                      <Image
+                        src={product.image || "/placeholder.svg"}
+                        alt={product.name}
+                        width={300}
+                        height={300}
+                        className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
+                    <div className="p-6">
+                      <h3 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2 group-hover:text-purple-600 transition-colors duration-300 mobile-text-base">
+                        {product.name}
+                      </h3>
+                      <div className="flex items-center mb-3">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`w-4 h-4 ${i < product.rating ? "text-yellow-400 fill-current" : "text-gray-300"}`}
+                          />
+                        ))}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xl md:text-2xl font-bold text-purple-600 mobile-text-lg">
+                          ${product.price}
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Our Services */}
+      <section
+        id="services"
+        data-animate
+        className={`py-20 px-4 transition-all duration-1000 ${
+          isVisible["services"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+        }`}
+      >
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
+            Our Services
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {services.map((service, index) => (
+              <Card
+                key={index}
+                className={`text-center group hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-pink-50 dark:from-gray-800 dark:to-pink-900/20 ${
+                  isVisible["services"]
+                    ? `opacity-100 transform translate-y-0 transition-delay-[${index * 100}ms]`
+                    : "opacity-0 transform translate-y-8"
+                }`}
+              >
+                <CardContent className="p-8">
+                  <div className="text-purple-600 mb-4 group-hover:scale-110 transition-transform duration-300 flex justify-center">
+                    {service.icon}
+                  </div>
+                  <h3 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-gray-200 mb-3 group-hover:text-purple-600 transition-colors duration-300 mobile-text-base">
+                    {service.title}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 mobile-text-sm">{service.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Gallery with Videos */}
+      <section
+        id="gallery"
+        data-animate
+        className={`py-20 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
+          isVisible["gallery"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+        }`}
+      >
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
+            Our Gallery
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {galleryItems.map((item, index) => (
+              <div
+                key={index}
+                className={`${
+                  isVisible["gallery"]
+                    ? `opacity-100 transform scale-100 transition-delay-[${index * 100}ms]`
+                    : "opacity-0 transform scale-95"
+                } transition-all duration-500`}
+              >
+                {item.type === "image" ? (
+                  <div className="group relative overflow-hidden rounded-lg cursor-pointer">
+                    <Image
+                      src={item.src || "/placeholder.svg"}
+                      alt={item.alt || `Gallery image ${index + 1}`}
+                      width={300}
+                      height={300}
+                      className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-purple-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                ) : (
+                  <VideoThumbnail
+                    videoSrc={item.videoSrc!}
+                    thumbnailSrc={item.thumbnailSrc!}
+                    title={item.title!}
+                    onClick={() => setSelectedVideo({ src: item.videoSrc!, title: item.title! })}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Form */}
+      <section
+        id="contact-form"
+        data-animate
+        className={`py-20 px-4 transition-all duration-1000 ${
+          isVisible["contact-form"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+        }`}
+      >
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
+            Get In Touch
+          </h2>
+          <Card className="border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 shadow-2xl">
+            <CardContent className="p-8">
+              <form className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Input
+                      placeholder="Your Name"
+                      className="border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 rounded-lg h-12 bg-white dark:bg-gray-700"
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      type="email"
+                      placeholder="Your Email"
+                      className="border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 rounded-lg h-12 bg-white dark:bg-gray-700"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Textarea
+                    placeholder="Your Message"
+                    rows={6}
+                    className="border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 rounded-lg bg-white dark:bg-gray-700"
+                  />
+                </div>
+                <div className="text-center">
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-12 py-4 rounded-full transform hover:scale-105 transition-all duration-300 mobile-text-base"
+                  >
+                    Send Message
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* Map Integration */}
+      <section
+        id="map"
+        data-animate
+        className={`py-20 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
+          isVisible["map"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+        }`}
+      >
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
+            Visit Our Store
+          </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="flex items-center space-x-4">
+                <MapPin className="w-6 h-6 text-purple-600" />
+                <div>
+                  <h3 className="font-semibold text-gray-800 dark:text-gray-200 mobile-text-base">Address</h3>
+                  <p className="text-gray-600 dark:text-gray-300 mobile-text-sm">123 Toy Street, Fun City, FC 12345</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <Phone className="w-6 h-6 text-purple-600" />
+                <div>
+                  <h3 className="font-semibold text-gray-800 dark:text-gray-200 mobile-text-base">Phone</h3>
+                  <p className="text-gray-600 dark:text-gray-300 mobile-text-sm">+1 (555) 123-4567</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <Mail className="w-6 h-6 text-purple-600" />
+                <div>
+                  <h3 className="font-semibold text-gray-800 dark:text-gray-200 mobile-text-base">Email</h3>
+                  <p className="text-gray-600 dark:text-gray-300 mobile-text-sm">info@cyclesandtoys.com</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <Clock className="w-6 h-6 text-purple-600" />
+                <div>
+                  <h3 className="font-semibold text-gray-800 dark:text-gray-200 mobile-text-base">Business Hours</h3>
+                  <p className="text-gray-600 dark:text-gray-300 mobile-text-sm">Mon-Sat: 9AM-7PM, Sun: 10AM-6PM</p>
+                </div>
+              </div>
+            </div>
+            <div className="h-96 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3024.123456789!2d-74.0059413!3d40.7127753!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDQyJzQ2LjAiTiA3NMKwMDAnMjEuNCJX!5e0!3m2!1sen!2sus!4v1234567890123"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Store Location"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
+
+      {/* Video Modal */}
+      <VideoModal
+        isOpen={!!selectedVideo}
+        onClose={() => setSelectedVideo(null)}
+        videoSrc={selectedVideo?.src || ""}
+        title={selectedVideo?.title || ""}
+      />
+
+      {/* Floating Action Buttons */}
+      <div className="fixed bottom-6 right-6 flex flex-col space-y-3 z-50">
+        <Button
+          size="lg"
+          className="bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300"
+        >
+          <MessageCircle className="w-6 h-6" />
+        </Button>
+        <Button
+          size="lg"
+          className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300"
+        >
+          <Phone className="w-6 h-6" />
+        </Button>
+      </div>
+    </div>
+  )
+}
