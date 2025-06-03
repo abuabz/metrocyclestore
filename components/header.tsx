@@ -40,7 +40,7 @@ export default function Header() {
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative">
               <img
-                src="/logomain.png"
+                src="./logomain.png"
                 alt="Logo"
                 className={`w-40 h-40 transition-transform duration-300 ${isScrolled ? "transform scale-90" : "transform scale-100"
                   }`}
