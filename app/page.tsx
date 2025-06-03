@@ -132,8 +132,8 @@ const galleryItems = [
   },
   {
     type: "video",
-    videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-    thumbnailSrc: "/placeholder.svg?height=300&width=300",
+    videoSrc: "/reel1.mp4",
+    thumbnailSrc: "/reel1.jpeg?height=300&width=300",
     title: "Product Demo Video",
   },
   {

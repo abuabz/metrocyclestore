@@ -36,7 +36,7 @@ export function VideoModal({ isOpen, onClose, videoSrc, title }: VideoModalProps
         >
           <X className="w-5 h-5" />
         </Button>
-        <video src={videoSrc} controls autoPlay className="w-full h-full object-cover" title={title}>
+        <video src={videoSrc} controls autoPlay className="w-full h-full " title={title}>
           Your browser does not support the video tag.
         </video>
       </div>
