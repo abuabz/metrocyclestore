@@ -30,28 +30,28 @@ const heroSlides = [
     id: 1,
     title: "Adventure Awaits!",
     subtitle: "Discover our amazing collection of cycles and toys",
-    image: "/placeholder.svg?height=600&width=1200",
+    image: "https://images.pexels.com/photos/35619/capri-ford-oldtimer-automotive.jpg?cs=srgb&dl=pexels-pixabay-35619.jpg&fm=jpg",
     cta: "Shop Now",
   },
   {
     id: 2,
     title: "Premium Cycles",
     subtitle: "Quality bikes for every age and adventure",
-    image: "/placeholder.svg?height=600&width=1200",
+    image: "https://plus.unsplash.com/premium_photo-1685207267343-1c8852b45575?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Y3ljbGluZ3xlbnwwfHwwfHx8MA%3D%3D",
     cta: "View Cycles",
   },
   {
     id: 3,
     title: "Fun Toys Collection",
     subtitle: "Bringing joy to children everywhere",
-    image: "/placeholder.svg?height=600&width=1200",
+    image: "https://plus.unsplash.com/premium_photo-1684795780266-ecd819f04f96?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dG95c3xlbnwwfHwwfHx8MA%3D%3D",
     cta: "Explore Toys",
   },
   {
     id: 4,
-    title: "Special Offers",
+    title: "Kids Car ",
     subtitle: "Up to 30% off on selected items",
-    image: "/placeholder.svg?height=600&width=1200",
+    image: "https://t3.ftcdn.net/jpg/02/68/62/42/360_F_268624278_8BbMAUszsyvayoNVnRvgfJoodkqLoxDn.jpg",
     cta: "Get Deals",
   },
 ]
@@ -162,7 +162,7 @@ const galleryItems = [
 
 export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [isVisible, setIsVisible] = useState({})
+  const [isVisible, setIsVisible] = useState<Record<string, boolean>>({})
   const [selectedVideo, setSelectedVideo] = useState<{ src: string; title: string } | null>(null)
 
   useEffect(() => {
@@ -223,7 +223,7 @@ export default function HomePage() {
                 className="object-cover"
                 priority={index === 0}
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-900/70 to-pink-900/50" />
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-700/70 to-[#000000c7]" />
               <div className="absolute inset-0 flex items-center justify-center text-center text-white">
                 <div className="max-w-4xl px-4">
                   <h1
@@ -246,7 +246,7 @@ export default function HomePage() {
                   </p>
                   <Button
                     size="lg"
-                    className={`bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-8 py-4 text-lg rounded-full transform transition-all duration-1000 delay-700 hover:scale-105 mobile-text-base ${
+                    className={`bg-gradient-to-r from-yellow-500 to-gray-800 hover:from-yellow-600 hover:to-gray-900 text-white px-8 py-4 text-lg rounded-full transform transition-all duration-1000 delay-700 hover:scale-105 mobile-text-base ${
                       index === currentSlide ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                     }`}
                   >

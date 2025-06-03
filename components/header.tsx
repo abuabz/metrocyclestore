@@ -31,7 +31,7 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg" : "bg-transparent"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-gray-900/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg" : "bg-transparent"
         }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -40,7 +40,7 @@ export default function Header() {
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative">
               <img
-                src="./logomain.png"
+                src="./Logomain.png"
                 alt="Logo"
                 className={`w-40 h-40 transition-transform duration-300 ${isScrolled ? "transform scale-90" : "transform scale-100"
                   }`}
@@ -55,8 +55,8 @@ export default function Header() {
                 key={item.name}
                 href={item.href}
                 className={`font-medium transition-all duration-300 hover:scale-105 relative group ${isScrolled
-                    ? "text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400"
-                    : "text-white hover:text-purple-600"
+                    ? "text-gray-200 dark:text-gray-300 hover:text-yellow-300 dark:hover:text-yellow-400"
+                    : "text-white hover:text-yellow-300"
                   }`}
               >
                 {item.name}
@@ -66,7 +66,7 @@ export default function Header() {
           </nav>
 
           {/* Search Bar (Desktop) */}
-          <div className="hidden lg:flex items-center space-x-4">
+          {/* <div className="hidden lg:flex items-center space-x-4">
             <div className="relative">
               <Search
                 className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${isScrolled ? "text-gray-400" : "text-white/60"
@@ -80,7 +80,7 @@ export default function Header() {
                   }`}
               />
             </div>
-          </div>
+          </div> */}
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-2">
@@ -88,19 +88,7 @@ export default function Header() {
             <ThemeToggle />
 
             {/* Wishlist */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`relative p-2 rounded-full hover:scale-110 transition-all duration-300 ${isScrolled
-                  ? "text-gray-700 dark:text-gray-300 hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-900/20"
-                  : "text-white hover:text-pink-300 hover:bg-white/10"
-                }`}
-            >
-              <Heart className="w-5 h-5" />
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-pink-500 text-white text-xs rounded-full flex items-center justify-center">
-                2
-              </span>
-            </Button>
+           
 
             {/* Cart */}
             <Link href="/cart">

@@ -36,8 +36,11 @@ const milestones = [
   { year: "2023", event: "Award Winner", description: "Best Local Toy Store Award" },
 ]
 
+type SectionId = "brand-story" | "mission-vision" | "values" | "timeline" | "team" | "store-photos";
+type IsVisibleState = Partial<Record<SectionId, boolean>>;
+
 export default function AboutPage() {
-  const [isVisible, setIsVisible] = useState({})
+  const [isVisible, setIsVisible] = useState<IsVisibleState>({})
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -63,8 +66,8 @@ export default function AboutPage() {
 
       {/* Hero Section */}
       <section className="relative h-96 overflow-hidden">
-        <Image src="/placeholder.svg?height=400&width=1200" alt="About Us Hero" fill className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-900/70 to-pink-900/50" />
+        <Image src="./assets/aboutus.jpg" alt="About Us Hero" fill className="object-fit bg-bottom" />
+        <div className="absolute inset-0 bg-gradient-to-r from-yellow-700/70 to-[#000000c7]" />
         <div className="absolute inset-0 flex items-center justify-center text-center text-white">
           <div className="max-w-4xl px-4">
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in-up mobile-text-3xl">
@@ -100,20 +103,17 @@ export default function AboutPage() {
                 We believe that play is not just fun—it's fundamental to a child's development. Every product we select
                 is chosen with care, ensuring it meets our high standards for safety, quality, and educational value.
               </p>
-              <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 leading-relaxed mobile-text-base">
-                Today, we're proud to serve thousands of families, helping create countless memories and adventures. Our
-                commitment to excellence and customer satisfaction remains at the heart of everything we do.
-              </p>
+            
             </div>
-            <div className="relative">
+            <div className="relative ">
               <Image
-                src="/placeholder.svg?height=500&width=600"
+                src="./Logomain.png"
                 alt="Our Story"
-                width={600}
+                width={400}
                 height={500}
-                className="rounded-lg shadow-2xl transform hover:scale-105 transition-transform duration-500"
+                className="rounded-lg shadow-2xl transform hover:scale-105 transition-transform duration-500 bg-gray-900"
               />
-              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-gradient-to-br from-pink-400 to-purple-600 rounded-full opacity-20 animate-pulse" />
+              <div className="absolute bottom-0 right-16 w-32 h-32 bg-gradient-to-br from-yellow-500/90 to-[#ffffff48] rounded-full opacity-20 animate-pulse" />
             </div>
           </div>
         </div>

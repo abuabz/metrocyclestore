@@ -11,7 +11,7 @@ import Footer from "@/components/footer"
 import Image from "next/image"
 import Link from "next/link"
 
-const categories = ["All", "Cycles", "Toys", "Accessories", "Safety Gear"]
+const categories = ["All", "Cycles", "Toys", "Accessories", "Safety Gear",]
 
 const products = [
   {
@@ -19,40 +19,36 @@ const products = [
     name: "Mountain Explorer Bike",
     price: 299,
     category: "Cycles",
-    image: "/placeholder.svg?height=300&width=300",
+    image: "https://images-cdn.ubuy.co.in/653ebb40c556d711a206eaca-hyper-bicycle-men-s-29-explorer.jpg",
     rating: 5,
     reviews: 24,
-    badge: "Best Seller",
   },
   {
     id: "2",
     name: "Racing Car Toy Set",
     price: 49,
     category: "Toys",
-    image: "/placeholder.svg?height=300&width=300",
+    image: "https://rukminim2.flixcart.com/image/850/1000/xif0q/vehicle-pull-along/l/c/b/6-pcs-mini-car-racing-friction-toy-car-set-for-kids-boys-and-original-imagknhg86ny4xdy.jpeg?q=90&crop=false",
     rating: 4,
     reviews: 18,
-    badge: "New",
   },
   {
     id: "3",
     name: "Kids Safety Helmet",
     price: 25,
     category: "Safety Gear",
-    image: "/placeholder.svg?height=300&width=300",
+    image: "https://duckduckbaby.in/cdn/shop/files/DDB14863_1.jpg?v=1732084849?height=300&width=300",
     rating: 5,
     reviews: 32,
-    badge: "",
   },
   {
     id: "4",
     name: "Educational Building Blocks",
     price: 35,
     category: "Toys",
-    image: "/placeholder.svg?height=300&width=300",
+    image: "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQqnFHTlVwMkxBzZ01EsoEZIycKVqpPjA9ueKerZ4gcITlJKgCZssB88QRAjIroA7cSw_FJaVXEF-942R6MMN7xolQX_ojmAc8bzpXLt6Im",
     rating: 4,
     reviews: 15,
-    badge: "Popular",
   },
   {
     id: "5",
@@ -62,7 +58,6 @@ const products = [
     image: "/placeholder.svg?height=300&width=300",
     rating: 5,
     reviews: 28,
-    badge: "Featured",
   },
   {
     id: "6",
@@ -72,7 +67,6 @@ const products = [
     image: "/placeholder.svg?height=300&width=300",
     rating: 4,
     reviews: 12,
-    badge: "",
   },
   {
     id: "7",
@@ -82,7 +76,6 @@ const products = [
     image: "/placeholder.svg?height=300&width=300",
     rating: 5,
     reviews: 19,
-    badge: "New",
   },
   {
     id: "8",
@@ -92,7 +85,6 @@ const products = [
     image: "/placeholder.svg?height=300&width=300",
     rating: 4,
     reviews: 8,
-    badge: "",
   },
   {
     id: "9",
@@ -102,7 +94,6 @@ const products = [
     image: "/placeholder.svg?height=300&width=300",
     rating: 5,
     reviews: 22,
-    badge: "Hot",
   },
   {
     id: "10",
@@ -112,7 +103,6 @@ const products = [
     image: "/placeholder.svg?height=300&width=300",
     rating: 4,
     reviews: 14,
-    badge: "",
   },
   {
     id: "11",
@@ -122,7 +112,6 @@ const products = [
     image: "/placeholder.svg?height=300&width=300",
     rating: 5,
     reviews: 35,
-    badge: "Best Seller",
   },
   {
     id: "12",
@@ -132,7 +121,6 @@ const products = [
     image: "/placeholder.svg?height=300&width=300",
     rating: 5,
     reviews: 27,
-    badge: "Premium",
   },
 ]
 
@@ -140,7 +128,7 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [searchTerm, setSearchTerm] = useState("")
   const [filteredProducts, setFilteredProducts] = useState(products)
-  const [isVisible, setIsVisible] = useState({})
+  const [isVisible, setIsVisible] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -178,24 +166,24 @@ export default function ProductsPage() {
     setFilteredProducts(filtered)
   }, [selectedCategory, searchTerm])
 
-  const getBadgeColor = (badge) => {
-    switch (badge) {
-      case "Best Seller":
-        return "bg-green-500"
-      case "New":
-        return "bg-blue-500"
-      case "Popular":
-        return "bg-purple-500"
-      case "Featured":
-        return "bg-pink-500"
-      case "Hot":
-        return "bg-red-500"
-      case "Premium":
-        return "bg-yellow-500"
-      default:
-        return "bg-gray-500"
-    }
-  }
+  // const getBadgeColor = (badge) => {
+  //   switch (badge) {
+  //     case "Best Seller":
+  //       return "bg-green-500"
+  //     case "New":
+  //       return "bg-blue-500"
+  //     case "Popular":
+  //       return "bg-purple-500"
+  //     case "Featured":
+  //       return "bg-pink-500"
+  //     case "Hot":
+  //       return "bg-red-500"
+  //     case "Premium":
+  //       return "bg-yellow-500"
+  //     default:
+  //       return "bg-gray-500"
+  //   }
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20">
@@ -203,8 +191,8 @@ export default function ProductsPage() {
 
       {/* Hero Section */}
       <section className="relative h-64 overflow-hidden">
-        <Image src="/placeholder.svg?height=300&width=1200" alt="Products Hero" fill className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-900/70 to-pink-900/50" />
+        <Image src="./assets/ourproducts.jpg" alt="Products Hero" fill className="object-cover " />
+        <div className="absolute inset-0 bg-gradient-to-r from-yellow-700/70 to-[#000000c7]" />
         <div className="absolute inset-0 flex items-center justify-center text-center text-white">
           <div className="max-w-4xl px-4">
             <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 animate-fade-in-up mobile-text-2xl">
@@ -231,13 +219,7 @@ export default function ProductsPage() {
               />
             </div>
             <div className="flex items-center gap-2">
-              <Filter className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-              <span className="text-gray-600 dark:text-gray-400 font-medium mobile-text-sm">Filter by:</span>
-            </div>
-          </div>
-
-          {/* Category Tabs */}
-          <div className="flex flex-wrap gap-2 justify-center">
+              <div className="flex flex-wrap gap-2 justify-center">
             {categories.map((category) => (
               <Button
                 key={category}
@@ -253,6 +235,11 @@ export default function ProductsPage() {
               </Button>
             ))}
           </div>
+            </div>
+          </div>
+
+          {/* Category Tabs */}
+          
         </div>
       </section>
 
@@ -292,11 +279,11 @@ export default function ProductsPage() {
                         height={300}
                         className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                       />
-                      {product.badge && (
+                      {/* {product.badge && (
                         <Badge className={`absolute top-2 left-2 ${getBadgeColor(product.badge)} text-white border-0`}>
                           {product.badge}
                         </Badge>
-                      )}
+                      )} */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
                     <div className="p-4">
@@ -320,7 +307,7 @@ export default function ProductsPage() {
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-xl md:text-2xl font-bold text-purple-600 mobile-text-lg">
-                          ${product.price}
+                           ₹{product.price}
                         </span>
                       </div>
                     </div>
