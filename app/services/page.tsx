@@ -17,28 +17,28 @@ const services = [
     title: "Repair Services",
     description: "Professional repair services for all types of cycles and toys",
     features: ["Quick turnaround", "Genuine parts", "Expert technicians", "Warranty included"],
-    price: "Starting from $15",
+    price: "Starting from ₹49",
   },
   {
     icon: <Palette className="w-12 h-12" />,
     title: "Customization",
     description: "Personalize your bikes and toys with custom colors and designs",
     features: ["Custom paint jobs", "Decal application", "Accessory installation", "Design consultation"],
-    price: "Starting from $25",
+    price: "Starting from ₹99",
   },
   {
     icon: <Truck className="w-12 h-12" />,
     title: "Delivery & Assembly",
     description: "Free delivery and professional assembly for your convenience",
     features: ["Free local delivery", "Professional assembly", "Setup instruction", "Safety check"],
-    price: "Free on orders $50+",
+    price: "Free on orders ₹499+",
   },
   {
     icon: <Shield className="w-12 h-12" />,
     title: "Extended Warranty",
     description: "Extended protection plans for your valuable purchases",
     features: ["Extended coverage", "Accident protection", "Priority service", "Replacement guarantee"],
-    price: "Starting from $10",
+    price: "Starting from ₹99",
   },
 ]
 
@@ -114,7 +114,7 @@ export default function ServicesPage() {
       {/* Hero Section */}
       <section className="relative h-64 overflow-hidden">
         <Image src="/placeholder.svg?height=300&width=1200" alt="Services Hero" fill className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-900/70 to-pink-900/50" />
+        <div className="absolute inset-0 bg-gradient-to-r from-yellow-600/70 to-black/50" />
         <div className="absolute inset-0 flex items-center justify-center text-center text-white">
           <div className="max-w-4xl px-4">
             <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 animate-fade-in-up mobile-text-2xl">
@@ -149,7 +149,7 @@ export default function ServicesPage() {
                     </label>
                     <Input
                       placeholder="Enter your full name"
-                      className="border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 rounded-lg h-12 bg-white dark:bg-gray-700"
+                      className="border-purple-200 dark:border-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 rounded-lg h-12 bg-white dark:bg-gray-700"
                     />
                   </div>
                   <div>
@@ -159,7 +159,7 @@ export default function ServicesPage() {
                     <Input
                       type="tel"
                       placeholder="Enter your phone number"
-                      className="border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 rounded-lg h-12 bg-white dark:bg-gray-700"
+                      className="border-purple-200 dark:border-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 rounded-lg h-12 bg-white dark:bg-gray-700"
                     />
                   </div>
                 </div>
@@ -170,14 +170,14 @@ export default function ServicesPage() {
                   <Input
                     type="email"
                     placeholder="Enter your email address"
-                    className="border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 rounded-lg h-12 bg-white dark:bg-gray-700"
+                    className="border-purple-200 dark:border-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 rounded-lg h-12 bg-white dark:bg-gray-700"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 mobile-text-sm">
                     Service Needed
                   </label>
-                  <select className="w-full border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 rounded-lg h-12 px-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                  <select className="w-full border-purple-200 dark:border-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 rounded-lg h-12 px-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                     <option value="">Select a service</option>
                     <option value="repair">Repair Services</option>
                     <option value="customization">Customization</option>
@@ -192,14 +192,14 @@ export default function ServicesPage() {
                   <Textarea
                     placeholder="Describe your service request..."
                     rows={6}
-                    className="border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 rounded-lg bg-white dark:bg-gray-700"
+                    className="border-purple-200 dark:border-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 rounded-lg bg-white dark:bg-gray-700"
                   />
                 </div>
                 <div className="text-center">
                   <Button
                     type="submit"
                     size="lg"
-                    className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-12 py-4 rounded-full transform hover:scale-105 transition-all duration-300 mobile-text-base"
+                    className="bg-gradient-to-r from-yellow-500 to-white hover:from-white hover:to-yellow-500 text-black px-12 py-4 rounded-full transform hover:scale-105 transition-all duration-300 mobile-text-base"
                   >
                     Submit Request
                   </Button>
@@ -234,11 +234,11 @@ export default function ServicesPage() {
               >
                 <CardContent className="p-8">
                   <div className="flex items-start space-x-6">
-                    <div className="text-purple-600 group-hover:scale-110 transition-transform duration-300">
+                    <div className="text-yellow-500 group-hover:scale-110 transition-transform duration-300">
                       {service.icon}
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-200 mb-3 group-hover:text-purple-600 transition-colors duration-300 mobile-text-lg">
+                      <h3 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-200 mb-3 group-hover:text-yellow-500 transition-colors duration-300 mobile-text-lg">
                         {service.title}
                       </h3>
                       <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed mobile-text-sm">
@@ -250,14 +250,14 @@ export default function ServicesPage() {
                             key={featureIndex}
                             className="flex items-center text-sm text-gray-600 dark:text-gray-400 mobile-text-sm"
                           >
-                            <div className="w-2 h-2 bg-purple-400 rounded-full mr-3" />
+                            <div className="w-2 h-2 bg-yellow-400 rounded-full mr-3" />
                             {feature}
                           </li>
                         ))}
                       </ul>
-                      <div className="text-lg md:text-xl font-bold text-purple-600 mobile-text-base">
+                      {/* <div className="text-lg md:text-xl font-bold text-yellow-500 mobile-text-base">
                         {service.price}
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </CardContent>
@@ -296,7 +296,7 @@ export default function ServicesPage() {
                   height={400}
                   className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-purple-900/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-yellow-600/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute bottom-4 left-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <h3 className="text-lg md:text-xl font-bold mobile-text-base">{image.title}</h3>
                 </div>
@@ -339,7 +339,7 @@ export default function ServicesPage() {
                     <h4 className="font-semibold text-gray-800 dark:text-gray-200 mobile-text-sm">
                       {testimonial.name}
                     </h4>
-                    <p className="text-sm text-purple-600 dark:text-purple-400 mobile-text-sm">{testimonial.service}</p>
+                    <p className="text-sm text-purple-600 dark:text-yellow-500 mobile-text-sm">{testimonial.service}</p>
                   </div>
                 </CardContent>
               </Card>

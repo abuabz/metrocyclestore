@@ -24,6 +24,11 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import Image from "next/image";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+
+interface ContactFormProps {
+  isVisible: { [key: string]: boolean };
+}
 
 const heroSlides = [
   {
@@ -68,29 +73,33 @@ const featuredProducts = [
     image:
       "https://d2f9uwgpmber13.cloudfront.net/public/image_new/23c1499577f529ac1717253885630.jpg",
     rating: 5,
+    originalPrice: 4990
   },
-  {
-    id: "2",
-    name: "Racing Car Toy Set",
-    price: 990,
-    image: "https://m.media-amazon.com/images/I/81mItRCAIbL.jpg",
-    rating: 4,
-  },
-  {
-    id: "3",
-    name: "Kids Safety Helmet",
-    price: 490,
-    image:
-      "https://img4.dhresource.com/webp/m/0x0/f3/albu/jc/n/01/9e1fcf07-3102-4321-b666-e0d4554cd20d.jpg",
-    rating: 5,
-  },
+  // {
+  //   id: "2",
+  //   name: "Racing Car Toy Set",
+  //   price: 990,
+  //   image: "https://m.media-amazon.com/images/I/81mItRCAIbL.jpg",
+  //   rating: 4,
+  //   originalPrice: 1290
+  // },
+  // {
+  //   id: "3",
+  //   name: "Kids Safety Helmet",
+  //   price: 490,
+  //   image:
+  //     "https://img4.dhresource.com/webp/m/0x0/f3/albu/jc/n/01/9e1fcf07-3102-4321-b666-e0d4554cd20d.jpg",
+  //   rating: 5,
+  //   originalPrice: 690
+  // },
   {
     id: "4",
-    name: "Educational Building Blocks",
+    name: "Building Blocks",
     price: 299,
     image:
       "https://storio.in/cdn/shop/files/518nztRjWbL_e38b8549-f817-4480-87b1-6384b39c5a4c.jpg?v=1716551994&width=1023",
     rating: 4,
+    originalPrice: 499
   },
   {
     id: "5",
@@ -99,6 +108,7 @@ const featuredProducts = [
     image:
       "https://www.shutterstock.com/image-photo/happy-kids-standing-on-electric-600w-478633153.jpg",
     rating: 5,
+    originalPrice: 3790
   },
   {
     id: "6",
@@ -107,6 +117,7 @@ const featuredProducts = [
     image:
       "https://media.istockphoto.com/id/1292652212/photo/little-girl-playing-with-puzzles-at-home.jpg?s=612x612&w=0&k=20&c=-sqipGfTwfzpQBLEzLsKPnKFuW8uwe27zU3PLwMmqrw=",
     rating: 4,
+    originalPrice: 249
   },
 ];
 
@@ -176,6 +187,31 @@ export default function HomePage() {
     src: string;
     title: string;
   } | null>(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Format message for WhatsApp
+    const whatsappMessage = encodeURIComponent(
+      `New Contact Form Submission\nName: ${name}\nEmail: ${email}\nMessage: ${message}`
+    );
+    const whatsappUrl = `https://wa.me/+916238520474?text=${whatsappMessage}`;
+
+    try {
+      // Redirect to WhatsApp
+      window.open(whatsappUrl, "_blank");
+
+      // Reset form fields
+      setName("");
+      setEmail("");
+      setMessage("");
+    } catch (error) {
+      console.error("Error sending WhatsApp message:", error);
+    }
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -212,6 +248,7 @@ export default function HomePage() {
     );
   };
 
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20">
       <Header />
@@ -221,13 +258,12 @@ export default function HomePage() {
         {heroSlides.map((slide, index) => (
           <div
             key={slide.id}
-            className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
-              index === currentSlide
-                ? "opacity-100 transform translate-x-0"
-                : index < currentSlide
+            className={`absolute inset-0 transition-all duration-1000 ease-in-out ${index === currentSlide
+              ? "opacity-100 transform translate-x-0"
+              : index < currentSlide
                 ? "opacity-0 transform -translate-x-full"
                 : "opacity-0 transform translate-x-full"
-            }`}
+              }`}
           >
             <div className="relative h-full">
               <Image
@@ -241,30 +277,27 @@ export default function HomePage() {
               <div className="absolute inset-0 flex items-center justify-center text-center text-white">
                 <div className="max-w-4xl px-4">
                   <h1
-                    className={`text-3xl md:text-5xl lg:text-7xl font-bold mb-6 transition-all duration-1000 delay-300 mobile-text-3xl ${
-                      index === currentSlide
-                        ? "opacity-100 transform translate-y-0"
-                        : "opacity-0 transform translate-y-8"
-                    }`}
+                    className={`text-3xl md:text-5xl lg:text-7xl font-bold mb-6 transition-all duration-1000 delay-300 mobile-text-3xl ${index === currentSlide
+                      ? "opacity-100 transform translate-y-0"
+                      : "opacity-0 transform translate-y-8"
+                      }`}
                   >
                     {slide.title}
                   </h1>
                   <p
-                    className={`text-lg md:text-xl lg:text-2xl mb-8 transition-all duration-1000 delay-500 mobile-text-lg ${
-                      index === currentSlide
-                        ? "opacity-100 transform translate-y-0"
-                        : "opacity-0 transform translate-y-8"
-                    }`}
+                    className={`text-lg md:text-xl lg:text-2xl mb-8 transition-all duration-1000 delay-500 mobile-text-lg ${index === currentSlide
+                      ? "opacity-100 transform translate-y-0"
+                      : "opacity-0 transform translate-y-8"
+                      }`}
                   >
                     {slide.subtitle}
                   </p>
                   <Button
                     size="lg"
-                    className={`bg-gradient-to-r from-yellow-500 to-white-800 hover:from-yellow-600 hover:to-gray-900 px-8 py-4 text-lg text-black rounded-full transform transition-all duration-1000 delay-700 hover:scale-105 mobile-text-base ${
-                      index === currentSlide
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-8"
-                    }`}
+                    className={`bg-gradient-to-r from-yellow-500 to-white-800 hover:from-yellow-600 hover:to-gray-50 px-8 py-4 text-lg text-black rounded-full transform transition-all duration-1000 delay-700 hover:scale-105 mobile-text-base ${index === currentSlide
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-8"
+                      }`}
                   >
                     {slide.cta}
                   </Button>
@@ -294,11 +327,10 @@ export default function HomePage() {
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index === currentSlide
-                  ? "bg-white scale-125"
-                  : "bg-white/50 hover:bg-white/75"
-              }`}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentSlide
+                ? "bg-white scale-125"
+                : "bg-white/50 hover:bg-white/75"
+                }`}
             />
           ))}
         </div>
@@ -308,11 +340,10 @@ export default function HomePage() {
       <section
         id="about-mini"
         data-animate
-        className={`py-20 px-4 transition-all duration-1000 ${
-          isVisible["about-mini"]
-            ? "opacity-100 transform translate-y-0"
-            : "opacity-0 transform translate-y-8"
-        }`}
+        className={`py-20 px-4 transition-all duration-1000 ${isVisible["about-mini"]
+          ? "opacity-100 transform translate-y-0"
+          : "opacity-0 transform translate-y-8"
+          }`}
       >
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl md:text-4xl font-bold text-gray-800 dark:text-yellow-400 mb-6 bg-gradient-to-r from-yellow-500 to-red-500 bg-clip-text text-transparent mobile-text-2xl">
@@ -331,27 +362,24 @@ export default function HomePage() {
       <section
         id="featured-products"
         data-animate
-        className={`py-20 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
-          isVisible["featured-products"]
-            ? "opacity-100 transform translate-y-0"
-            : "opacity-0 transform translate-y-8"
-        }`}
+        className={`py-20 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["featured-products"]
+          ? "opacity-100 transform translate-y-0"
+          : "opacity-0 transform translate-y-8"
+          }`}
       >
         <div className="max-w-7xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-yellow-500 to-red-500 bg-clip-text text-transparent mobile-text-2xl">
             Featured Products
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {featuredProducts.map((product, index) => (
               <Link key={product.id} href={`/products/${product.id}`}>
                 <Card
-                  className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 overflow-hidden cursor-pointer ${
-                    isVisible["featured-products"]
-                      ? `opacity-100 transform translate-y-0 transition-delay-[${
-                          index * 100
-                        }ms]`
-                      : "opacity-0 transform translate-y-8"
-                  }`}
+                  className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 overflow-hidden cursor-pointer ${isVisible["featured-products"]
+                    ? `opacity-100 transform translate-y-0 transition-delay-[${index * 100
+                    }ms]`
+                    : "opacity-0 transform translate-y-8"
+                    }`}
                 >
                   <CardContent className="p-0">
                     <div className="relative overflow-hidden">
@@ -379,14 +407,19 @@ export default function HomePage() {
                       <div>
                         <p className="dark:text-gray-300 text-gray-800">
                           Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit. Neque excepturi pariatur nobis temporibus fugit
-                          ut
+                          elit. Neque excepturi pariatur
                         </p>
                       </div>
                       <div className="flex items-center justify-between mt-5">
-                        <span className="text-xl md:text-2xl font-bold text-yellow-500 mobile-text-lg">
-                          ₹{product.price}
-                        </span>
+                        <div className="flex gap-2 items-center">
+                          <span className="text-xl flex items-center gap-3 md:text-2xl font-bold text-yellow-500 mobile-text-lg">
+                            ₹{product.price}
+                          </span>
+                          <span className="text-lg md:text-md text-gray-500 dark:text-gray-400 line-through mobile-text-base">
+                            ₹{product.originalPrice}
+                          </span>
+                        </div>
+                        <Badge className="bg-red-500 text-white">Save ₹{product.originalPrice - product.price}</Badge>
                       </div>
                     </div>
                   </CardContent>
@@ -401,11 +434,10 @@ export default function HomePage() {
       <section
         id="services"
         data-animate
-        className={`py-20 px-4 transition-all duration-1000 ${
-          isVisible["services"]
-            ? "opacity-100 transform translate-y-0"
-            : "opacity-0 transform translate-y-8"
-        }`}
+        className={`py-20 px-4 transition-all duration-1000 ${isVisible["services"]
+          ? "opacity-100 transform translate-y-0"
+          : "opacity-0 transform translate-y-8"
+          }`}
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
@@ -415,13 +447,11 @@ export default function HomePage() {
             {services.map((service, index) => (
               <Card
                 key={index}
-                className={`text-center group hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-pink-50 dark:from-gray-800 dark:to-pink-900/20 ${
-                  isVisible["services"]
-                    ? `opacity-100 transform translate-y-0 transition-delay-[${
-                        index * 100
-                      }ms]`
-                    : "opacity-0 transform translate-y-8"
-                }`}
+                className={`text-center group hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-pink-50 dark:from-gray-800 dark:to-pink-900/20 ${isVisible["services"]
+                  ? `opacity-100 transform translate-y-0 transition-delay-[${index * 100
+                  }ms]`
+                  : "opacity-0 transform translate-y-8"
+                  }`}
               >
                 <CardContent className="p-8 cursor-pointer">
                   <div className="text-yellow-500 mb-4 group-hover:scale-110 transition-transform duration-300 flex justify-center">
@@ -444,11 +474,10 @@ export default function HomePage() {
       <section
         id="gallery"
         data-animate
-        className={`py-20 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
-          isVisible["gallery"]
-            ? "opacity-100 transform translate-y-0"
-            : "opacity-0 transform translate-y-8"
-        }`}
+        className={`py-20 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["gallery"]
+          ? "opacity-100 transform translate-y-0"
+          : "opacity-0 transform translate-y-8"
+          }`}
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
@@ -458,13 +487,11 @@ export default function HomePage() {
             {galleryItems.map((item, index) => (
               <div
                 key={index}
-                className={`${
-                  isVisible["gallery"]
-                    ? `opacity-100 transform scale-100 transition-delay-[${
-                        index * 100
-                      }ms]`
-                    : "opacity-0 transform scale-95"
-                } transition-all duration-500`}
+                className={`${isVisible["gallery"]
+                  ? `opacity-100 transform scale-100 transition-delay-[${index * 100
+                  }ms]`
+                  : "opacity-0 transform scale-95"
+                  } transition-all duration-500`}
               >
                 {item.type === "image" ? (
                   <div className="group relative overflow-hidden rounded-lg cursor-pointer">
@@ -496,15 +523,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Contact Form */}
       <section
         id="contact-form"
         data-animate
-        className={`py-20 px-4 transition-all duration-1000 ${
-          isVisible["contact-form"]
-            ? "opacity-100 transform translate-y-0"
-            : "opacity-0 transform translate-y-8"
-        }`}
+        className={`py-20 px-4 transition-all duration-1000 ${isVisible["contact-form"]
+          ? "opacity-100 transform translate-y-0"
+          : "opacity-0 transform translate-y-8"
+          }`}
       >
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
@@ -512,34 +537,43 @@ export default function HomePage() {
           </h2>
           <Card className="border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 shadow-2xl">
             <CardContent className="p-8">
-              <form className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <Input
                       placeholder="Your Name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                       className="border-purple-200 dark:border-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 rounded-lg h-12 bg-white dark:bg-gray-700"
+                      required
                     />
                   </div>
                   <div>
                     <Input
                       type="email"
                       placeholder="Your Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       className="border-purple-200 dark:border-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 rounded-lg h-12 bg-white dark:bg-gray-700"
+                      required
                     />
                   </div>
                 </div>
                 <div>
                   <Textarea
                     placeholder="Your Message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
                     rows={6}
                     className="border-purple-200 dark:border-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 rounded-lg bg-white dark:bg-gray-700"
+                    required
                   />
                 </div>
                 <div className="text-center">
                   <Button
                     type="submit"
                     size="lg"
-                    className="bg-gradient-to-r from-yellow-500 to-white hover:from-orange-500 hover:to-yellow-700 text-black hover:text-white px-12 py-4 rounded-full transform hover:scale-105 transition-all duration-300 mobile-text-base"
+                    className="bg-gradient-to-r from-yellow-500 to-white hover:from-white hover:to-yellow-700 text-black px-12 py-4 rounded-full transform hover:scale-105 transition-all duration-300 mobile-text-base"
                   >
                     Send Message
                   </Button>
@@ -554,11 +588,10 @@ export default function HomePage() {
       <section
         id="map"
         data-animate
-        className={`py-20 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
-          isVisible["map"]
-            ? "opacity-100 transform translate-y-0"
-            : "opacity-0 transform translate-y-8"
-        }`}
+        className={`py-20 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["map"]
+          ? "opacity-100 transform translate-y-0"
+          : "opacity-0 transform translate-y-8"
+          }`}
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
@@ -566,8 +599,8 @@ export default function HomePage() {
           </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <div className="flex items-center space-x-4">
-                <MapPin className="w-6 h-6 text-purple-600" />
+              <Link href="https://maps.app.goo.gl/rmXMcXU5K8omi7BG9" className="flex items-center space-x-4">
+                <MapPin className="w-6 h-6 text-yellow-500" />
                 <div>
                   <h3 className="font-semibold text-gray-800 dark:text-gray-200 mobile-text-base">
                     Address
@@ -576,9 +609,9 @@ export default function HomePage() {
                     Airport Road Padikkal, Chelari, Malappuram.
                   </p>
                 </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <Phone className="w-6 h-6 text-purple-600" />
+              </Link>
+              <Link href="tel:+916238520474" className="flex items-center space-x-4">
+                <Phone className="w-6 h-6 text-yellow-500" />
                 <div>
                   <h3 className="font-semibold text-gray-800 dark:text-gray-200 mobile-text-base">
                     Phone
@@ -587,9 +620,9 @@ export default function HomePage() {
                     +91 6238520474
                   </p>
                 </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <Mail className="w-6 h-6 text-purple-600" />
+              </Link>
+              <Link href="mailto:info@cyclesandtoys.com" className="flex items-center space-x-4">
+                <Mail className="w-6 h-6 text-yellow-500" />
                 <div>
                   <h3 className="font-semibold text-gray-800 dark:text-gray-200 mobile-text-base">
                     Email
@@ -598,9 +631,9 @@ export default function HomePage() {
                     info@cyclesandtoys.com
                   </p>
                 </div>
-              </div>
+              </Link>
               <div className="flex items-center space-x-4">
-                <Clock className="w-6 h-6 text-purple-600" />
+                <Clock className="w-6 h-6 text-yellow-500" />
                 <div>
                   <h3 className="font-semibold text-gray-800 dark:text-gray-200 mobile-text-base">
                     Business Hours
@@ -612,7 +645,7 @@ export default function HomePage() {
               </div>
             </div>
             <div className="h-96 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
-             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3915.20862869316!2d75.89698147480979!3d11.097823189071146!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba6530dea0f169d%3A0xb959c2b18a78a6c6!2sMetro%20toys%20padikkal!5e0!3m2!1sen!2sin!4v1748973014399!5m2!1sen!2sin" width="600" height="450" allowFullScreen loading="lazy" referrerPolicy=""></iframe>
+              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3915.20862869316!2d75.89698147480979!3d11.097823189071146!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba6530dea0f169d%3A0xb959c2b18a78a6c6!2sMetro%20toys%20padikkal!5e0!3m2!1sen!2sin!4v1748973014399!5m2!1sen!2sin" width="600" height="450" allowFullScreen loading="lazy" referrerPolicy=""></iframe>
             </div>
           </div>
         </div>

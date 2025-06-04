@@ -116,7 +116,7 @@ export default function ContactPage() {
       {/* Hero Section */}
       <section className="relative h-96 overflow-hidden">
         <Image src="/placeholder.svg?height=400&width=1200" alt="Contact Us Hero" fill className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-900/70 to-pink-900/50" />
+        <div className="absolute inset-0 bg-gradient-to-r from-yellow-600/50 to-black/50" />
         <div className="absolute inset-0 flex items-center justify-center text-center text-white">
           <div className="max-w-4xl px-4">
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in-up mobile-text-3xl">
@@ -152,10 +152,10 @@ export default function ContactPage() {
                 }`}
               >
                 <CardContent className="p-8">
-                  <div className="text-purple-600 mb-4 group-hover:scale-110 transition-transform duration-300 flex justify-center">
+                  <div className="text-yellow-500 mb-4 group-hover:scale-110 transition-transform duration-300 flex justify-center">
                     {feature.icon}
                   </div>
-                  <h3 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-gray-200 mb-3 group-hover:text-purple-600 transition-colors duration-300 mobile-text-base">
+                  <h3 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-gray-200 mb-3 group-hover:text-yellow-500 transition-colors duration-300 mobile-text-base">
                     {feature.title}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 leading-relaxed mobile-text-sm">
@@ -198,7 +198,7 @@ export default function ContactPage() {
                   >
                     <CardContent className="p-6">
                       <div className="flex items-start space-x-4">
-                        <div className="text-purple-600 mt-1">{info.icon}</div>
+                        <div className="text-yellow-500 mt-1">{info.icon}</div>
                         <div className="flex-1">
                           <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2 mobile-text-sm">
                             {info.title}
@@ -233,7 +233,7 @@ export default function ContactPage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="flex-1 border-purple-300 dark:border-purple-700 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-full py-4 transform hover:scale-105 transition-all duration-300 mobile-text-base"
+                  className="flex-1 border-yellow-300 dark:border-yellow-700 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-full py-4 transform hover:scale-105 transition-all duration-300 mobile-text-base"
                 >
                   <MessageCircle className="w-5 h-5 mr-2" />
                   Live Chat
@@ -259,7 +259,7 @@ export default function ContactPage() {
                           value={formData.name}
                           onChange={handleInputChange}
                           placeholder="Enter your full name"
-                          className="border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 rounded-lg h-12 bg-white dark:bg-gray-700"
+                          className="border-purple-200 dark:border-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 rounded-lg h-12 bg-white dark:bg-gray-700"
                           required
                         />
                       </div>
@@ -273,7 +273,7 @@ export default function ContactPage() {
                           value={formData.email}
                           onChange={handleInputChange}
                           placeholder="Enter your email"
-                          className="border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 rounded-lg h-12 bg-white dark:bg-gray-700"
+                          className="border-purple-200 dark:border-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 rounded-lg h-12 bg-white dark:bg-gray-700"
                           required
                         />
                       </div>
@@ -290,7 +290,7 @@ export default function ContactPage() {
                           value={formData.phone}
                           onChange={handleInputChange}
                           placeholder="Enter your phone number"
-                          className="border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 rounded-lg h-12 bg-white dark:bg-gray-700"
+                          className="border-purple-200 dark:border-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 rounded-lg h-12 bg-white dark:bg-gray-700"
                         />
                       </div>
                       <div>
@@ -302,7 +302,7 @@ export default function ContactPage() {
                           value={formData.subject}
                           onChange={handleInputChange}
                           placeholder="What's this about?"
-                          className="border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 rounded-lg h-12 bg-white dark:bg-gray-700"
+                          className="border-purple-200 dark:border-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 rounded-lg h-12 bg-white dark:bg-gray-700"
                           required
                         />
                       </div>
@@ -318,7 +318,7 @@ export default function ContactPage() {
                         onChange={handleInputChange}
                         placeholder="Tell us how we can help you..."
                         rows={6}
-                        className="border-purple-200 dark:border-purple-700 focus:border-purple-500 focus:ring-purple-500 rounded-lg bg-white dark:bg-gray-700"
+                        className="border-purple-200 dark:border-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 rounded-lg bg-white dark:bg-gray-700"
                         required
                       />
                     </div>
@@ -328,7 +328,7 @@ export default function ContactPage() {
                         type="submit"
                         disabled={isSubmitting}
                         size="lg"
-                        className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-12 py-4 rounded-full transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed mobile-text-base"
+                        className="bg-gradient-to-r from-yellow-500 to-white hover:from-white hover:to-yellow-500 text-black px-12 py-4 rounded-full transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed mobile-text-base"
                       >
                         {isSubmitting ? (
                           <>
@@ -378,7 +378,7 @@ export default function ContactPage() {
                     title="Store Location"
                   />
                 </div>
-                <div className="bg-gradient-to-br from-purple-600 to-pink-600 text-white p-8 flex flex-col justify-center">
+                <div className="bg-gradient-to-br from-yellow-500 to-gray-800 text-white p-8 flex flex-col justify-center">
                   <h3 className="text-xl md:text-2xl font-bold mb-6 mobile-text-lg">Visit Our Showroom</h3>
                   <div className="space-y-4">
                     <div className="flex items-center space-x-3">
@@ -406,7 +406,7 @@ export default function ContactPage() {
                   </div>
                   <Button
                     variant="outline"
-                    className="mt-6 border-white text-white hover:bg-white hover:text-purple-600 rounded-full mobile-text-sm"
+                    className="mt-6 border-white text-white hover:bg-white hover:text-yellow-500 rounded-full mobile-text-sm"
                   >
                     Get Directions
                   </Button>

@@ -134,8 +134,8 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Card className="border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
               <CardContent className="p-8 text-center">
-                <Target className="w-16 h-16 text-purple-600 mx-auto mb-6" />
-                <h3 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4 mobile-text-lg">
+                <Target className="w-16 h-16 text-red-400 mx-auto mb-6" />
+                <h3 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-yellow-500 mb-4 mobile-text-lg">
                   Our Mission
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed mobile-text-sm">
@@ -147,8 +147,8 @@ export default function AboutPage() {
             </Card>
             <Card className="border-0 bg-gradient-to-br from-white to-pink-50 dark:from-gray-800 dark:to-pink-900/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
               <CardContent className="p-8 text-center">
-                <Heart className="w-16 h-16 text-pink-600 mx-auto mb-6" />
-                <h3 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4 mobile-text-lg">
+                <Heart className="w-16 h-16 text-blue-400 mx-auto mb-6" />
+                <h3 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-yellow-500 mb-4 mobile-text-lg">
                   Our Vision
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed mobile-text-sm">
@@ -177,8 +177,8 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="border-0 bg-gradient-to-br from-white to-yellow-50 dark:from-gray-800 dark:to-yellow-900/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 text-center">
               <CardContent className="p-8">
-                <Award className="w-16 h-16 text-yellow-600 mx-auto mb-6" />
-                <h3 className="text-lg md:text-xl font-bold text-gray-800 dark:text-gray-200 mb-4 mobile-text-base">
+                <Award className="w-16 h-16 text-orange-400 mx-auto mb-6" />
+                <h3 className="text-lg md:text-xl font-bold text-gray-800 dark:text-yellow-400 mb-4 mobile-text-base">
                   Quality First
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 mobile-text-sm">
@@ -190,7 +190,7 @@ export default function AboutPage() {
             <Card className="border-0 bg-gradient-to-br from-white to-green-50 dark:from-gray-800 dark:to-green-900/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 text-center">
               <CardContent className="p-8">
                 <Users className="w-16 h-16 text-green-600 mx-auto mb-6" />
-                <h3 className="text-lg md:text-xl font-bold text-gray-800 dark:text-gray-200 mb-4 mobile-text-base">
+                <h3 className="text-lg md:text-xl font-bold text-gray-800 dark:text-yellow-400 mb-4 mobile-text-base">
                   Family Focus
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 mobile-text-sm">
@@ -201,7 +201,7 @@ export default function AboutPage() {
             <Card className="border-0 bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-blue-900/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 text-center">
               <CardContent className="p-8">
                 <Heart className="w-16 h-16 text-blue-600 mx-auto mb-6" />
-                <h3 className="text-lg md:text-xl font-bold text-gray-800 dark:text-gray-200 mb-4 mobile-text-base">
+                <h3 className="text-lg md:text-xl font-bold text-gray-800 dark:text-yellow-400 mb-4 mobile-text-base">
                   Customer Care
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 mobile-text-sm">
@@ -226,7 +226,7 @@ export default function AboutPage() {
             Our Journey
           </h2>
           <div className="relative">
-            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-purple-400 to-pink-400" />
+            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-yellow-400 to-red-400" />
             {milestones.map((milestone, index) => (
               <div
                 key={index}
@@ -235,7 +235,7 @@ export default function AboutPage() {
                 <div className={`w-1/2 ${index % 2 === 0 ? "pr-8 text-right" : "pl-8 text-left"}`}>
                   <Card className="border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-1">
                     <CardContent className="p-6">
-                      <div className="text-xl md:text-2xl font-bold text-purple-600 mb-2 mobile-text-lg">
+                      <div className="text-xl md:text-2xl font-bold text-yellow-500 mb-2 mobile-text-lg">
                         {milestone.year}
                       </div>
                       <h3 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2 mobile-text-base">
@@ -245,7 +245,7 @@ export default function AboutPage() {
                     </CardContent>
                   </Card>
                 </div>
-                <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full border-4 border-white dark:border-gray-800 shadow-lg" />
+                <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-gradient-to-br from-yellow-500 to-pink-500 rounded-full border-4 border-white dark:border-gray-800 shadow-lg" />
               </div>
             ))}
           </div>
@@ -289,7 +289,7 @@ export default function AboutPage() {
                     <h3 className="text-lg md:text-xl font-bold text-gray-800 dark:text-gray-200 mb-2 mobile-text-base">
                       {member.name}
                     </h3>
-                    <p className="text-purple-600 font-semibold mb-3 mobile-text-sm">{member.role}</p>
+                    <p className="text-yellow-500 font-semibold mb-3 mobile-text-sm">{member.role}</p>
                     <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mobile-text-sm">
                       {member.bio}
                     </p>
@@ -330,7 +330,7 @@ export default function AboutPage() {
                   height={300}
                   className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-purple-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-yellow-600/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
             ))}
           </div>

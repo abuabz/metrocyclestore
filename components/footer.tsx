@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import {
   Facebook,
@@ -47,78 +46,101 @@ export default function Footer() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle newsletter subscription
-    console.log("Newsletter subscription:", email);
-    setEmail("");
+    try {
+      // This is a basic example. In production, you should use a proper backend service
+      await fetch("/api/newsletter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          to: "info@cyclesandtoys.com",
+        }),
+      });
+      console.log("Newsletter subscription:", email);
+      setEmail("");
+    } catch (error) {
+      console.error("Error subscribing to newsletter:", error);
+    }
   };
 
   return (
-    <footer className="bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900 dark:from-yellow-600 dark:via-orange-600 dark:to-red-600 text-white relative overflow-hidden">
-      {/* Background Pattern */}
+    <footer className="bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900 dark:from-yellow-600  dark:to-black text-white relative overflow-hidden">
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-400 rounded-full animate-pulse" />
-        <div className="absolute top-32 right-20 w-16 h-16 bg-pink-400 rounded-full animate-bounce" />
-        <div className="absolute bottom-20 left-1/4 w-12 h-12 bg-purple-400 rounded-full animate-pulse" />
+        <div className="absolute top-10 left-10 w-20 h-20 bg-green-400 rounded-full animate-pulse" />
+        <div className="absolute top-32 right-20 w-16 h-16 bg-orange-400 rounded-full animate-bounce" />
+        <div className="absolute bottom-20 left-1/4 w-12 h-12 bg-red-400 rounded-full animate-pulse" />
         <div className="absolute bottom-32 right-1/3 w-14 h-14 bg-blue-400 rounded-full animate-bounce" />
       </div>
 
       <div className="relative z-10">
-        {/* Main Footer Content */}
         <div className="max-w-7xl mx-auto px-4 py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Company Info */}
             <div className="space-y-6">
               <div className="flex items-center space-x-3">
                 <img
                   src="./Logomain.png"
                   alt="Logo"
-                  className={`w-40 h-40 transition-transform duration-300`}
+                  className="w-60 h-60 transition-transform duration-300"
                 />
-                {/* <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">C&T</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold">Cycles & Toys</h3>
-                  <p className="text-sm text-gray-300">Adventure Awaits</p>
-                </div> */}
               </div>
-              <p className="text-gray-300 leading-relaxed mobile-text-sm">
+              <p className="text-gray-200 leading-relaxed mobile-text-sm">
                 Bringing joy and adventure to families through our carefully
                 curated collection of premium cycles and educational toys since
                 2010.
               </p>
 
-              {/* Social Media Icons */}
               <div className="flex space-x-4">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="p-3 rounded-full bg-white/10 hover:bg-blue-600 hover:scale-110 transition-all duration-300 group"
-                >
-                  <Facebook className="w-5 h-5 group-hover:animate-bounce" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="p-3 rounded-full bg-white/10 hover:bg-pink-600 hover:scale-110 transition-all duration-300 group"
-                >
-                  <Instagram className="w-5 h-5 group-hover:animate-bounce" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="p-3 rounded-full bg-white/10 hover:bg-green-600 hover:scale-110 transition-all duration-300 group"
-                >
-                  <MessageCircle className="w-5 h-5 group-hover:animate-bounce" />
-                </Button>
+                <Link href="https://www.facebook.com/share/1BSkQxcTpm/?mibextid=wwXIfr">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-3 rounded-full bg-white/10 hover:bg-blue-600 hover:scale-110 transition-all duration-300 group"
+                  >
+                    <Facebook className="w-5 h-5 group-hover:animate-bounce" />
+                  </Button>
+                </Link>
+                <Link href="https://www.instagram.com/metro.toys_?igsh=MWh2a2kwc2hxa240MA%3D%3D&utm_source=qr">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-3 rounded-full bg-white/10 hover:bg-pink-600 hover:scale-110 transition-all duration-300 group"
+                  >
+                    <Instagram className="w-5 h-5 group-hover:animate-bounce" />
+                  </Button>
+                </Link>
+                <Link href="https://wa.me/+916238520474">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-3 rounded-full bg-white/10 hover:bg-green-600 hover:scale-110 transition-all duration-300 group"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="icon icon-tabler icons-tabler-outline icon-tabler-brand-whatsapp group-hover:animate-bounce"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M3 21l1.65 -3.8a9 9 0 1 1 3.4 2.9l-5.05 .9" />
+                      <path d="M9 10a.5 .5 0 0 0 1 0v-1a.5 .5 0 0 0 -1 0v1a5 5 0 0 0 5 5h1a.5 .5 0 0 0 0 -1h-1a.5 .5 0 0 0 0 1" />
+                    </svg>
+                  </Button>
+                </Link>
               </div>
             </div>
 
-            {/* Quick Links */}
             <div className="space-y-6">
-              <h4 className="text-lg font-semibold text-purple-600 mobile-text-base">
+              <h4 className="text-lg font-semibold text-yellow-400 mobile-text-base">
                 Quick Links
               </h4>
               <ul className="space-y-3">
@@ -126,7 +148,7 @@ export default function Footer() {
                   <li key={link.name}>
                     <Link
                       href={link.href}
-                      className="text-gray-300 hover:text-purple-600 transition-colors duration-300 hover:translate-x-1 transform inline-block mobile-text-sm"
+                      className="text-gray-200 hover:text-yellow-500 transition-colors duration-300 hover:translate-x-1 transform inline-block mobile-text-sm"
                     >
                       {link.name}
                     </Link>
@@ -135,9 +157,8 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Products & Services */}
             <div className="space-y-6">
-              <h4 className="text-lg font-semibold text-purple-600 mobile-text-base">
+              <h4 className="text-lg font-semibold text-yellow-400 mobile-text-base">
                 Categories
               </h4>
               <ul className="space-y-3">
@@ -145,7 +166,7 @@ export default function Footer() {
                   <li key={category.name}>
                     <Link
                       href={category.href}
-                      className="text-gray-300 hover:text-purple-600 transition-colors duration-300 hover:translate-x-1 transform inline-block mobile-text-sm"
+                      className="text-gray-200 hover:text-yellow-500 transition-colors duration-300 hover:translate-x-1 transform inline-block mobile-text-sm"
                     >
                       {category.name}
                     </Link>
@@ -153,7 +174,7 @@ export default function Footer() {
                 ))}
               </ul>
 
-              <h4 className="text-lg font-semibold text-purple-600 pt-4 mobile-text-base">
+              <h4 className="text-lg font-semibold text-yellow-400 pt-4 mobile-text-base">
                 Services
               </h4>
               <ul className="space-y-3">
@@ -161,7 +182,7 @@ export default function Footer() {
                   <li key={service.name}>
                     <Link
                       href={service.href}
-                      className="text-gray-300 hover:text-purple-600 transition-colors duration-300 hover:translate-x-1 transform inline-block mobile-text-sm"
+                      className="text-gray-200 hover:text-yellow-500 transition-colors duration-300 hover:translate-x-1 transform inline-block mobile-text-sm"
                     >
                       {service.name}
                     </Link>
@@ -170,46 +191,43 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Contact Info & Newsletter */}
             <div className="space-y-6">
-              <h4 className="text-lg font-semibold text-purple-600 mobile-text-base">
+              <h4 className="text-lg font-semibold text-orange-300 mobile-text-base">
                 Get In Touch
               </h4>
 
-              {/* Contact Details */}
               <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <MapPin className="w-5 h-5 text-purple-400 flex-shrink-0" />
-                  <span className="text-gray-300 text-sm mobile-text-sm">
+                <Link href="https://maps.app.goo.gl/rmXMcXU5K8omi7BG9" className="flex items-center space-x-3">
+                  <MapPin className="w-5 h-5 text-yellow-400 flex-shrink-0" />
+                  <span className="text-gray-200 text-sm mobile-text-sm">
                     Airport Road Padikkal, Chelari, Malappuram. Kerala
                   </span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Phone className="w-5 h-5 text-green-400 flex-shrink-0" />
-                  <span className="text-gray-300 text-sm mobile-text-sm">
+                </Link>
+                <Link href="tel:+916238520474" className="flex items-center space-x-3">
+                  <Phone className="w-5 h-5 text-yellow-400 flex-shrink-0" />
+                  <span className="text-gray-200 text-sm mobile-text-sm">
                     +91 6238520474
                   </span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Mail className="w-5 h-5 text-blue-400 flex-shrink-0" />
-                  <span className="text-gray-300 text-sm mobile-text-sm">
+                </Link>
+                <Link href="mailto:info@cyclesandtoys.com" className="flex items-center space-x-3">
+                  <Mail className="w-5 h-5 text-yellow-400 flex-shrink-0" />
+                  <span className="text-gray-200 text-sm mobile-text-sm">
                     info@cyclesandtoys.com
                   </span>
-                </div>
+                </Link>
                 <div className="flex items-center space-x-3">
                   <Clock className="w-5 h-5 text-yellow-400 flex-shrink-0" />
-                  <span className="text-gray-300 text-sm mobile-text-sm">
+                  <span className="text-gray-200 text-sm mobile-text-sm">
                     Mon-Sat: 9AM-8PM, Sun: Off
                   </span>
                 </div>
               </div>
 
-              {/* Newsletter Signup */}
               <div className="space-y-3">
-                <h5 className="font-semibold text-pink-300 mobile-text-base">
+                <h5 className="font-semibold text-orange-300 mobile-text-base">
                   Newsletter
                 </h5>
-                <p className="text-gray-400 text-sm mobile-text-sm">
+                <p className="text-gray-300 text-sm mobile-text-sm">
                   Get updates on new products and special offers!
                 </p>
                 <form onSubmit={handleNewsletterSubmit} className="space-y-2">
@@ -218,14 +236,14 @@ export default function Footer() {
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-yellow-400 rounded-lg"
+                    className="bg-white/10 border-white/20 text-white placeholder-gray-100 focus:border-yellow-400 rounded-lg"
                     required
                   />
                   <Button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-lg hover:scale-105 transition-all duration-300 mobile-text-sm"
+                    className="w-full bg-gradient-to-r from-yellow-500 to-white-500 hover:from-yellow-400 hover:to-gray-100 text-black rounded-lg hover:scale-105 transition-all duration-300 mobile-text-sm"
                   >
-                    Subscribe
+                    Connect
                   </Button>
                 </form>
               </div>
@@ -233,41 +251,29 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Business Hours Banner */}
-        <div className="bg-gradient-to-r from-purple-800 to-pink-800 dark:from-purple-900 dark:to-pink-900 py-4">
-          <div className="max-w-7xl mx-auto px-4 text-center">
-            <p className="text-purple-600 font-semibold mobile-text-sm">
-              🎉 Special Weekend Hours: Saturday 9AM-8PM
-            </p>
-          </div>
-        </div>
-
-        {/* Bottom Footer */}
         <div className="bg-black/30 dark:bg-black/50 py-6">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
               <div className="flex items-center space-x-2 text-gray-400 text-sm mobile-text-sm">
-                <span>© 2025 Cycles & Toys. Made with</span>
-                <Heart className="w-4 h-4 text-red-400 animate-pulse" />
-                <span>for families everywhere.</span>
+                <span>© 2025 Metro Cycles & Toys.</span>
               </div>
 
               <div className="flex items-center space-x-6 text-sm text-gray-400 mobile-text-sm">
                 <Link
                   href="/privacy"
-                  className="hover:text-purple-600 transition-colors duration-300"
+                  className="hover:text-yellow-600 transition-colors duration-300"
                 >
                   Privacy Policy
                 </Link>
                 <Link
                   href="/terms"
-                  className="hover:text-purple-600 transition-colors duration-300"
+                  className="hover:text-yellow-600 transition-colors duration-300"
                 >
                   Terms of Service
                 </Link>
                 <Link
                   href="/returns"
-                  className="hover:text-purple-600 transition-colors duration-300"
+                  className="hover:text-yellow-600 transition-colors duration-300"
                 >
                   Returns
                 </Link>
@@ -277,7 +283,6 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Scroll to Top Button */}
       <Button
         onClick={scrollToTop}
         className="fixed bottom-20 right-6 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-full p-3 shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300 z-40"

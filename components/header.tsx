@@ -64,36 +64,38 @@ export default function Header() {
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-2">
-            <ThemeToggle />
+            {/* <ThemeToggle /> */}
             <Link href="/cart">
               <Button
                 variant="ghost"
                 size="sm"
                 className={`relative p-2 rounded-full hover:scale-110 transition-all duration-300 ${isScrolled
-                    ? "text-gray-700 dark:text-gray-300 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                    : "text-white hover:text-purple-300 hover:bg-white/10"
+                  ? "text-gray-700 dark:text-gray-300 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                  : "text-white hover:text-purple-300 hover:bg-white/10"
                   }`}
               >
                 <ShoppingCart className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 text-white text-xs rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center">
                   {getCartCount()}
                 </span>
               </Button>
             </Link>
-            <Button
-              size="sm"
-              className="hidden sm:flex bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-full px-4 py-2 hover:scale-105 transition-all duration-300"
-            >
-              <Phone className="w-4 h-4 mr-2" />
-              Call Now
-            </Button>
+            <Link href="tel:+916238520474">
+              <Button
+                size="sm"
+                className="hidden sm:flex bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-full px-4 py-2 hover:scale-105 transition-all duration-300"
+              >
+                <Phone className="w-4 h-4 mr-2" />
+                Call Now
+              </Button>
+            </Link>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className={`lg:hidden p-2 rounded-full ${isScrolled
-                  ? "text-gray-700 dark:text-gray-300 hover:text-purple-600"
-                  : "text-white hover:text-purple-300"
+                ? "text-gray-700 dark:text-gray-300 hover:text-purple-600"
+                : "text-white hover:text-purple-300"
                 }`}
             >
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}

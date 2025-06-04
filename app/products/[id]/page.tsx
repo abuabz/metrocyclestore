@@ -155,7 +155,7 @@ export default function ProductDetailPage() {
               Product Not Found
             </h1>
             <Link href="/products">
-              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">Back to Products</Button>
+              <Button className="bg-gradient-to-r from-yellow-500 to-white text-black">Back to Products</Button>
             </Link>
           </div>
         </div>
@@ -201,15 +201,15 @@ export default function ProductDetailPage() {
       <section className="pt-24 pb-8 px-4">
         <div className="max-w-7xl mx-auto">
           <nav className="text-sm text-gray-600 dark:text-gray-400 mobile-text-sm">
-            <Link href="/" className="hover:text-purple-600 dark:hover:text-purple-400">
+            <Link href="/" className="hover:text-yellow-500 dark:hover:text-yellow-500">
               Home
             </Link>
             <span className="mx-2">/</span>
-            <Link href="/products" className="hover:text-purple-600 dark:hover:text-purple-400">
+            <Link href="/products" className="hover:text-yellow-500 dark:hover:text-yellow-500">
               Products
             </Link>
             <span className="mx-2">/</span>
-            <span className="text-purple-600 dark:text-purple-400">{product.name}</span>
+            <span className="text-yellow-600 dark:text-yellow-500">{product.name}</span>
           </nav>
         </div>
       </section>
@@ -243,8 +243,8 @@ export default function ProductDetailPage() {
                     onClick={() => setSelectedImage(index)}
                     className={`relative overflow-hidden rounded-lg border-2 transition-all duration-300 ${
                       selectedImage === index
-                        ? "border-purple-500 scale-105"
-                        : "border-gray-200 dark:border-gray-700 hover:border-purple-300"
+                        ? "border-yellow-500 scale-105"
+                        : "border-gray-200 dark:border-gray-700 hover:border-yellow-300"
                     }`}
                   >
                     <Image
@@ -266,18 +266,18 @@ export default function ProductDetailPage() {
                   {product.name}
                 </h1>
                 <div className="flex items-center space-x-4 mb-4">
-                  <div className="flex items-center">
+                  {/* <div className="flex items-center">
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
                         className={`w-5 h-5 ${i < product.rating ? "text-yellow-400 fill-current" : "text-gray-300"}`}
                       />
                     ))}
-                  </div>
-                  <span className="text-gray-600 dark:text-gray-400 mobile-text-sm">({product.reviews} reviews)</span>
+                  </div> */}
+                  {/* <span className="text-gray-600 dark:text-gray-400 mobile-text-sm">({product.reviews} reviews)</span> */}
                   <Badge
                     variant="outline"
-                    className="text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400"
+                    className="text-yellow-600 dark:text-yellow-400 border-yellow-600 dark:border-yellow-400"
                   >
                     {product.category}
                   </Badge>
@@ -286,14 +286,14 @@ export default function ProductDetailPage() {
 
               {/* Price */}
               <div className="flex items-center space-x-4">
-                <span className="text-2xl md:text-3xl font-bold text-purple-600 mobile-text-xl">${product.price}</span>
+                <span className="text-2xl md:text-3xl font-bold text-yellow-500 mobile-text-xl">₹{product.price}</span>
                 {product.originalPrice && (
                   <span className="text-lg md:text-xl text-gray-500 dark:text-gray-400 line-through mobile-text-base">
-                    ${product.originalPrice}
+                    ₹{product.originalPrice}
                   </span>
                 )}
                 {product.originalPrice && (
-                  <Badge className="bg-red-500 text-white">Save ${product.originalPrice - product.price}</Badge>
+                  <Badge className="bg-red-500 text-white">Save ₹{product.originalPrice - product.price}</Badge>
                 )}
               </div>
 
@@ -303,7 +303,7 @@ export default function ProductDetailPage() {
                   <>
                     <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                     <span className="text-green-600 dark:text-green-400 font-medium mobile-text-sm">
-                      In Stock ({product.stockCount} available)
+                      In Stock
                     </span>
                   </>
                 ) : (
@@ -313,6 +313,8 @@ export default function ProductDetailPage() {
                   </>
                 )}
               </div>
+
+              <p className="pe-5 text-gray-200">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vitae, expedita dolore eius temporibus asperiores officiis aspernatur placeat hic omnis vero. Possimus deserunt sed dolorum ipsum quasi natus deleniti, ratione beatae?</p>
 
               {/* Quantity Selector */}
               <div className="flex items-center space-x-4">
@@ -351,7 +353,7 @@ export default function ProductDetailPage() {
                   }`}
                 >
                   <ShoppingCart className="w-5 h-5 mr-2" />
-                  {isInCart ? `Remove from Cart` : `Add to Cart - $${(product.price * quantity).toFixed(2)}`}
+                  {isInCart ? `Remove from Cart` : `Add to Cart - ₹${(product.price * quantity).toFixed(2)}`}
                 </Button>
 
                 <div className="grid grid-cols-3 gap-2 text-sm mobile-text-sm">
@@ -385,14 +387,14 @@ export default function ProductDetailPage() {
         <div className="max-w-7xl mx-auto">
           {/* Tab Navigation */}
           <div className="flex space-x-8 border-b border-gray-200 dark:border-gray-700 mb-8">
-            {["description", "features", "specifications", "reviews"].map((tab) => (
+            {["features", "specifications"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`pb-4 px-2 font-medium capitalize transition-all duration-300 mobile-text-sm ${
                   activeTab === tab
-                    ? "text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400"
-                    : "text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
+                    ? "text-yellow-600 dark:text-yellow-400 border-b-2 border-yellow-600 dark:border-yellow-400"
+                    : "text-gray-600 dark:text-gray-400 hover:text-yellow-600 dark:hover:text-yellow-400"
                 }`}
               >
                 {tab}
@@ -486,7 +488,7 @@ export default function ProductDetailPage() {
       </section>
 
       {/* Related Products */}
-      <section
+      {/* <section
         id="related-products"
         data-animate
         className={`py-12 px-4 transition-all duration-1000 ${
@@ -546,7 +548,7 @@ export default function ProductDetailPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       <Footer />
     </div>

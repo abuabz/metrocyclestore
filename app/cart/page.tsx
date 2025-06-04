@@ -50,7 +50,7 @@ export default function CartPage() {
               <Link href="/products">
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-4 rounded-full transform hover:scale-105 transition-all duration-300 mobile-text-base"
+                  className="bg-gradient-to-r from-yellow-500 to-white hover:from-white hover:to-yellow-500 text-black px-8 py-4 rounded-full transform hover:scale-105 transition-all duration-300 mobile-text-base"
                 >
                   <ArrowLeft className="w-5 h-5 mr-2" />
                   Continue Shopping
@@ -104,7 +104,7 @@ export default function CartPage() {
                         <h3 className="text-base md:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-1 mobile-text-sm">
                           {item.name}
                         </h3>
-                        <p className="text-purple-600 font-bold text-lg md:text-xl mobile-text-base">${item.price}</p>
+                        <p className="text-yellow-500 font-bold text-lg md:text-xl mobile-text-base">${item.price}</p>
                       </div>
 
                       {/* Quantity Controls */}
@@ -158,7 +158,7 @@ export default function CartPage() {
                 <Link href="/products">
                   <Button
                     variant="outline"
-                    className="border-purple-300 dark:border-purple-700 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 mobile-text-sm"
+                    className="border-yellow-300 dark:border-yellow-700 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 mobile-text-sm"
                   >
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Continue Shopping
@@ -190,7 +190,7 @@ export default function CartPage() {
                       <Button
                         onClick={handlePromoCode}
                         variant="outline"
-                        className="border-purple-300 dark:border-purple-700 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 mobile-text-sm"
+                        className="border-yellow-300 dark:border-yellow-700 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 mobile-text-sm"
                       >
                         Apply
                       </Button>
@@ -235,14 +235,14 @@ export default function CartPage() {
 
                     <div className="flex justify-between text-base md:text-lg font-bold">
                       <span className="text-gray-800 dark:text-gray-200 mobile-text-base">Total:</span>
-                      <span className="text-purple-600 mobile-text-base">${total.toFixed(2)}</span>
+                      <span className="text-yellow-500 mobile-text-base">${total.toFixed(2)}</span>
                     </div>
                   </div>
 
                   {/* Checkout Button */}
                   <Button
                     size="lg"
-                    className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-4 text-base md:text-lg font-semibold rounded-lg transform hover:scale-105 transition-all duration-300 mobile-text-base"
+                    className="w-full bg-gradient-to-r from-yellow-500 to-white hover:from-yellow-600 hover:to-white text-black py-4 text-base md:text-lg font-semibold rounded-lg transform hover:scale-105 transition-all duration-300 mobile-text-base"
                   >
                     Proceed to Checkout
                   </Button>
