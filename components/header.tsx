@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { ThemeToggle } from "@/components/theme-toggle"
 import Link from "next/link"
 import { useCart } from "@/hooks/use-cart"
+import { usePathname } from "next/navigation"
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -20,6 +21,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const { getCartCount } = useCart()
+  const pathname = usePathname()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,8 +33,7 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-gray-900/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg" : "bg-transparent"
-        }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-gray-900/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg" : "bg-transparent"}`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
@@ -42,8 +43,7 @@ export default function Header() {
               <img
                 src="./Logomain.png"
                 alt="Logo"
-                className={`w-40 h-40 transition-transform duration-300 ${isScrolled ? "transform scale-90" : "transform scale-100"
-                  }`}
+                className={`w-40 h-40 transition-transform duration-300 ${isScrolled ? "transform scale-90" : "transform scale-100"}`}
               />
             </div>
           </Link>
@@ -54,43 +54,17 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`font-medium transition-all duration-300 hover:scale-105 relative group ${isScrolled
-                    ? "text-gray-200 dark:text-gray-300 hover:text-yellow-300 dark:hover:text-yellow-400"
-                    : "text-white hover:text-yellow-300"
-                  }`}
+                className={`font-medium transition-all duration-300 hover:scale-105 relative group ${pathname === item.href ? "text-yellow-500" : isScrolled ? "text-gray-200 dark:text-gray-300 hover:text-yellow-300 dark:hover:text-yellow-400" : "text-white hover:text-yellow-300"}`}
               >
                 {item.name}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 group-hover:w-full transition-all duration-300" />
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-yellow-400 to-yellow-600 group-hover:w-full transition-all duration-300" />
               </Link>
             ))}
           </nav>
 
-          {/* Search Bar (Desktop) */}
-          {/* <div className="hidden lg:flex items-center space-x-4">
-            <div className="relative">
-              <Search
-                className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${isScrolled ? "text-gray-400" : "text-white/60"
-                  }`}
-              />
-              <Input
-                placeholder="Search..."
-                className={`pl-10 w-64 rounded-full border-0 ${isScrolled
-                    ? "bg-gray-100 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-700"
-                    : "bg-white/20 placeholder-white/60 text-white focus:bg-white/30"
-                  }`}
-              />
-            </div>
-          </div> */}
-
           {/* Action Buttons */}
           <div className="flex items-center space-x-2">
-            {/* Theme Toggle */}
             <ThemeToggle />
-
-            {/* Wishlist */}
-           
-
-            {/* Cart */}
             <Link href="/cart">
               <Button
                 variant="ghost"
@@ -106,8 +80,6 @@ export default function Header() {
                 </span>
               </Button>
             </Link>
-
-            {/* Call Button */}
             <Button
               size="sm"
               className="hidden sm:flex bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-full px-4 py-2 hover:scale-105 transition-all duration-300"
@@ -115,8 +87,6 @@ export default function Header() {
               <Phone className="w-4 h-4 mr-2" />
               Call Now
             </Button>
-
-            {/* Mobile Menu Button */}
             <Button
               variant="ghost"
               size="sm"
@@ -134,12 +104,10 @@ export default function Header() {
 
       {/* Mobile Menu */}
       <div
-        className={`lg:hidden transition-all duration-300 overflow-hidden ${isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-          }`}
+        className={`lg:hidden transition-all duration-300 overflow-hidden ${isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
       >
         <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-700">
           <div className="px-4 py-4 space-y-4">
-            {/* Mobile Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Input
@@ -147,22 +115,18 @@ export default function Header() {
                 className="pl-10 w-full rounded-full border-gray-200 dark:border-gray-700 focus:border-purple-500 bg-white dark:bg-gray-800"
               />
             </div>
-
-            {/* Mobile Navigation */}
             <nav className="space-y-2">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
                   onClick={() => setIsMenuOpen(false)}
-                  className="block px-4 py-3 text-gray-700 dark:text-gray-300 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-all duration-300 font-medium"
+                  className={`block px-4 py-3 font-medium transition-all duration-300 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg ${pathname === item.href ? "text-yellow-500" : "text-gray-700 dark:text-gray-300"}`}
                 >
                   {item.name}
                 </Link>
               ))}
             </nav>
-
-            {/* Mobile Call Button */}
             <Button className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-full py-3">
               <Phone className="w-4 h-4 mr-2" />
               Call Now: (555) 123-4567
