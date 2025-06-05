@@ -113,7 +113,7 @@ export default function ServicesPage() {
 
       {/* Hero Section */}
       <section className="relative h-64 overflow-hidden">
-        <Image src="/placeholder.svg?height=300&width=1200" alt="Services Hero" fill className="object-cover" />
+        <Image src="./assets/services.jpeg" alt="Services Hero" fill className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-yellow-600/70 to-black/50" />
         <div className="absolute inset-0 flex items-center justify-center text-center text-white">
           <div className="max-w-4xl px-4">

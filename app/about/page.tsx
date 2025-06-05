@@ -29,11 +29,11 @@ const teamMembers = [
 ]
 
 const milestones = [
-  { year: "2010", event: "Store Founded", description: "Started as a small local shop" },
-  { year: "2015", event: "Online Expansion", description: "Launched our e-commerce platform" },
-  { year: "2018", event: "10,000+ Happy Customers", description: "Reached major customer milestone" },
-  { year: "2020", event: "Eco-Friendly Initiative", description: "Introduced sustainable product lines" },
-  { year: "2023", event: "Award Winner", description: "Best Local Toy Store Award" },
+  { year: "2017", event: "Store Founded", description: "We began with simple idea" },
+  { year: "2019", event: "Expansion", description: "We expand the store in to the complete toy store" },
+  { year: "2022", event: "Start Online", description: "we started online sales also" },
+  { year: "2025", event: "Happy Customers", description: "We have 30000+ happy customers in 2025" },
+  // { year: "2023", event: "Award Winner", description: "Best Local Toy Store Award" },
 ]
 
 type SectionId = "brand-story" | "mission-vision" | "values" | "timeline" | "team" | "store-photos";

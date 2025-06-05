@@ -16,25 +16,25 @@ const contactInfo = [
   {
     icon: <Phone className="w-6 h-6" />,
     title: "Phone",
-    details: ["+1 (555) 123-4567", "+1 (555) 123-4568"],
+    details: ["+91 6238520474", "+91 6238520474"],
     description: "Call us anytime during business hours",
   },
   {
     icon: <Mail className="w-6 h-6" />,
     title: "Email",
-    details: ["info@cyclesandtoys.com", "support@cyclesandtoys.com"],
+    details: ["info@cyclesandtoys.com"],
     description: "We'll respond within 24 hours",
   },
   {
     icon: <MapPin className="w-6 h-6" />,
     title: "Address",
-    details: ["123 Toy Street", "Fun City, FC 12345"],
+    details: ["AirPort road Padikkal", "Chelari, Malappuram"],
     description: "Visit our beautiful showroom",
   },
   {
     icon: <Clock className="w-6 h-6" />,
     title: "Business Hours",
-    details: ["Mon-Sat: 9AM-7PM", "Sun: 10AM-6PM"],
+    details: ["Mon-Sat: 9AM-8PM", "Sun: Off"],
     description: "Extended weekend hours",
   },
 ]
@@ -115,7 +115,7 @@ export default function ContactPage() {
 
       {/* Hero Section */}
       <section className="relative h-96 overflow-hidden">
-        <Image src="/placeholder.svg?height=400&width=1200" alt="Contact Us Hero" fill className="object-cover" />
+        <Image src="./assets/contactus.jpeg" alt="Contact Us Hero" fill className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-yellow-600/50 to-black/50" />
         <div className="absolute inset-0 flex items-center justify-center text-center text-white">
           <div className="max-w-4xl px-4">
@@ -236,7 +236,7 @@ export default function ContactPage() {
                   className="flex-1 border-yellow-300 dark:border-yellow-700 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-full py-4 transform hover:scale-105 transition-all duration-300 mobile-text-base"
                 >
                   <MessageCircle className="w-5 h-5 mr-2" />
-                  Live Chat
+                  Chat on Whatsapp
                 </Button>
               </div>
             </div>
@@ -368,7 +368,7 @@ export default function ContactPage() {
               <div className="grid grid-cols-1 lg:grid-cols-3">
                 <div className="lg:col-span-2 h-96">
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3024.123456789!2d-74.0059413!3d40.7127753!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDQyJzQ2LjAiTiA3NMKwMDAnMjEuNCJX!5e0!3m2!1sen!2sus!4v1234567890123"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3915.208628693151!2d75.89698147405909!3d11.097823189071114!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba6530dea0f169d%3A0xb959c2b18a78a6c6!2sMetro%20toys%20padikkal!5e0!3m2!1sen!2sin!4v1749114616782!5m2!1sen!2sin"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
@@ -384,23 +384,23 @@ export default function ContactPage() {
                     <div className="flex items-center space-x-3">
                       <MapPin className="w-5 h-5" />
                       <div>
-                        <p className="font-medium mobile-text-sm">123 Toy Street</p>
-                        <p className="text-purple-100 mobile-text-sm">Fun City, FC 12345</p>
+                        <p className="font-medium mobile-text-sm">AirPort road Padikkal,</p>
+                        <p className="text-purple-100 mobile-text-sm">Chelari, Malappuram.</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Clock className="w-5 h-5" />
                       <div>
                         <p className="font-medium mobile-text-sm">Store Hours</p>
-                        <p className="text-purple-100 mobile-text-sm">Mon-Sat: 9AM-7PM</p>
-                        <p className="text-purple-100 mobile-text-sm">Sun: 10AM-6PM</p>
+                        <p className="text-purple-100 mobile-text-sm">Mon-Sat: 9AM-8PM</p>
+                        <p className="text-purple-100 mobile-text-sm">Sun: off</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Phone className="w-5 h-5" />
                       <div>
                         <p className="font-medium mobile-text-sm">Call for Directions</p>
-                        <p className="text-purple-100 mobile-text-sm">+1 (555) 123-4567</p>
+                        <p className="text-purple-100 mobile-text-sm">+91 6238520474</p>
                       </div>
                     </div>
                   </div>
@@ -437,11 +437,11 @@ export default function ContactPage() {
               },
               {
                 question: "Do you offer assembly services?",
-                answer: "Yes! We provide free assembly service for purchases over $50.",
+                answer: "Yes! We provide free assembly service for purchases over ₹49.",
               },
               {
                 question: "What payment methods do you accept?",
-                answer: "We accept all major credit cards, PayPal, and cash for in-store purchases.",
+                answer: "We accept all major credit cards, Paytm, Gpay and cash for in-store purchases.",
               },
               {
                 question: "Do you have a warranty on products?",
