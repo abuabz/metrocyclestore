@@ -2,6 +2,7 @@
 import Footer from '@/components/footer'
 import Header from '@/components/header'
 import Image from 'next/image'
+import Link from 'next/link' // Import Link component
 import React, { useState, useEffect } from 'react'
 
 interface ProductCategory {
@@ -80,7 +81,7 @@ export default function Page() {
                 </div>
             </section>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 md:py-20 py-10">
                 {loading ? (
                     <div className="text-center text-gray-600 dark:text-gray-300">Loading categories...</div>
                 ) : error ? (
@@ -88,19 +89,24 @@ export default function Page() {
                 ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 text-center">
                         {categories.map((category) => (
-                            <div
+                            <Link
                                 key={category._id}
-                                className="relative h-48 rounded-lg shadow-lg overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 bg-cover bg-center cursor-pointer"
-                                style={{
-                                    backgroundImage: `url(${category.M04_image || '/assets/placeholder.jpg'})`,
-                                }}
+                                href={`/products?categoryID=${category._id}`}
+                                className="block"
                             >
-                                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                                    <h3 className="text-2xl font-bold text-[#ffffffc2] text-shadow-md capitalize text-wrap">
-                                        {category.M04_category_name}
-                                    </h3>
+                                <div
+                                    className="relative h-48 rounded-lg shadow-lg overflow-hidden hover:shadow-xl hover:scale-105 transition-all duration-300 bg-cover bg-center cursor-pointer"
+                                    style={{
+                                        backgroundImage: `url(${category.M04_image || '/assets/placeholder.jpg'})`,
+                                    }}
+                                >
+                                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                        <h3 className="text-2xl font-bold text-[#ffffffc2] text-shadow-md capitalize text-wrap">
+                                            {category.M04_category_name}
+                                        </h3>
+                                    </div>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 )}

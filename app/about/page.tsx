@@ -9,8 +9,14 @@ import Image from "next/image"
 
 const teamMembers = [
   {
+    name: "Emma Davis",
+    role: "Founder & CEO",
+    image: "/placeholder.svg?height=300&width=300",
+    bio: "With 8 years in the toy industry, Junaid founded Cycles & Toys to bring quality and joy to families.",
+  },
+  {
     name: "Junaid Babu TK",
-    role: "Founder & Manager",
+    role: "Manager",
     image: "./assets/manager.jpeg",
     bio: "With 8 years in the toy industry, Junaid founded Cycles & Toys to bring quality and joy to families.",
   },
@@ -20,12 +26,7 @@ const teamMembers = [
     image: "./assets/sales.jpeg",
     bio: "Shamnad leads our customer service team and ensures every customer has an amazing experience.",
   },
-  {
-    name: "Emma Davis",
-    role: "Customer Experience Manager",
-    image: "/placeholder.svg?height=300&width=300",
-    bio: "Emma leads our customer service team and ensures every customer has an amazing experience.",
-  },
+
 ]
 
 const milestones = [
@@ -84,9 +85,8 @@ export default function AboutPage() {
       <section
         id="brand-story"
         data-animate
-        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${
-          isVisible["brand-story"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
-        }`}
+        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${isVisible["brand-story"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+          }`}
       >
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -103,7 +103,7 @@ export default function AboutPage() {
                 We believe that play is not just fun—it's fundamental to a child's development. Every product we select
                 is chosen with care, ensuring it meets our high standards for safety, quality, and educational value.
               </p>
-            
+
             </div>
             <div className="relative ">
               <Image
@@ -123,9 +123,8 @@ export default function AboutPage() {
       <section
         id="mission-vision"
         data-animate
-        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
-          isVisible["mission-vision"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
-        }`}
+        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["mission-vision"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+          }`}
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
@@ -166,9 +165,8 @@ export default function AboutPage() {
       <section
         id="values"
         data-animate
-        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${
-          isVisible["values"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
-        }`}
+        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${isVisible["values"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+          }`}
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
@@ -217,9 +215,8 @@ export default function AboutPage() {
       <section
         id="timeline"
         data-animate
-        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
-          isVisible["timeline"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
-        }`}
+        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["timeline"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+          }`}
       >
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
@@ -256,9 +253,8 @@ export default function AboutPage() {
       <section
         id="team"
         data-animate
-        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${
-          isVisible["team"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
-        }`}
+        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${isVisible["team"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+          }`}
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
@@ -268,11 +264,10 @@ export default function AboutPage() {
             {teamMembers.map((member, index) => (
               <Card
                 key={index}
-                className={`border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 text-center overflow-hidden ${
-                  isVisible["team"]
+                className={`border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 text-center overflow-hidden ${isVisible["team"]
                     ? `opacity-100 transform translate-y-0 transition-delay-[${index * 200}ms]`
                     : "opacity-0 transform translate-y-8"
-                }`}
+                  }`}
               >
                 <CardContent className="p-0">
                   <div className="relative overflow-hidden">
@@ -305,9 +300,8 @@ export default function AboutPage() {
       <section
         id="store-photos"
         data-animate
-        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
-          isVisible["store-photos"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
-        }`}
+        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["store-photos"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+          }`}
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
@@ -317,11 +311,10 @@ export default function AboutPage() {
             {[1, 2, 3, 4, 5, 6].map((index) => (
               <div
                 key={index}
-                className={`relative overflow-hidden rounded-lg group cursor-pointer ${
-                  isVisible["store-photos"]
+                className={`relative overflow-hidden rounded-lg group cursor-pointer ${isVisible["store-photos"]
                     ? `opacity-100 transform scale-100 transition-delay-[${index * 100}ms]`
                     : "opacity-0 transform scale-95"
-                } transition-all duration-500`}
+                  } transition-all duration-500`}
               >
                 <Image
                   src={`/placeholder.svg?height=300&width=400`}

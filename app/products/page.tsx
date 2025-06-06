@@ -10,138 +10,190 @@ import Header from "@/components/header"
 import Footer from "@/components/footer"
 import Image from "next/image"
 import Link from "next/link"
+import { useSearchParams, useRouter } from "next/navigation"
 
-const categories = ["All", "Cycles", "Toys", "Accessories", "Safety Gear",]
+// Define interfaces for category API response
+interface ProductCategory {
+  _id: string
+  M04_category_name: string
+  M04_image: string | null
+  M04_M04_parent_category_id: string | null
+  M04_is_active: number
+  M04_deleted_at: string | null
+  createdAt: string
+  updatedAt: string
+}
 
-const products = [
-  {
-    id: "1",
-    name: "Mountain Explorer Bike",
-    price: 299,
-    category: "Cycles",
-    image: "https://images-cdn.ubuy.co.in/653ebb40c556d711a206eaca-hyper-bicycle-men-s-29-explorer.jpg",
-    rating: 5,
-    reviews: 24,
-    originalPrice: 499
-  },
-  {
-    id: "2",
-    name: "Racing Car Toy Set",
-    price: 49,
-    category: "Toys",
-    image: "https://rukminim2.flixcart.com/image/850/1000/xif0q/vehicle-pull-along/l/c/b/6-pcs-mini-car-racing-friction-toy-car-set-for-kids-boys-and-original-imagknhg86ny4xdy.jpeg?q=90&crop=false",
-    rating: 4,
-    reviews: 18,
-    originalPrice: 99
-  },
-  {
-    id: "3",
-    name: "Kids Safety Helmet",
-    price: 25,
-    category: "Safety Gear",
-    image: "https://duckduckbaby.in/cdn/shop/files/DDB14863_1.jpg?v=1732084849?height=300&width=300",
-    rating: 5,
-    reviews: 32,
-    originalPrice: 39
-  },
-  {
-    id: "4",
-    name: "Educational Building Blocks",
-    price: 35,
-    category: "Toys",
-    image: "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQqnFHTlVwMkxBzZ01EsoEZIycKVqpPjA9ueKerZ4gcITlJKgCZssB88QRAjIroA7cSw_FJaVXEF-942R6MMN7xolQX_ojmAc8bzpXLt6Im",
-    rating: 4,
-    reviews: 15,
-    originalPrice: 49
-  },
-  {
-    id: "5",
-    name: "Electric Scooter",
-    price: 199,
-    category: "Cycles",
-    image: "/placeholder.svg?height=300&width=300",
-    rating: 5,
-    reviews: 28,
-    originalPrice: 349
-  },
-  {
-    id: "6",
-    name: "Puzzle Game Collection",
-    price: 29,
-    category: "Toys",
-    image: "/placeholder.svg?height=300&width=300",
-    rating: 4,
-    reviews: 12,
-    originalPrice: 49
-  },
-  {
-    id: "7",
-    name: "BMX Stunt Bike",
-    price: 249,
-    category: "Cycles",
-    image: "/placeholder.svg?height=300&width=300",
-    rating: 5,
-    reviews: 19,
-    originalPrice: 349
-  },
-  {
-    id: "8",
-    name: "Bike Lock Set",
-    price: 15,
-    category: "Accessories",
-    image: "/placeholder.svg?height=300&width=300",
-    rating: 4,
-    reviews: 8,
-    originalPrice: 24
-  },
-  {
-    id: "9",
-    name: "Remote Control Drone",
-    price: 89,
-    category: "Toys",
-    image: "/placeholder.svg?height=300&width=300",
-    rating: 5,
-    reviews: 22,
-    originalPrice: 99
-  },
-  {
-    id: "10",
-    name: "Knee & Elbow Pads",
-    price: 18,
-    category: "Safety Gear",
-    image: "/placeholder.svg?height=300&width=300",
-    rating: 4,
-    reviews: 14,
-    originalPrice: 29
-  },
-  {
-    id: "11",
-    name: "Kids Balance Bike",
-    price: 79,
-    category: "Cycles",
-    image: "/placeholder.svg?height=300&width=300",
-    rating: 5,
-    reviews: 35,
-    originalPrice: 99
-  },
-  {
-    id: "12",
-    name: "LEGO Architecture Set",
-    price: 65,
-    category: "Toys",
-    image: "/placeholder.svg?height=300&width=300",
-    rating: 5,
-    reviews: 27,
-    originalPrice: 89
-  },
-]
+interface CategoryApiResponse {
+  success: boolean
+  msg: string
+  data: {
+    productCategories: ProductCategory[]
+    pagination: {
+      currentPage: number
+      totalPages: number
+      totalItems: number
+      limit: number
+    }
+  }
+  statusCode: number
+}
+
+// Define interfaces for product SKU API response
+interface ProductSku {
+  _id: string
+  M06_sku: string
+  M06_product_sku_name: string
+  M06_description: string
+  M06_thumbnail_image: string
+  M06_MRP: number
+  M06_price: number
+  M06_quantity: number
+  M06_is_new: boolean
+  M06_single_order_limit: number | null
+  M06_is_active: number
+  M06_deleted_at: string | null
+  M06_is_out_of_stock: boolean
+  M06_M05_product_id: string
+  createdAt: string
+  updatedAt: string
+  Variations: any[]
+}
+
+interface ProductApiResponse {
+  success: boolean
+  msg: string
+  data: {
+    products_skus: ProductSku[]
+    pagination: {
+      page: number
+      limit: number
+      totalItems: number
+      totalPages: number
+    }
+  }
+  statusCode: number
+}
+
+// Define interface for products to render
+interface Product {
+  id: string
+  name: string
+  price: number
+  category: string
+  image: string
+  rating: number
+  reviews: number
+  originalPrice: number
+  description: string
+}
 
 export default function ProductsPage() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const [categories, setCategories] = useState<string[]>(["All"])
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [searchTerm, setSearchTerm] = useState("")
-  const [filteredProducts, setFilteredProducts] = useState(products)
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [isVisible, setIsVisible] = useState<Record<string, boolean>>({})
+  const [loadingCategories, setLoadingCategories] = useState<boolean>(true)
+  const [categoryError, setCategoryError] = useState<string | null>(null)
+  const [categoryMap, setCategoryMap] = useState<Map<string, string>>(new Map()) // Map category ID to name
+  const [categoryIdMap, setCategoryIdMap] = useState<Map<string, string>>(new Map()) // Map name to category ID
+  const [loadingProducts, setLoadingProducts] = useState<boolean>(true)
+  const [productError, setProductError] = useState<string | null>(null)
+  const [totalProducts, setTotalProducts] = useState<number>(0)
 
+  // Fetch categories from API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/product-category?limit=30`)
+        if (!response.ok) {
+          throw new Error('Failed to fetch product categories')
+        }
+        const data: CategoryApiResponse = await response.json()
+        if (data.success) {
+          const childCategories = data.data.productCategories.filter(
+            (category) => category.M04_M04_parent_category_id !== null
+          )
+          const map = new Map<string, string>()
+          const idMap = new Map<string, string>()
+          childCategories.forEach((category) => {
+            map.set(category._id, category.M04_category_name)
+            idMap.set(category.M04_category_name, category._id)
+          })
+          setCategoryMap(map)
+          setCategoryIdMap(idMap)
+          setCategories(["All", ...childCategories.map((cat) => cat.M04_category_name)])
+        } else {
+          throw new Error(data.msg || 'API returned unsuccessful response')
+        }
+      } catch (err) {
+        setCategoryError(err instanceof Error ? err.message : 'An error occurred')
+      } finally {
+        setLoadingCategories(false)
+      }
+    }
+
+    fetchCategories()
+  }, [])
+
+  // Fetch products from API based on categoryID in URL
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoadingProducts(true)
+      setProductError(null)
+      try {
+        const categoryID = searchParams.get("categoryID")
+        let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/product-sku`
+        if (categoryID) {
+          url += `?categoryId=${categoryID}`
+        }
+        const response = await fetch(url)
+        if (!response.ok) {
+          throw new Error('Failed to fetch products')
+        }
+        const data: ProductApiResponse = await response.json()
+        if (data.success) {
+          const mappedProducts: Product[] = data.data.products_skus.map((sku) => ({
+            id: sku._id,
+            name: sku.M06_product_sku_name,
+            price: sku.M06_price,
+            category: "", // Not provided by API, will use client-side filtering
+            image: sku.M06_thumbnail_image,
+            rating: 5, // Static as not provided by API
+            reviews: 20, // Static as not provided by API
+            originalPrice: sku.M06_MRP,
+            description: sku.M06_description,
+          }))
+          setTotalProducts(data.data.pagination.totalItems)
+          setFilteredProducts(mappedProducts)
+        } else {
+          throw new Error(data.msg || 'API returned unsuccessful response')
+        }
+      } catch (err) {
+        setProductError(err instanceof Error ? err.message : 'An error occurred')
+      } finally {
+        setLoadingProducts(false)
+      }
+    }
+
+    fetchProducts()
+  }, [searchParams])
+
+  // Set active category based on URL query parameter
+  useEffect(() => {
+    const categoryID = searchParams.get("categoryID")
+    if (categoryID && categoryMap.has(categoryID)) {
+      const categoryName = categoryMap.get(categoryID)!
+      setSelectedCategory(categoryName)
+    } else {
+      setSelectedCategory("All")
+    }
+  }, [searchParams, categoryMap])
+
+  // Handle intersection observer for animations
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -160,42 +212,35 @@ export default function ProductsPage() {
     return () => observer.disconnect()
   }, [])
 
+  // Filter products based on search term (category filtering handled by API)
   useEffect(() => {
-    let filtered = products
-
-    if (selectedCategory !== "All") {
-      filtered = filtered.filter((product) => product.category === selectedCategory)
-    }
+    let filtered = filteredProducts
 
     if (searchTerm) {
       filtered = filtered.filter(
         (product) =>
           product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.category.toLowerCase().includes(searchTerm.toLowerCase()),
+          product.description.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 
     setFilteredProducts(filtered)
-  }, [selectedCategory, searchTerm])
+  }, [searchTerm, filteredProducts])
 
-  // const getBadgeColor = (badge) => {
-  //   switch (badge) {
-  //     case "Best Seller":
-  //       return "bg-green-500"
-  //     case "New":
-  //       return "bg-blue-500"
-  //     case "Popular":
-  //       return "bg-purple-500"
-  //     case "Featured":
-  //       return "bg-pink-500"
-  //     case "Hot":
-  //       return "bg-red-500"
-  //     case "Premium":
-  //       return "bg-yellow-500"
-  //     default:
-  //       return "bg-gray-500"
-  //   }
-  // }
+  // Handle category click to update URL and set active category
+  const handleCategoryClick = (category: string) => {
+    setSelectedCategory(category)
+    if (category === "All") {
+      // Remove categoryID from URL
+      router.push("/products")
+    } else {
+      // Add categoryID to URL
+      const categoryID = categoryIdMap.get(category)
+      if (categoryID) {
+        router.push(`/products?categoryID=${categoryID}`)
+      }
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20">
@@ -231,26 +276,30 @@ export default function ProductsPage() {
               />
             </div>
             <div className="flex items-center gap-2">
-              <div className="flex flex-wrap gap-2 justify-center">
-                {categories.map((category) => (
-                  <Button
-                    key={category}
-                    variant={selectedCategory === category ? "default" : "outline"}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`rounded-full px-6 py-2 transition-all duration-300 mobile-text-sm ${selectedCategory === category
-                        ? "bg-gradient-to-r from-yellow-500 to-white text-black shadow-lg transform scale-105"
-                        : "border-yellow-200 dark:border-yellow-700 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 hover:border-yellow-300"
+              {loadingCategories ? (
+                <p className="text-gray-600 dark:text-gray-400">Loading categories...</p>
+              ) : categoryError ? (
+                <p className="text-red-500">{categoryError}</p>
+              ) : (
+                <div className="flex overflow-x-auto scrollbar-hide gap-2 justify-center">
+                  {categories.map((category) => (
+                    <Button
+                      key={category}
+                      variant={selectedCategory === category ? "default" : "outline"}
+                      onClick={() => handleCategoryClick(category)}
+                      className={`rounded-full px-6 py-2 transition-all duration-300 mobile-text-sm whitespace-nowrap ${
+                        selectedCategory === category
+                          ? "bg-gradient-to-r from-yellow-500 to-white text-black shadow-lg transform scale-105"
+                          : "border-yellow-200 dark:border-yellow-700 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 hover:border-yellow-300"
                       }`}
-                  >
-                    {category}
-                  </Button>
-                ))}
-              </div>
+                    >
+                      {category}
+                    </Button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-
-          {/* Category Tabs */}
-
         </div>
       </section>
 
@@ -258,26 +307,34 @@ export default function ProductsPage() {
       <section
         id="products-grid"
         data-animate
-        className={`py-12 px-4 transition-all duration-1000 ${isVisible["products-grid"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
-          }`}
+        className={`py-12 px-4 transition-all duration-1000 ${
+          isVisible["products-grid"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+        }`}
       >
         <div className="max-w-7xl mx-auto">
           <div className="mb-6 text-center">
-            <p className="text-gray-600 dark:text-gray-400 mobile-text-sm">
-              Showing {filteredProducts.length} of {products.length} products
-              {selectedCategory !== "All" && ` in ${selectedCategory}`}
-              {searchTerm && ` matching "${searchTerm}"`}
-            </p>
+            {loadingProducts ? (
+              <p className="text-gray-600 dark:text-gray-400 mobile-text-sm">Loading products...</p>
+            ) : productError ? (
+              <p className="text-red-500 mobile-text-sm">{productError}</p>
+            ) : (
+              <p className="text-gray-600 dark:text-gray-400 mobile-text-sm">
+                Showing {filteredProducts.length} of {totalProducts} products
+                {selectedCategory !== "All" && ` in ${selectedCategory}`}
+                {searchTerm && ` matching "${searchTerm}"`}
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map((product, index) => (
               <Link key={product.id} href={`/products/${product.id}`}>
                 <Card
-                  className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 overflow-hidden cursor-pointer ${isVisible["products-grid"]
+                  className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 overflow-hidden cursor-pointer ${
+                    isVisible["products-grid"]
                       ? `opacity-100 transform translate-y-0 transition-delay-[${index * 50}ms]`
                       : "opacity-0 transform translate-y-8"
-                    }`}
+                  }`}
                 >
                   <CardContent className="p-0">
                     <div className="relative overflow-hidden">
@@ -288,34 +345,14 @@ export default function ProductsPage() {
                         height={300}
                         className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                       />
-                      {/* {product.badge && (
-                        <Badge className={`absolute top-2 left-2 ${getBadgeColor(product.badge)} text-white border-0`}>
-                          {product.badge}
-                        </Badge>
-                      )} */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
                     <div className="p-4">
                       <h3 className="text-base md:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 group-hover:text-yellow-500 transition-colors duration-300 line-clamp-2 mobile-text-sm">
                         {product.name}
                       </h3>
-                      {/* <div className="flex items-center mb-2">
-                        <div className="flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`w-4 h-4 ${
-                                i < product.rating ? "text-yellow-400 fill-current" : "text-gray-300"
-                              }`}
-                            />
-                          ))}
-                        </div>
-                        <span className="text-sm text-gray-500 dark:text-gray-400 ml-2 mobile-text-sm">
-                          ({product.reviews})
-                        </span>
-                      </div> */}
-                      <p>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Modi, quod sit quos asperiores
+                      <p className="line-clamp-2 overflow-hidden text-ellipsis">
+                        {product.description}
                       </p>
                       <div className="flex items-center justify-between mt-5">
                         <div className="flex gap-2 items-center">
@@ -335,7 +372,7 @@ export default function ProductsPage() {
             ))}
           </div>
 
-          {filteredProducts.length === 0 && (
+          {filteredProducts.length === 0 && !loadingProducts && !productError && (
             <div className="text-center py-12">
               <div className="text-gray-400 mb-4">
                 <Search className="w-16 h-16 mx-auto" />
