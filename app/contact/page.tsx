@@ -1,8 +1,7 @@
 "use client"
 
 import type React from "react"
-
-import { useState, useEffect } from "react"
+import { useState, useEffect, FormEvent } from "react"
 import { Phone, Mail, MapPin, Clock, Send, MessageCircle, Globe, Award } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,6 +10,14 @@ import { Card, CardContent } from "@/components/ui/card"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import Image from "next/image"
+
+interface FormData {
+  name: string
+  email: string
+  phone: string
+  subject: string
+  message: string
+}
 
 const contactInfo = [
   {
@@ -58,15 +65,15 @@ const features = [
 ]
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
     phone: "",
     subject: "",
     message: "",
   })
-  const [isVisible, setIsVisible] = useState({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isVisible, setIsVisible] = useState<Record<string, boolean>>({})
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -91,22 +98,37 @@ export default function ContactPage() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    // Construct WhatsApp message with form data
+    const phoneNumber = "+918714583859"
+  const message = `🌟 New Contact Form Submission 🌟%0A` +
+                   `👤 Name:    ${encodeURIComponent(formData.name)}%0A` +
+                   `✉️ Email:   ${encodeURIComponent(formData.email)}%0A` +
+                   `📞 Phone:   ${encodeURIComponent(formData.phone || 'Not provided')}%0A` +
+                   `📋 Subject: ${encodeURIComponent(formData.subject)}%0A` +
+                   `💬 Message: ${encodeURIComponent(formData.message)}%0A`
 
-    alert("Thank you for your message! We'll get back to you soon.")
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      subject: "",
-      message: "",
-    })
-    setIsSubmitting(false)
+
+    // WhatsApp URL
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`
+
+    // Open WhatsApp in a new tab
+    window.open(whatsappUrl, '_blank')
+
+    // Reset form after a short delay
+    setTimeout(() => {
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: "",
+      })
+      setIsSubmitting(false)
+    }, 1000)
   }
 
   return (
@@ -115,7 +137,7 @@ export default function ContactPage() {
 
       {/* Hero Section */}
       <section className="relative h-96 overflow-hidden">
-        <Image src="./assets/contactus.jpeg" alt="Contact Us Hero" fill className="object-cover" />
+        <Image src="/assets/contactus.jpeg" alt="Contact Us Hero" fill className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-yellow-600/50 to-black/50" />
         <div className="absolute inset-0 flex items-center justify-center text-center text-white">
           <div className="max-w-4xl px-4">
