@@ -654,7 +654,7 @@ export default function HomePage() {
                 </div>
               </Link>
               <Link
-                href="mailto:info@cyclesandtoys.com"
+                href="mailto:metrotoysstore@gmail.com"
                 className="flex items-center space-x-4"
               >
                 <Mail className="w-6 h-6 text-yellow-500" />
@@ -663,7 +663,7 @@ export default function HomePage() {
                     Email
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 mobile-text-sm">
-                    info@cyclesandtoys.com
+                    metrotoysstore@gmail.com
                   </p>
                 </div>
               </Link>

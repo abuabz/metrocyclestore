@@ -57,7 +57,7 @@ export default function Footer() {
         },
         body: JSON.stringify({
           email,
-          to: "info@cyclesandtoys.com",
+          to: "metrotoysstore@gmail.com",
         }),
       });
       console.log("Newsletter subscription:", email);
@@ -209,10 +209,10 @@ export default function Footer() {
                     +91 87145 83859
                   </span>
                 </Link>
-                <Link href="mailto:info@cyclesandtoys.com" className="flex items-center space-x-3">
+                <Link href="mailto:metrotoysstore@gmail.com" className="flex items-center space-x-3">
                   <Mail className="w-5 h-5 text-yellow-400 flex-shrink-0" />
                   <span className="text-gray-200 text-sm mobile-text-sm">
-                    info@cyclesandtoys.com
+                    metrotoysstore@gmail.com
                   </span>
                 </Link>
                 <div className="flex items-center space-x-3">
