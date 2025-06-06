@@ -16,7 +16,7 @@ const contactInfo = [
   {
     icon: <Phone className="w-6 h-6" />,
     title: "Phone",
-    details: ["+91 6238520474", "+91 6238520474"],
+    details: ["+91 87145 83859", "+91 87145 83859"],
     description: "Call us anytime during business hours",
   },
   {
@@ -400,7 +400,7 @@ export default function ContactPage() {
                       <Phone className="w-5 h-5" />
                       <div>
                         <p className="font-medium mobile-text-sm">Call for Directions</p>
-                        <p className="text-purple-100 mobile-text-sm">+91 6238520474</p>
+                        <p className="text-purple-100 mobile-text-sm">+91 87145 83859</p>
                       </div>
                     </div>
                   </div>

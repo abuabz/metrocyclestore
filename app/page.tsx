@@ -198,7 +198,7 @@ export default function HomePage() {
     const whatsappMessage = encodeURIComponent(
       `New Contact Form Submission\nName: ${name}\nEmail: ${email}\nMessage: ${message}`
     );
-    const whatsappUrl = `https://wa.me/+916238520474?text=${whatsappMessage}`;
+    const whatsappUrl = `https://wa.me/+9187145 83859?text=${whatsappMessage}`;
 
     try {
       // Redirect to WhatsApp
@@ -610,14 +610,14 @@ export default function HomePage() {
                   </p>
                 </div>
               </Link>
-              <Link href="tel:+916238520474" className="flex items-center space-x-4">
+              <Link href="tel:+9187145 83859" className="flex items-center space-x-4">
                 <Phone className="w-6 h-6 text-yellow-500" />
                 <div>
                   <h3 className="font-semibold text-gray-800 dark:text-gray-200 mobile-text-base">
                     Phone
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 mobile-text-sm">
-                    +91 6238520474
+                    +91 87145 83859
                   </p>
                 </div>
               </Link>

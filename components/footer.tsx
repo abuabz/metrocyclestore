@@ -112,7 +112,7 @@ export default function Footer() {
                     <Instagram className="w-5 h-5 group-hover:animate-bounce" />
                   </Button>
                 </Link>
-                <Link href="https://wa.me/+916238520474">
+                <Link href="https://wa.me/+9187145 83859">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -203,10 +203,10 @@ export default function Footer() {
                     Airport Road Padikkal, Chelari, Malappuram. Kerala
                   </span>
                 </Link>
-                <Link href="tel:+916238520474" className="flex items-center space-x-3">
+                <Link href="tel:+9187145 83859" className="flex items-center space-x-3">
                   <Phone className="w-5 h-5 text-yellow-400 flex-shrink-0" />
                   <span className="text-gray-200 text-sm mobile-text-sm">
-                    +91 6238520474
+                    +91 87145 83859
                   </span>
                 </Link>
                 <Link href="mailto:info@cyclesandtoys.com" className="flex items-center space-x-3">
