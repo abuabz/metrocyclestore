@@ -29,7 +29,7 @@ const contactInfo = [
   {
     icon: <Mail className="w-6 h-6" />,
     title: "Email",
-    details: ["info@cyclesandtoys.com"],
+    details: ["metrotoys079@gmail.com"],
     description: "We'll respond within 24 hours",
   },
   {
@@ -41,7 +41,7 @@ const contactInfo = [
   {
     icon: <Clock className="w-6 h-6" />,
     title: "Business Hours",
-    details: ["Mon-Sat: 9AM-8PM", "Sun: Off"],
+    details: ["Mon-Sat: 9AM-8PM", "Sun: 9AM-6PM"],
     description: "Extended weekend hours",
   },
 ]
@@ -104,12 +104,12 @@ export default function ContactPage() {
 
     // Construct WhatsApp message with form data
     const phoneNumber = "+918714583859"
-  const message = `🌟 New Contact Form Submission 🌟%0A` +
-                   `👤 Name:    ${encodeURIComponent(formData.name)}%0A` +
-                   `✉️ Email:   ${encodeURIComponent(formData.email)}%0A` +
-                   `📞 Phone:   ${encodeURIComponent(formData.phone || 'Not provided')}%0A` +
-                   `📋 Subject: ${encodeURIComponent(formData.subject)}%0A` +
-                   `💬 Message: ${encodeURIComponent(formData.message)}%0A`
+    const message = `🌟 New Contact Form Submission 🌟%0A` +
+      `👤 Name:    ${encodeURIComponent(formData.name)}%0A` +
+      `✉️ Email:   ${encodeURIComponent(formData.email)}%0A` +
+      `📞 Phone:   ${encodeURIComponent(formData.phone || 'Not provided')}%0A` +
+      `📋 Subject: ${encodeURIComponent(formData.subject)}%0A` +
+      `💬 Message: ${encodeURIComponent(formData.message)}%0A`
 
 
     // WhatsApp URL
@@ -155,9 +155,8 @@ export default function ContactPage() {
       <section
         id="contact-features"
         data-animate
-        className={`py-20 px-4 transition-all duration-1000 ${
-          isVisible["contact-features"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
-        }`}
+        className={`py-20 px-4 transition-all duration-1000 ${isVisible["contact-features"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+          }`}
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
@@ -167,11 +166,10 @@ export default function ContactPage() {
             {features.map((feature, index) => (
               <Card
                 key={index}
-                className={`text-center group hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 ${
-                  isVisible["contact-features"]
-                    ? `opacity-100 transform translate-y-0 transition-delay-[${index * 100}ms]`
-                    : "opacity-0 transform translate-y-8"
-                }`}
+                className={`text-center group hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 ${isVisible["contact-features"]
+                  ? `opacity-100 transform translate-y-0 transition-delay-[${index * 100}ms]`
+                  : "opacity-0 transform translate-y-8"
+                  }`}
               >
                 <CardContent className="p-8">
                   <div className="text-yellow-500 mb-4 group-hover:scale-110 transition-transform duration-300 flex justify-center">
@@ -194,9 +192,8 @@ export default function ContactPage() {
       <section
         id="contact-main"
         data-animate
-        className={`py-20 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
-          isVisible["contact-main"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
-        }`}
+        className={`py-20 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["contact-main"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+          }`}
       >
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -248,6 +245,7 @@ export default function ContactPage() {
                 <Button
                   size="lg"
                   className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-full py-4 transform hover:scale-105 transition-all duration-300 mobile-text-base"
+                  onClick={() => window.open('tel:+918714583859', '_self')}
                 >
                   <Phone className="w-5 h-5 mr-2" />
                   Call Now
@@ -256,6 +254,7 @@ export default function ContactPage() {
                   size="lg"
                   variant="outline"
                   className="flex-1 border-yellow-300 dark:border-yellow-700 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-full py-4 transform hover:scale-105 transition-all duration-300 mobile-text-base"
+                  onClick={() => window.open('https://wa.me/+918714583859', '_blank')}
                 >
                   <MessageCircle className="w-5 h-5 mr-2" />
                   Chat on Whatsapp
@@ -377,9 +376,8 @@ export default function ContactPage() {
       <section
         id="map-section"
         data-animate
-        className={`py-20 px-4 transition-all duration-1000 ${
-          isVisible["map-section"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
-        }`}
+        className={`py-20 px-4 transition-all duration-1000 ${isVisible["map-section"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+          }`}
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
@@ -429,6 +427,7 @@ export default function ContactPage() {
                   <Button
                     variant="outline"
                     className="mt-6 border-white text-white hover:bg-white hover:text-yellow-500 rounded-full mobile-text-sm"
+                    onClick={() => window.open('https://maps.app.goo.gl/tiU5bDPY4o4X7Lb19', '_blank')}
                   >
                     Get Directions
                   </Button>
@@ -443,9 +442,8 @@ export default function ContactPage() {
       <section
         id="faq-section"
         data-animate
-        className={`py-20 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
-          isVisible["faq-section"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
-        }`}
+        className={`py-20 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["faq-section"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+          }`}
       >
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
