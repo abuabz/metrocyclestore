@@ -26,8 +26,32 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 
-interface ContactFormProps {
-  isVisible: { [key: string]: boolean };
+// Define interface for the featured product based on API response
+interface FeaturedProduct {
+  id: string;
+  name: string;
+  price: number;
+  originalPrice: number;
+  image: string;
+  description: string;
+}
+
+// Define interface for API response
+interface ProductSku {
+  _id: string;
+  M06_product_sku_name: string;
+  M06_price: number;
+  M06_MRP: number;
+  M06_thumbnail_image: string;
+  M06_description: string;
+}
+
+interface ApiResponse {
+  success: boolean;
+  msg: string;
+  data: {
+    products_skus: ProductSku[];
+  };
 }
 
 // New Image Modal Component
@@ -97,45 +121,6 @@ const heroSlides = [
     image:
       "https://t3.ftcdn.net/jpg/02/68/62/42/360_F_268624278_8BbMAUszsyvayoNVnRvgfJoodkqLoxDn.jpg",
     cta: "Get Deals",
-  },
-];
-
-const featuredProducts = [
-  {
-    id: "1",
-    name: "Mountain Explorer Bike",
-    price: 3990,
-    image:
-      "https://d2f9uwgpmber13.cloudfront.net/public/image_new/23c1499577f529ac1717253885630.jpg",
-    rating: 5,
-    originalPrice: 4990,
-  },
-  {
-    id: "4",
-    name: "Building Blocks",
-    price: 299,
-    image:
-      "https://storio.in/cdn/shop/files/518nztRjWbL_e38b8549-f817-4480-87b1-6384b39c5a4c.jpg?v=1716551994&width=1023",
-    rating: 4,
-    originalPrice: 499,
-  },
-  {
-    id: "5",
-    name: "Electric Scooter",
-    price: 2990,
-    image:
-      "https://www.shutterstock.com/image-photo/happy-kids-standing-on-electric-600w-478633153.jpg",
-    rating: 5,
-    originalPrice: 3790,
-  },
-  {
-    id: "6",
-    name: "Puzzle Game Collection",
-    price: 149,
-    image:
-      "https://media.istockphoto.com/id/1292652212/photo/little-girl-playing-with-puzzles-at-home.jpg?s=612x612&w=0&k=20&c=-sqipGfTwfzpQBLEzLsKPnKFuW8uwe27zU3PLwMmqrw=",
-    rating: 4,
-    originalPrice: 249,
   },
 ];
 
@@ -212,6 +197,37 @@ export default function HomePage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [featuredProducts, setFeaturedProducts] = useState<FeaturedProduct[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch featured products from the API
+  useEffect(() => {
+    const fetchFeaturedProducts = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/featured-products`);
+        const result: ApiResponse = await response.json();
+
+        if (result.success) {
+          const products = result.data.products_skus.slice(0, 4).map((sku) => ({
+            id: sku._id,
+            name: sku.M06_product_sku_name,
+            price: sku.M06_price,
+            originalPrice: sku.M06_MRP,
+            image: sku.M06_thumbnail_image,
+            description: sku.M06_description,
+          }));
+          setFeaturedProducts(products);
+        } else {
+          throw new Error(result.msg || "Failed to fetch featured products");
+        }
+      } catch (err: any) {
+        setError(err.message || "Error fetching featured products");
+        console.error("Error fetching featured products:", err);
+      }
+    };
+
+    fetchFeaturedProducts();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -386,55 +402,64 @@ export default function HomePage() {
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-yellow-500 to-red-500 bg-clip-text text-transparent mobile-text-2xl">
             Featured Products
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredProducts.map((product, index) => (
-              <Link key={product.id} href={`/products/${product.id}`}>
-                <Card
-                  className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 overflow-hidden cursor-pointer ${isVisible["featured-products"]
-                      ? `opacity-100 transform translate-y-0 transition-delay-[${index * 100}ms]`
-                      : "opacity-0 transform translate-y-8"
-                    }`}
-                >
-                  <CardContent className="p-0">
-                    <div className="relative overflow-hidden">
-                      <Image
-                        src={product.image || "/placeholder.svg"}
-                        alt={product.name}
-                        width={300}
-                        height={300}
-                        className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    </div>
-                    <div className="p-6">
-                      <h3 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-yellow-200 mb-2 group-hover:text-yellow-500 transition-colors duration-300 mobile-text-base">
-                        {product.name}
-                      </h3>
-                      <div>
-                        <p className="dark:text-gray-300 text-gray-800">
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit. Neque excepturi pariatur
-                        </p>
+          {error && (
+            <p className="text-center text-red-500 mb-4">{error}</p>
+          )}
+          {featuredProducts.length === 0 && !error && (
+            <p className="text-center text-gray-600 dark:text-gray-300">
+              Loading featured products...
+            </p>
+          )}
+          {featuredProducts.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {featuredProducts.map((product, index) => (
+                <Link key={product.id} href={`/products/${product.id}`}>
+                  <Card
+                    className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 overflow-hidden cursor-pointer flex flex-col h-full ${isVisible["featured-products"]
+                        ? `opacity-100 transform translate-y-0 transition-delay-[${index * 100}ms]`
+                        : "opacity-0 transform translate-y-8"
+                      }`}
+                  >
+                    <CardContent className="p-0 flex flex-col h-full">
+                      <div className="relative overflow-hidden">
+                        <Image
+                          src={product.image || "/placeholder.svg"}
+                          alt={product.name}
+                          width={300}
+                          height={300}
+                          className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </div>
-                      <div className="flex items-center justify-between mt-5">
-                        <div className="flex gap-2 items-center">
-                          <span className="text-xl flex items-center gap-3 md:text-2xl font-bold text-yellow-500 mobile-text-lg">
-                            ₹{product.price}
-                          </span>
-                          <span className="text-lg md:text-md text-gray-500 dark:text-gray-400 line-through mobile-text-base">
-                            ₹{product.originalPrice}
-                          </span>
+                      <div className="p-6 flex flex-col flex-grow">
+                        <h3 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-yellow-200 mb-2 group-hover:text-yellow-500 transition-colors duration-300 mobile-text-base">
+                          {product.name}
+                        </h3>
+                        <div className="mb-4 h-12">
+                          <p className="dark:text-gray-300 text-gray-800 line-clamp-2 overflow-hidden text-ellipsis">
+                            {product.description}
+                          </p>
                         </div>
-                        <Badge className="bg-red-500 text-white">
-                          Save ₹{product.originalPrice - product.price}
-                        </Badge>
+                        <div className="flex items-center justify-between mt-auto">
+                          <div className="flex gap-2 items-center">
+                            <span className="text-xl flex items-center gap-3 md:text-xl font-bold text-yellow-500 mobile-text-lg">
+                              ₹{product.price}
+                            </span>
+                            <span className="text-base md:text-base text-gray-500 dark:text-gray-400 line-through mobile-text-base">
+                              ₹{product.originalPrice}
+                            </span>
+                          </div>
+                          <Badge className="bg-red-500 text-white">
+                            Save ₹{product.originalPrice - product.price}
+                          </Badge>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
