@@ -9,16 +9,16 @@ import Image from "next/image"
 
 const teamMembers = [
   {
-    name: "Sarah Johnson",
-    role: "Founder & CEO",
-    image: "/placeholder.svg?height=300&width=300",
-    bio: "With 15 years in the toy industry, Sarah founded Cycles & Toys to bring quality and joy to families.",
+    name: "Junaid Babu TK",
+    role: "Founder & Manager",
+    image: "./assets/manager.jpeg",
+    bio: "With 8 years in the toy industry, Junaid founded Cycles & Toys to bring quality and joy to families.",
   },
   {
-    name: "Mike Chen",
-    role: "Head of Operations",
-    image: "/placeholder.svg?height=300&width=300",
-    bio: "Mike ensures every product meets our high standards and manages our efficient delivery system.",
+    name: "Shamnad KP",
+    role: "Sales Excutive",
+    image: "./assets/sales.jpeg",
+    bio: "Shamnad leads our customer service team and ensures every customer has an amazing experience.",
   },
   {
     name: "Emma Davis",
@@ -84,7 +84,7 @@ export default function AboutPage() {
       <section
         id="brand-story"
         data-animate
-        className={`py-20 px-4 transition-all duration-1000 ${
+        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${
           isVisible["brand-story"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
         }`}
       >
@@ -107,7 +107,7 @@ export default function AboutPage() {
             </div>
             <div className="relative ">
               <Image
-                src="./Logomain.png"
+                src="./assets/shop.png"
                 alt="Our Story"
                 width={400}
                 height={500}
@@ -123,7 +123,7 @@ export default function AboutPage() {
       <section
         id="mission-vision"
         data-animate
-        className={`py-20 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
+        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
           isVisible["mission-vision"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
         }`}
       >
@@ -166,7 +166,7 @@ export default function AboutPage() {
       <section
         id="values"
         data-animate
-        className={`py-20 px-4 transition-all duration-1000 ${
+        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${
           isVisible["values"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
         }`}
       >
@@ -217,7 +217,7 @@ export default function AboutPage() {
       <section
         id="timeline"
         data-animate
-        className={`py-20 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
+        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
           isVisible["timeline"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
         }`}
       >
@@ -256,7 +256,7 @@ export default function AboutPage() {
       <section
         id="team"
         data-animate
-        className={`py-20 px-4 transition-all duration-1000 ${
+        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${
           isVisible["team"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
         }`}
       >
@@ -305,7 +305,7 @@ export default function AboutPage() {
       <section
         id="store-photos"
         data-animate
-        className={`py-20 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
+        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
           isVisible["store-photos"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
         }`}
       >

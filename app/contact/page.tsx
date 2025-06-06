@@ -155,7 +155,7 @@ export default function ContactPage() {
       <section
         id="contact-features"
         data-animate
-        className={`py-20 px-4 transition-all duration-1000 ${isVisible["contact-features"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${isVisible["contact-features"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
           }`}
       >
         <div className="max-w-6xl mx-auto">
@@ -192,7 +192,7 @@ export default function ContactPage() {
       <section
         id="contact-main"
         data-animate
-        className={`py-20 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["contact-main"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["contact-main"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
           }`}
       >
         <div className="max-w-7xl mx-auto">
@@ -244,7 +244,7 @@ export default function ContactPage() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
                   size="lg"
-                  className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-full py-4 transform hover:scale-105 transition-all duration-300 mobile-text-base"
+                  className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-full md:py-4 py-2 transform hover:scale-105 transition-all duration-300 mobile-text-base"
                   onClick={() => window.open('tel:+918714583859', '_self')}
                 >
                   <Phone className="w-5 h-5 mr-2" />
@@ -253,7 +253,7 @@ export default function ContactPage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="flex-1 border-yellow-300 dark:border-yellow-700 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-full py-4 transform hover:scale-105 transition-all duration-300 mobile-text-base"
+                  className="flex-1 border-yellow-300 dark:border-yellow-700 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-full md:py-4 py-2 transform hover:scale-105 transition-all duration-300 mobile-text-base"
                   onClick={() => window.open('https://wa.me/+918714583859', '_blank')}
                 >
                   <MessageCircle className="w-5 h-5 mr-2" />
@@ -265,7 +265,7 @@ export default function ContactPage() {
             {/* Contact Form */}
             <div>
               <Card className="border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 shadow-2xl">
-                <CardContent className="p-8">
+                <CardContent className="md:p-8 p-3">
                   <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6 text-center mobile-text-lg">
                     Send Us a Message
                   </h2>
@@ -376,7 +376,7 @@ export default function ContactPage() {
       <section
         id="map-section"
         data-animate
-        className={`py-20 px-4 transition-all duration-1000 ${isVisible["map-section"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${isVisible["map-section"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
           }`}
       >
         <div className="max-w-6xl mx-auto">
@@ -442,7 +442,7 @@ export default function ContactPage() {
       <section
         id="faq-section"
         data-animate
-        className={`py-20 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["faq-section"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
+        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["faq-section"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
           }`}
       >
         <div className="max-w-4xl mx-auto">
