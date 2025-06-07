@@ -13,82 +13,64 @@ import Link from "next/link"
 import { useCart } from "@/hooks/use-cart"
 import { useToast } from "@/hooks/use-toast"
 
-// Mock product data - in a real app, this would come from an API
-const products = [
-  {
-    id: "1",
-    name: "Mountain Explorer Bike",
-    price: 299,
-    originalPrice: 349,
-    category: "Cycles",
-    images: [
-      "/placeholder.svg?height=600&width=600",
-      "/placeholder.svg?height=600&width=600",
-      "/placeholder.svg?height=600&width=600",
-      "/placeholder.svg?height=600&width=600",
-    ],
-    rating: 5,
-    reviews: 24,
-    badge: "Best Seller",
-    description:
-      "Experience the thrill of mountain biking with our premium Mountain Explorer Bike. Built for adventure and designed for durability, this bike features a lightweight aluminum frame, 21-speed gear system, and all-terrain tires that can handle any trail.",
-    features: [
-      "Lightweight aluminum frame",
-      "21-speed Shimano gear system",
-      "All-terrain tires with excellent grip",
-      "Adjustable seat height",
-      "Front suspension for smooth rides",
-      "Dual disc brakes for safety",
-    ],
-    specifications: {
-      "Frame Material": "Aluminum Alloy",
-      "Wheel Size": "26 inches",
-      "Gear System": "21-speed Shimano",
-      Brakes: "Dual Disc Brakes",
-      Weight: "15 kg",
-      "Max Load": "120 kg",
-    },
-    inStock: true,
-    stockCount: 15,
-  },
-  {
-    id: "2",
-    name: "Racing Car Toy Set",
-    price: 49,
-    originalPrice: 59,
-    category: "Toys",
-    images: [
-      "/placeholder.svg?height=600&width=600",
-      "/placeholder.svg?height=600&width=600",
-      "/placeholder.svg?height=600&width=600",
-    ],
-    rating: 4,
-    reviews: 18,
-    badge: "New",
-    description:
-      "Rev up the fun with our exciting Racing Car Toy Set! This comprehensive set includes multiple racing cars, a race track, and accessories for hours of imaginative play.",
-    features: [
-      "6 different racing cars included",
-      "Modular track system",
-      "LED lights and sound effects",
-      "Remote control functionality",
-      "Educational STEM components",
-      "Safe, non-toxic materials",
-    ],
-    specifications: {
-      "Age Range": "3-12 years",
-      Material: "ABS Plastic",
-      Battery: "AA x 4 (included)",
-      "Track Length": "2 meters",
-      "Cars Included": "6 pieces",
-      "Remote Range": "10 meters",
-    },
-    inStock: true,
-    stockCount: 8,
-  },
-  // Add more products as needed...
-]
+// Define interface for API response
+interface ProductImage {
+  _id: string
+  M07_image_path: string
+  M07_M06_product_sku_id: string
+  M07_order: number
+  M07_is_active: number
+}
 
+interface ProductSpec {
+  key: string
+  value: string
+}
+
+interface ProductApiResponse {
+  success: boolean
+  msg: string
+  data: {
+    _id: string
+    M06_sku: string
+    M06_product_sku_name: string
+    M06_description: string
+    M06_features: string[]
+    M06_specs: ProductSpec[]
+    M06_thumbnail_image: string
+    M06_MRP: number
+    M06_price: number
+    M06_quantity: number
+    M06_is_new: boolean
+    M06_single_order_limit: number | null
+    M06_is_active: number
+    M06_is_out_of_stock: boolean
+    M06_M05_product_id: string
+    Images: ProductImage[]
+    Variations: any[]
+  }
+  statusCode: number
+}
+
+// Define interface for product to render
+interface Product {
+  id: string
+  name: string
+  price: number
+  originalPrice: number
+  category: string
+  images: string[]
+  rating: number
+  reviews: number
+  badge: string
+  description: string
+  features: string[]
+  specifications: { [key: string]: string }
+  inStock: boolean
+  stockCount: number
+}
+
+// Keep related products array as per request
 const relatedProducts = [
   {
     id: "3",
@@ -121,11 +103,59 @@ export default function ProductDetailPage() {
 
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
-  const [activeTab, setActiveTab] = useState("description")
-  const [isVisible, setIsVisible] = useState({})
+  const [activeTab, setActiveTab] = useState("features")
+  const [isVisible, setIsVisible] = useState<Record<string, boolean>>({ "product-tabs": true }) // Set default to true for tabs
+  const [product, setProduct] = useState<Product | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const product = products.find((p) => p.id === productId)
-  const isInCart = product ? items.some((item) => item.id === product.id) : false
+  // Fetch product data from API
+  useEffect(() => {
+    const fetchProduct = async () => {
+      setLoading(true)
+      setError(null)
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/product-sku/${productId}`)
+        if (!response.ok) {
+          throw new Error('Failed to fetch product')
+        }
+        const data: ProductApiResponse = await response.json()
+        if (data.success) {
+          const apiProduct = data.data
+          const mappedProduct: Product = {
+            id: apiProduct._id,
+            name: apiProduct.M06_product_sku_name,
+            price: apiProduct.M06_price,
+            originalPrice: apiProduct.M06_MRP,
+            category: "Cycles", // Not provided by API; set statically for now
+            images: apiProduct.Images.map((img) => img.M07_image_path),
+            rating: 5, // Static as not provided by API
+            reviews: 24, // Static as not provided by API
+            badge: apiProduct.M06_is_new ? "New" : "Best Seller", // Use M06_is_new for badge
+            description: apiProduct.M06_description,
+            features: apiProduct.M06_features,
+            specifications: apiProduct.M06_specs.reduce((acc: { [key: string]: string }, spec: ProductSpec) => {
+              acc[spec.key] = spec.value
+              return acc
+            }, {}),
+            inStock: !apiProduct.M06_is_out_of_stock,
+            stockCount: apiProduct.M06_quantity,
+          }
+          setProduct(mappedProduct)
+        } else {
+          throw new Error(data.msg || 'API returned unsuccessful response')
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (productId) {
+      fetchProduct()
+    }
+  }, [productId])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -145,14 +175,30 @@ export default function ProductDetailPage() {
     return () => observer.disconnect()
   }, [])
 
-  if (!product) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20">
         <Header />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4 mobile-text-xl">
-              Product Not Found
+              Loading...
+            </h1>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (error || !product) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4 mobile-text-xl">
+              {error || "Product Not Found"}
             </h1>
             <Link href="/products">
               <Button className="bg-gradient-to-r from-yellow-500 to-white text-black">Back to Products</Button>
@@ -163,6 +209,8 @@ export default function ProductDetailPage() {
       </div>
     )
   }
+
+  const isInCart = items.some((item) => item.id === product.id)
 
   const handleCartAction = () => {
     if (isInCart) {
@@ -266,15 +314,6 @@ export default function ProductDetailPage() {
                   {product.name}
                 </h1>
                 <div className="flex items-center space-x-4 mb-4">
-                  {/* <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-5 h-5 ${i < product.rating ? "text-yellow-400 fill-current" : "text-gray-300"}`}
-                      />
-                    ))}
-                  </div> */}
-                  {/* <span className="text-gray-600 dark:text-gray-400 mobile-text-sm">({product.reviews} reviews)</span> */}
                   <Badge
                     variant="outline"
                     className="text-yellow-600 dark:text-yellow-400 border-yellow-600 dark:border-yellow-400"
@@ -404,83 +443,33 @@ export default function ProductDetailPage() {
 
           {/* Tab Content */}
           <div className="min-h-[200px]">
-            {activeTab === "description" && (
-              <div className="prose max-w-none">
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base md:text-lg mobile-text-base">
-                  {product.description}
-                </p>
-              </div>
-            )}
-
             {activeTab === "features" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {product.features.map((feature, index) => (
-                  <div key={index} className="flex items-center space-x-3">
-                    <Award className="w-5 h-5 text-purple-600 flex-shrink-0" />
-                    <span className="text-gray-700 dark:text-gray-300 mobile-text-sm">{feature}</span>
-                  </div>
-                ))}
+                {product.features.length > 0 ? (
+                  product.features.map((feature, index) => (
+                    <div key={index} className="flex items-center space-x-3">
+                      <Award className="w-5 h-5 text-purple-600 flex-shrink-0" />
+                      <span className="text-gray-700 dark:text-gray-300 mobile-text-sm">{feature}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-600 dark:text-gray-400">No features available.</p>
+                )}
               </div>
             )}
 
             {activeTab === "specifications" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {Object.entries(product.specifications).map(([key, value]) => (
-                  <div key={key} className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-                    <span className="font-medium text-gray-800 dark:text-gray-200 mobile-text-sm">{key}:</span>
-                    <span className="text-gray-600 dark:text-gray-400 mobile-text-sm">{value}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {activeTab === "reviews" && (
-              <div className="space-y-6">
-                <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-purple-600 mb-2 mobile-text-2xl">
-                    {product.rating}.0
-                  </div>
-                  <div className="flex justify-center mb-2">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-6 h-6 ${i < product.rating ? "text-yellow-400 fill-current" : "text-gray-300"}`}
-                      />
-                    ))}
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-400 mobile-text-sm">Based on {product.reviews} reviews</p>
-                </div>
-
-                {/* Sample Reviews */}
-                <div className="space-y-4">
-                  {[1, 2, 3].map((review) => (
-                    <Card key={review} className="border-0 bg-white dark:bg-gray-800 shadow-sm">
-                      <CardContent className="p-6">
-                        <div className="flex items-start space-x-4">
-                          <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/20 rounded-full flex items-center justify-center">
-                            <span className="text-purple-600 dark:text-purple-400 font-semibold">U{review}</span>
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-2 mb-2">
-                              <span className="font-semibold text-gray-800 dark:text-gray-200 mobile-text-sm">
-                                Customer {review}
-                              </span>
-                              <div className="flex">
-                                {[...Array(5)].map((_, i) => (
-                                  <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
-                                ))}
-                              </div>
-                            </div>
-                            <p className="text-gray-600 dark:text-gray-300 mobile-text-sm">
-                              Great product! Excellent quality and fast delivery. Highly recommended for anyone looking
-                              for {product.category.toLowerCase()}.
-                            </p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                {Object.keys(product.specifications).length > 0 ? (
+                  Object.entries(product.specifications).map(([key, value]) => (
+                    <div key={key} className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                      <span className="font-medium text-gray-800 dark:text-gray-200 mobile-text-sm">{key}:</span>
+                      <span className="text-gray-600 dark:text-gray-400 mobile-text-sm">{value}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-600 dark:text-gray-400">No specifications available.</p>
+                )}
               </div>
             )}
           </div>

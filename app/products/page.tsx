@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Search, Filter, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -104,6 +104,9 @@ export default function ProductsPage() {
   const [productError, setProductError] = useState<string | null>(null)
   const [totalProducts, setTotalProducts] = useState<number>(0)
 
+  // Ref to store the debounce timer
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null)
+
   // Fetch categories from API
   useEffect(() => {
     const fetchCategories = async () => {
@@ -139,7 +142,7 @@ export default function ProductsPage() {
     fetchCategories()
   }, [])
 
-  // Fetch products from API based on categoryID in URL
+  // Fetch products from API with debounced search
   useEffect(() => {
     const fetchProducts = async () => {
       setLoadingProducts(true)
@@ -147,8 +150,15 @@ export default function ProductsPage() {
       try {
         const categoryID = searchParams.get("categoryID")
         let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/product-sku`
+        const queryParams = new URLSearchParams()
         if (categoryID) {
-          url += `?categoryId=${categoryID}`
+          queryParams.append("categoryId", categoryID)
+        }
+        if (searchTerm) {
+          queryParams.append("search", searchTerm)
+        }
+        if (queryParams.toString()) {
+          url += `?${queryParams.toString()}`
         }
         const response = await fetch(url)
         if (!response.ok) {
@@ -179,8 +189,20 @@ export default function ProductsPage() {
       }
     }
 
-    fetchProducts()
-  }, [searchParams])
+    // Debounce the API call
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current)
+    }
+    debounceTimer.current = setTimeout(() => {
+      fetchProducts()
+    }, 2000)
+
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current)
+      }
+    }
+  }, [searchParams, searchTerm])
 
   // Set active category based on URL query parameter
   useEffect(() => {
@@ -212,21 +234,6 @@ export default function ProductsPage() {
     return () => observer.disconnect()
   }, [])
 
-  // Filter products based on search term (category filtering handled by API)
-  useEffect(() => {
-    let filtered = filteredProducts
-
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (product) =>
-          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.description.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    }
-
-    setFilteredProducts(filtered)
-  }, [searchTerm, filteredProducts])
-
   // Handle category click to update URL and set active category
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category)
@@ -244,6 +251,31 @@ export default function ProductsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20">
+      <style jsx>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none; /* IE and Edge */
+          scrollbar-width: none; /* Firefox */
+        }
+        .categories-container {
+          display: flex;
+          overflow-x: auto;
+          gap: 0.5rem;
+        }
+        @media (min-width: 768px) {
+          .categories-container {
+            justify-content: flex-start;
+          }
+        }
+        @media (max-width: 767px) {
+          .categories-container {
+            flex-wrap: wrap;
+            justify-content: center;
+          }
+        }
+      `}</style>
       <Header />
 
       {/* Hero Section */}
@@ -265,23 +297,23 @@ export default function ProductsPage() {
       {/* Search and Filter */}
       <section className="py-8 px-4 bg-white/50 dark:bg-gray-800/50">
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-8">
-            <div className="relative flex-1 max-w-md">
+          <div className="flex flex-col md:flex-row gap-4 items-center mb-8">
+            <div className="relative w-full md:w-1/2">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
                 placeholder="Search products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 border-purple-200 dark:border-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 rounded-lg h-12 bg-white dark:bg-gray-700"
+                className="pl-10 border-purple-200 dark:border-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 rounded-lg h-12 bg-white dark:bg-gray-700 w-full"
               />
             </div>
-            <div className="flex items-center gap-2">
+            <div className="w-full md:w-1/2">
               {loadingCategories ? (
-                <p className="text-gray-600 dark:text-gray-400">Loading categories...</p>
+                <p className="text-gray-600 dark:text-gray-400 text-center">Loading categories...</p>
               ) : categoryError ? (
-                <p className="text-red-500">{categoryError}</p>
+                <p className="text-red-500 text-center">{categoryError}</p>
               ) : (
-                <div className="flex overflow-x-auto scrollbar-hide gap-2 justify-center">
+                <div className="categories-container scrollbar-hide py-2 px-2">
                   {categories.map((category) => (
                     <Button
                       key={category}
