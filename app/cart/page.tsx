@@ -248,11 +248,11 @@ export default function CartPage() {
                   </Button>
 
                   {/* Security Info */}
-                  <div className="mt-4 text-center">
+{/*                   <div className="mt-4 text-center">
                     <p className="text-xs text-gray-500 dark:text-gray-400 mobile-text-sm">
                       🔒 Secure checkout with SSL encryption
                     </p>
-                  </div>
+                  </div> */}
                 </CardContent>
               </Card>
             </div>
