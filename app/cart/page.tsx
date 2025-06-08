@@ -207,7 +207,7 @@ export default function CartPage() {
                     <div className="flex justify-between">
                       <span className="text-gray-600 dark:text-gray-400 mobile-text-sm">Subtotal:</span>
                       <span className="font-medium text-gray-800 dark:text-gray-200 mobile-text-sm">
-                        ${subtotal.toFixed(2)}
+                        ₹{subtotal.toFixed(2)}
                       </span>
                     </div>
 
