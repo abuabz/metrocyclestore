@@ -5,6 +5,8 @@ import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
 import Image from "next/image"
@@ -13,19 +15,94 @@ import { useCart } from "@/hooks/use-cart"
 
 export default function CartPage() {
   const { items, updateQuantity, removeFromCart, getCartTotal, getCartCount } = useCart()
-  const [promoCode, setPromoCode] = useState("")
+  const [customerDetails, setCustomerDetails] = useState({
+    name: "",
+    place: "",
+    district: "",
+    pincode: "",
+    phoneNumber: "",
+    landmark: "",
+  })
   const [discount, setDiscount] = useState(0)
 
-  const handlePromoCode = () => {
-    // Simple promo code logic
-    if (promoCode.toLowerCase() === "save10") {
-      setDiscount(0.1) // 10% discount
-    } else if (promoCode.toLowerCase() === "welcome") {
-      setDiscount(0.05) // 5% discount
-    } else {
-      setDiscount(0)
-      alert("Invalid promo code")
+  const handleCustomerDetailsChange = (field: string, value: string) => {
+    setCustomerDetails((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const districts = [
+    "Thiruvananthapuram",
+    "Kollam",
+    "Pathanamthitta",
+    "Alappuzha",
+    "Kottayam",
+    "Idukki",
+    "Ernakulam",
+    "Thrissur",
+    "Palakkad",
+    "Malappuram",
+    "Kozhikode",
+    "Wayanad",
+    "Kannur",
+    "Kasaragod",
+  ]
+
+  const validateCustomerDetails = () => {
+    const { name, place, district, pincode, phoneNumber } = customerDetails
+    if (!name || !place || !district || !pincode || !phoneNumber) {
+      alert("Please fill in all required fields (Name, Place, District, Pincode, Phone Number).")
+      return false
     }
+    if (!/^\d{6}$/.test(pincode)) {
+      alert("Pincode must be a 6-digit number.")
+      return false
+    }
+    if (!/^\d{10}$/.test(phoneNumber)) {
+      alert("Phone Number must be a 10-digit number.")
+      return false
+    }
+    return true
+  }
+
+  const handleCheckout = () => {
+    if (!validateCustomerDetails()) return
+
+    const subtotal = getCartTotal()
+    const discountAmount = subtotal * discount
+    const shipping = subtotal > 50 ? 0 : 9.99
+    const total = subtotal - discountAmount + shipping
+
+    const orderSummary = `
+Metro Toys Store
+
+Order Summary - ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+
+Customer Details:
+Name: ${customerDetails.name}
+Place: ${customerDetails.place}
+District: ${customerDetails.district}
+Pincode: ${customerDetails.pincode}
+Phone Number: ${customerDetails.phoneNumber}
+${customerDetails.landmark ? `Landmark: ${customerDetails.landmark}` : ''}
+
+Order Items:
+${items.map((item) => `- ${item.name}${item.variations ? ` (${item.variations.map(v => `${v.name}: ${v.value}`).join(', ')})` : ''} - ₹${item.price} x ${item.quantity} = ₹${(item.price * item.quantity).toFixed(2)}`).join('\n')}
+
+Price Details:
+Subtotal: ₹${subtotal.toFixed(2)}
+${discount > 0 ? `Discount (${discount * 100}%): -₹${discountAmount.toFixed(2)}` : ''}
+Shipping: ${shipping === 0 ? 'Free' : `₹${shipping.toFixed(2)}`}
+Total: ₹${total.toFixed(2)}
+
+Thank you for choosing us! +9187145 83859
+    `.trim()
+
+    // For now, we'll log the order summary to the console. In a real app, you might send this to an API or WhatsApp.
+    console.log(orderSummary)
+
+    // Optionally, open WhatsApp with the order summary
+    const whatsappMessage = encodeURIComponent(orderSummary)
+    const whatsappUrl = `https://wa.me/918714583859?text=${whatsappMessage}`
+    window.open(whatsappUrl, "_blank")
   }
 
   const subtotal = getCartTotal()
@@ -83,7 +160,7 @@ export default function CartPage() {
             <div className="lg:col-span-2 space-y-4">
               {items.map((item) => (
                 <Card
-                  key={item.id}
+                  key={`${item.id}-${JSON.stringify(item.variations)}`} // Unique key including variations
                   className="border-0 bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   <CardContent className="p-6">
@@ -104,7 +181,12 @@ export default function CartPage() {
                         <h3 className="text-base md:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-1 mobile-text-sm">
                           {item.name}
                         </h3>
-                        <p className="text-yellow-500 font-bold text-lg md:text-xl mobile-text-base">${item.price}</p>
+                        {item.variations && item.variations.length > 0 && (
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mobile-text-sm">
+                            {item.variations.map((v) => `${v.name}: ${v.value}`).join(", ")}
+                          </p>
+                        )}
+                        <p className="text-yellow-500 font-bold text-lg md:text-xl mobile-text-base">₹{item.price}</p>
                       </div>
 
                       {/* Quantity Controls */}
@@ -113,7 +195,7 @@ export default function CartPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                            onClick={() => updateQuantity(item.id, item.variations, Math.max(1, item.quantity - 1))}
                             className="px-3 py-2"
                           >
                             <Minus className="w-4 h-4" />
@@ -124,7 +206,7 @@ export default function CartPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.id, item.variations, item.quantity + 1)}
                             className="px-3 py-2"
                           >
                             <Plus className="w-4 h-4" />
@@ -135,7 +217,7 @@ export default function CartPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => removeFromCart(item.id)}
+                          onClick={() => removeFromCart(item.id, item.variations)}
                           className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 p-2"
                         >
                           <Trash2 className="w-5 h-5" />
@@ -145,7 +227,7 @@ export default function CartPage() {
                       {/* Item Total */}
                       <div className="text-right">
                         <p className="text-base md:text-lg font-bold text-gray-800 dark:text-gray-200 mobile-text-sm">
-                          ${(item.price * item.quantity).toFixed(2)}
+                          ₹{(item.price * item.quantity).toFixed(2)}
                         </p>
                       </div>
                     </div>
@@ -175,31 +257,98 @@ export default function CartPage() {
                     Order Summary
                   </h2>
 
-                  {/* Promo Code */}
-                  <div className="mb-6">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 mobile-text-sm">
-                      Promo Code
-                    </label>
-                    <div className="flex space-x-2">
+                  {/* Customer Details Form */}
+                  <div className="space-y-4 mb-6">
+                    <div>
+                      <Label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 mobile-text-sm">
+                        Name *
+                      </Label>
                       <Input
-                        placeholder="Enter code"
-                        value={promoCode}
-                        onChange={(e) => setPromoCode(e.target.value)}
-                        className="flex-1 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                        id="name"
+                        placeholder="Enter your name"
+                        value={customerDetails.name}
+                        onChange={(e) => handleCustomerDetailsChange("name", e.target.value)}
+                        className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                        required
                       />
-                      <Button
-                        onClick={handlePromoCode}
-                        variant="outline"
-                        className="border-yellow-300 dark:border-yellow-700 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 mobile-text-sm"
-                      >
-                        Apply
-                      </Button>
                     </div>
-                    {discount > 0 && (
-                      <p className="text-green-600 dark:text-green-400 text-sm mt-2 mobile-text-sm">
-                        ✓ {discount * 100}% discount applied!
-                      </p>
-                    )}
+
+                    <div>
+                      <Label htmlFor="place" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 mobile-text-sm">
+                        Place *
+                      </Label>
+                      <Input
+                        id="place"
+                        placeholder="Enter your place"
+                        value={customerDetails.place}
+                        onChange={(e) => handleCustomerDetailsChange("place", e.target.value)}
+                        className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="district" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 mobile-text-sm">
+                        District *
+                      </Label>
+                      <Select
+                        onValueChange={(value) => handleCustomerDetailsChange("district", value)}
+                        value={customerDetails.district}
+                        required
+                      >
+                        <SelectTrigger className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
+                          <SelectValue placeholder="Select district" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {districts.map((district) => (
+                            <SelectItem key={district} value={district}>
+                              {district}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="pincode" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 mobile-text-sm">
+                        Pincode *
+                      </Label>
+                      <Input
+                        id="pincode"
+                        placeholder="Enter your pincode"
+                        value={customerDetails.pincode}
+                        onChange={(e) => handleCustomerDetailsChange("pincode", e.target.value)}
+                        className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 mobile-text-sm">
+                        Phone Number *
+                      </Label>
+                      <Input
+                        id="phoneNumber"
+                        placeholder="Enter your phone number"
+                        value={customerDetails.phoneNumber}
+                        onChange={(e) => handleCustomerDetailsChange("phoneNumber", e.target.value)}
+                        className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="landmark" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 mobile-text-sm">
+                        Landmark (Optional)
+                      </Label>
+                      <Input
+                        id="landmark"
+                        placeholder="Enter a landmark (optional)"
+                        value={customerDetails.landmark}
+                        onChange={(e) => handleCustomerDetailsChange("landmark", e.target.value)}
+                        className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                      />
+                    </div>
                   </div>
 
                   {/* Price Breakdown */}
@@ -207,27 +356,27 @@ export default function CartPage() {
                     <div className="flex justify-between">
                       <span className="text-gray-600 dark:text-gray-400 mobile-text-sm">Subtotal:</span>
                       <span className="font-medium text-gray-800 dark:text-gray-200 mobile-text-sm">
-                        ${subtotal.toFixed(2)}
+                        ₹{subtotal.toFixed(2)}
                       </span>
                     </div>
 
                     {discount > 0 && (
                       <div className="flex justify-between text-green-600 dark:text-green-400">
                         <span className="mobile-text-sm">Discount ({discount * 100}%):</span>
-                        <span className="mobile-text-sm">-${discountAmount.toFixed(2)}</span>
+                        <span className="mobile-text-sm">-₹{discountAmount.toFixed(2)}</span>
                       </div>
                     )}
 
                     <div className="flex justify-between">
                       <span className="text-gray-600 dark:text-gray-400 mobile-text-sm">Shipping:</span>
                       <span className="font-medium text-gray-800 dark:text-gray-200 mobile-text-sm">
-                        {shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
+                        {shipping === 0 ? "Free" : `₹${shipping.toFixed(2)}`}
                       </span>
                     </div>
 
                     {subtotal < 50 && (
                       <p className="text-sm text-gray-500 dark:text-gray-400 mobile-text-sm">
-                        Add ${(50 - subtotal).toFixed(2)} more for free shipping!
+                        Add ₹{(50 - subtotal).toFixed(2)} more for free shipping!
                       </p>
                     )}
 
@@ -235,13 +384,14 @@ export default function CartPage() {
 
                     <div className="flex justify-between text-base md:text-lg font-bold">
                       <span className="text-gray-800 dark:text-gray-200 mobile-text-base">Total:</span>
-                      <span className="text-yellow-500 mobile-text-base">${total.toFixed(2)}</span>
+                      <span className="text-yellow-500 mobile-text-base">₹{total.toFixed(2)}</span>
                     </div>
                   </div>
 
                   {/* Checkout Button */}
                   <Button
                     size="lg"
+                    onClick={handleCheckout}
                     className="w-full bg-gradient-to-r from-yellow-500 to-white hover:from-yellow-600 hover:to-white text-black py-4 text-base md:text-lg font-semibold rounded-lg transform hover:scale-105 transition-all duration-300 mobile-text-base"
                   >
                     Proceed to Checkout

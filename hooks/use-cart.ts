@@ -3,19 +3,25 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
+interface VariationDetail {
+  name: string
+  value: string
+}
+
 export interface CartItem {
   id: string
   name: string
   price: number
   image: string
   quantity: number
+  variations?: VariationDetail[] // Add variations to differentiate items (e.g., blue jeep vs. red jeep)
 }
 
 interface CartStore {
   items: CartItem[]
   addToCart: (item: CartItem) => void
-  removeFromCart: (id: string) => void
-  updateQuantity: (id: string, quantity: number) => void
+  removeFromCart: (id: string, variations?: VariationDetail[]) => void
+  updateQuantity: (id: string, variations: VariationDetail[] | undefined, quantity: number) => void
   clearCart: () => void
   getCartTotal: () => number
   getCartCount: () => number
@@ -28,30 +34,61 @@ export const useCart = create<CartStore>()(
 
       addToCart: (item) => {
         const items = get().items
-        const existingItem = items.find((i) => i.id === item.id)
+        const existingItemIndex = items.findIndex(
+          (i) =>
+            i.id === item.id &&
+            JSON.stringify(i.variations) === JSON.stringify(item.variations)
+        )
 
-        if (existingItem) {
-          set({
-            items: items.map((i) => (i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i)),
-          })
+        if (existingItemIndex !== -1) {
+          // Update quantity if the item with the same id and variations exists
+          const updatedItems = [...items]
+          updatedItems[existingItemIndex] = {
+            ...updatedItems[existingItemIndex],
+            quantity: updatedItems[existingItemIndex].quantity + item.quantity,
+          }
+          set({ items: updatedItems })
         } else {
+          // Add as a new item
           set({ items: [...items, item] })
         }
       },
 
-      removeFromCart: (id) => {
-        set({ items: get().items.filter((item) => item.id !== id) })
+      removeFromCart: (id, variations) => {
+        set({
+          items: get().items.filter(
+            (item) =>
+              !(
+                item.id === id &&
+                JSON.stringify(item.variations) === JSON.stringify(variations)
+              )
+          ),
+        })
       },
 
-      updateQuantity: (id, quantity) => {
+      updateQuantity: (id, variations, quantity) => {
+        const items = get().items
+        const existingItemIndex = items.findIndex(
+          (i) =>
+            i.id === id &&
+            JSON.stringify(i.variations) === JSON.stringify(variations)
+        )
+
         if (quantity <= 0) {
-          get().removeFromCart(id)
+          if (existingItemIndex !== -1) {
+            get().removeFromCart(id, variations)
+          }
           return
         }
 
-        set({
-          items: get().items.map((item) => (item.id === id ? { ...item, quantity } : item)),
-        })
+        if (existingItemIndex !== -1) {
+          const updatedItems = [...items]
+          updatedItems[existingItemIndex] = {
+            ...updatedItems[existingItemIndex],
+            quantity,
+          }
+          set({ items: updatedItems })
+        }
       },
 
       clearCart: () => {
@@ -63,11 +100,11 @@ export const useCart = create<CartStore>()(
       },
 
       getCartCount: () => {
-        return get().items.reduce((count, item) => count + item.quantity, 0)
+        return get().items.length // Count unique items (e.g., blue jeep and red jeep are 2 items)
       },
     }),
     {
       name: "cart-storage",
-    },
-  ),
+    }
+  )
 )
