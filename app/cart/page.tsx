@@ -72,28 +72,32 @@ export default function CartPage() {
     const total = subtotal - discountAmount + shipping
 
     const orderSummary = `
-Metro Toys Store
+🚲 *Metro Toys Store*  
+🛒 *Order Summary*  
+🕒 ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
 
-Order Summary - ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+👤 *Customer Details:*  
+• *Name:* ${customerDetails.name}  
+• *Place:* ${customerDetails.place}  
+• *District:* ${customerDetails.district}  
+• *Pincode:* ${customerDetails.pincode}  
+• *Phone:* ${customerDetails.phoneNumber}  
+${customerDetails.landmark ? `• *Landmark:* ${customerDetails.landmark}` : ''}
 
-Customer Details:
-Name: ${customerDetails.name}
-Place: ${customerDetails.place}
-District: ${customerDetails.district}
-Pincode: ${customerDetails.pincode}
-Phone Number: ${customerDetails.phoneNumber}
-${customerDetails.landmark ? `Landmark: ${customerDetails.landmark}` : ''}
+🛍️ *Order Items:*  
+${items.map((item, idx) =>
+      `${idx + 1}. ${item.name}${item.variations ? ` (${item.variations.map(v => `${v.name}: ${v.value}`).join(', ')})` : ''}  
+   ‣ ₹${item.price} x ${item.quantity} = ₹${(item.price * item.quantity).toFixed(2)}`
+    ).join('\n\n')}
 
-Order Items:
-${items.map((item) => `- ${item.name}${item.variations ? ` (${item.variations.map(v => `${v.name}: ${v.value}`).join(', ')})` : ''} - ₹${item.price} x ${item.quantity} = ₹${(item.price * item.quantity).toFixed(2)}`).join('\n')}
+💰 *Price Details:*  
+• Subtotal: ₹${subtotal.toFixed(2)}  
+${discount > 0 ? `• Discount (${(discount * 100).toFixed(0)}%): -₹${discountAmount.toFixed(2)}\n` : ''}• Shipping: ${shipping === 0 ? 'Free' : `₹${shipping.toFixed(2)}`}  
+• *Total:* ₹${total.toFixed(2)}
 
-Price Details:
-Subtotal: ₹${subtotal.toFixed(2)}
-${discount > 0 ? `Discount (${discount * 100}%): -₹${discountAmount.toFixed(2)}` : ''}
-Shipping: ${shipping === 0 ? 'Free' : `₹${shipping.toFixed(2)}`}
-Total: ₹${total.toFixed(2)}
+🙏 *Thank you for choosing us!*  
 
-Thank you for choosing us! +9187145 83859
+
     `.trim()
 
     // For now, we'll log the order summary to the console. In a real app, you might send this to an API or WhatsApp.
@@ -398,7 +402,7 @@ Thank you for choosing us! +9187145 83859
                   </Button>
 
                   {/* Security Info */}
-{/*                   <div className="mt-4 text-center">
+                  {/*                   <div className="mt-4 text-center">
                     <p className="text-xs text-gray-500 dark:text-gray-400 mobile-text-sm">
                       🔒 Secure checkout with SSL encryption
                     </p>
