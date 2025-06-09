@@ -168,7 +168,7 @@ ${discount > 0 ? `• Discount (${(discount * 100).toFixed(0)}%): -₹${discount
                   className="border-0 bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   <CardContent className="p-6">
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-4 flex-wrap md:flex-nowrap gap-3 justify-center  ">
                       {/* Product Image */}
                       <div className="relative overflow-hidden rounded-lg">
                         <Image
