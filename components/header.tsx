@@ -129,10 +129,10 @@ export default function Header() {
                 </Link>
               ))}
             </nav>
-            <Button className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-full py-3">
+            {/* <Button className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-full py-3">
               <Phone className="w-4 h-4 mr-2" />
               Call Now: (555) 123-4567
-            </Button>
+            </Button> */}
           </div>
         </div>
       </div>
