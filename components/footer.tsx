@@ -82,7 +82,7 @@ export default function Footer() {
             <div className="space-y-6">
               <div className="flex items-center space-x-3">
                 <img
-                  src="./Logomain.png"
+                  src="/assets/Logomain.png"
                   alt="Logo"
                   className="w-60 h-60 transition-transform duration-300"
                 />

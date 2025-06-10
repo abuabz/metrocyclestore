@@ -36,7 +36,7 @@ interface FeaturedProduct {
   description: string;
 }
 
-// Define interface for API response
+// Define interface for API response (Featured Products)
 interface ProductSku {
   _id: string;
   M06_product_sku_name: string;
@@ -52,6 +52,25 @@ interface ApiResponse {
   data: {
     products_skus: ProductSku[];
   };
+}
+
+// Define interface for gallery item based on API response
+interface GalleryItem {
+  _id: string;
+  M06_media_type: "image" | "video";
+  M06_media_url: string;
+  M06_thumbnail: "image";
+  M06_is_active: number;
+  M06_deleted_at: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Define interface for gallery API response
+interface GalleryApiResponse {
+  success: boolean;
+  msg: string;
+  data: GalleryItem[];
 }
 
 // New Image Modal Component
@@ -147,42 +166,6 @@ const services = [
   },
 ];
 
-const galleryItems = [
-  {
-    type: "image",
-    src: "https://samstoy.in/cdn/shop/files/Childrens-Electric-Motorcycle-Tricycle-Can-Sit-In-Baby-Toy-bike-Battery-1-3-5-6-12-Years-Old-Trikes-Ride-on-Toys-in-Ahmedabad-samstoy-in-4474.jpg?v=1724873942",
-    alt: "Gallery image 1",
-  },
-  {
-    type: "video",
-    videoSrc: "/reel1.mp4",
-    thumbnailSrc: "/reel1.jpeg?height=300&width=300",
-    title: "Product Demo Video",
-  },
-  {
-    type: "image",
-    src: "https://www.shutterstock.com/image-photo/toys-kids-child-260nw-295136831.jpg",
-    alt: "Gallery image 2",
-  },
-  {
-    type: "video",
-    videoSrc: "/reel1.mp4",
-    thumbnailSrc: "/reel1.jpeg?height=300&width=300",
-    title: "Customer Review Video",
-  },
-  {
-    type: "image",
-    src: "https://www.timeforkids.com/wp-content/uploads/2023/12/G3G5_231215_furbys.jpg?w=1024",
-    alt: "Gallery image 3",
-  },
-  {
-    type: "video",
-    videoSrc: "/reel1.mp4",
-    thumbnailSrc: "/reel1.jpeg?height=300&width=300",
-    title: "Store Tour Video",
-  },
-];
-
 export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isVisible, setIsVisible] = useState<Record<string, boolean>>({});
@@ -198,7 +181,9 @@ export default function HomePage() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [featuredProducts, setFeaturedProducts] = useState<FeaturedProduct[]>([]);
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]); // State for gallery items
   const [error, setError] = useState<string | null>(null);
+  const [galleryError, setGalleryError] = useState<string | null>(null); // Separate error state for gallery
 
   // Fetch featured products from the API
   useEffect(() => {
@@ -227,6 +212,31 @@ export default function HomePage() {
     };
 
     fetchFeaturedProducts();
+  }, []);
+
+  // Fetch gallery items from the API
+  useEffect(() => {
+    const fetchGalleryItems = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/gallery`);
+        const result: GalleryApiResponse = await response.json();
+
+        if (result.success) {
+          // Filter active items and take only the first 6
+          const activeItems = result.data
+            .filter((item) => item.M06_is_active === 1 && !item.M06_deleted_at)
+            .slice(0, 6);
+          setGalleryItems(activeItems);
+        } else {
+          throw new Error(result.msg || "Failed to fetch gallery items");
+        }
+      } catch (err: any) {
+        setGalleryError(err.message || "Error fetching gallery items");
+        console.error("Error fetching gallery items:", err);
+      }
+    };
+
+    fetchGalleryItems();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -292,10 +302,10 @@ export default function HomePage() {
           <div
             key={slide.id}
             className={`absolute inset-0 transition-all duration-1000 ease-in-out ${index === currentSlide
-                ? "opacity-100 transform translate-x-0"
-                : index < currentSlide
-                  ? "opacity-0 transform -translate-x-full"
-                  : "opacity-0 transform translate-x-full"
+              ? "opacity-100 transform translate-x-0"
+              : index < currentSlide
+                ? "opacity-0 transform -translate-x-full"
+                : "opacity-0 transform translate-x-full"
               }`}
           >
             <div className="relative h-full">
@@ -311,16 +321,16 @@ export default function HomePage() {
                 <div className="max-w-4xl px-4">
                   <h1
                     className={`text-3xl md:text-5xl lg:text-7xl font-bold mb-6 transition-all duration-1000 delay-300 mobile-text-3xl ${index === currentSlide
-                        ? "opacity-100 transform translate-y-0"
-                        : "opacity-0 transform translate-y-8"
+                      ? "opacity-100 transform translate-y-0"
+                      : "opacity-0 transform translate-y-8"
                       }`}
                   >
                     {slide.title}
                   </h1>
                   <p
                     className={`text-lg md:text-xl lg:text-2xl mb-8 transition-all duration-1000 delay-500 mobile-text-lg ${index === currentSlide
-                        ? "opacity-100 transform translate-y-0"
-                        : "opacity-0 transform translate-y-8"
+                      ? "opacity-100 transform translate-y-0"
+                      : "opacity-0 transform translate-y-8"
                       }`}
                   >
                     {slide.subtitle}
@@ -328,8 +338,8 @@ export default function HomePage() {
                   <Button
                     size="lg"
                     className={`bg-gradient-to-r from-yellow-500 to-white-800 hover:from-yellow-600 hover:to-gray-50 px-8 py-4 text-lg text-black rounded-full transform transition-all duration-1000 delay-700 hover:scale-105 mobile-text-base ${index === currentSlide
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-8"
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-8"
                       }`}
                   >
                     {slide.cta}
@@ -359,8 +369,8 @@ export default function HomePage() {
               key={index}
               onClick={() => setCurrentSlide(index)}
               className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentSlide
-                  ? "bg-white scale-125"
-                  : "bg-white/50 hover:bg-white/75"
+                ? "bg-white scale-125"
+                : "bg-white/50 hover:bg-white/75"
                 }`}
             />
           ))}
@@ -372,8 +382,8 @@ export default function HomePage() {
         id="about-mini"
         data-animate
         className={`md:py-20 py-10 px-4 transition-all duration-1000 ${isVisible["about-mini"]
-            ? "opacity-100 transform translate-y-0"
-            : "opacity-0 transform translate-y-8"
+          ? "opacity-100 transform translate-y-0"
+          : "opacity-0 transform translate-y-8"
           }`}
       >
         <div className="max-w-4xl mx-auto text-center">
@@ -394,8 +404,8 @@ export default function HomePage() {
         id="featured-products"
         data-animate
         className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["featured-products"]
-            ? "opacity-100 transform translate-y-0"
-            : "opacity-0 transform translate-y-8"
+          ? "opacity-100 transform translate-y-0"
+          : "opacity-0 transform translate-y-8"
           }`}
       >
         <div className="max-w-7xl mx-auto">
@@ -416,8 +426,8 @@ export default function HomePage() {
                 <Link key={product.id} href={`/products/${product.id}`}>
                   <Card
                     className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 overflow-hidden cursor-pointer flex flex-col h-full ${isVisible["featured-products"]
-                        ? `opacity-100 transform translate-y-0 transition-delay-[${index * 100}ms]`
-                        : "opacity-0 transform translate-y-8"
+                      ? `opacity-100 transform translate-y-0 transition-delay-[${index * 100}ms]`
+                      : "opacity-0 transform translate-y-8"
                       }`}
                   >
                     <CardContent className="p-0 flex flex-col h-full">
@@ -468,8 +478,8 @@ export default function HomePage() {
         id="services"
         data-animate
         className={`md:py-20 py-10 px-4 transition-all duration-1000 ${isVisible["services"]
-            ? "opacity-100 transform translate-y-0"
-            : "opacity-0 transform translate-y-8"
+          ? "opacity-100 transform translate-y-0"
+          : "opacity-0 transform translate-y-8"
           }`}
       >
         <div className="max-w-6xl mx-auto">
@@ -481,8 +491,8 @@ export default function HomePage() {
               <Card
                 key={index}
                 className={`text-center group hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-pink-50 dark:from-gray-800 dark:to-pink-900/20 ${isVisible["services"]
-                    ? `opacity-100 transform translate-y-0 transition-delay-[${index * 100}ms]`
-                    : "opacity-0 transform translate-y-8"
+                  ? `opacity-100 transform translate-y-0 transition-delay-[${index * 100}ms]`
+                  : "opacity-0 transform translate-y-8"
                   }`}
               >
                 <CardContent className="p-8 cursor-pointer">
@@ -507,65 +517,78 @@ export default function HomePage() {
         id="gallery"
         data-animate
         className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["gallery"]
-            ? "opacity-100 transform translate-y-0"
-            : "opacity-0 transform translate-y-8"
+          ? "opacity-100 transform translate-y-0"
+          : "opacity-0 transform translate-y-8"
           }`}
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
             Our Gallery
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {galleryItems.map((item, index) => (
-              <div
-                key={index}
-                className={`${isVisible["gallery"]
+          {galleryError && (
+            <p className="text-center text-red-500 mb-4">{galleryError}</p>
+          )}
+          {galleryItems.length === 0 && !galleryError && (
+            <p className="text-center text-gray-600 dark:text-gray-300">
+              Loading gallery items...
+            </p>
+          )}
+          {galleryItems.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {galleryItems.map((item, index) => (
+                <div
+                  key={item._id}
+                  className={`${isVisible["gallery"]
                     ? `opacity-100 transform scale-100 transition-delay-[${index * 100}ms]`
                     : "opacity-0 transform scale-95"
-                  } transition-all duration-500`}
-              >
-                {item.type === "image" ? (
-                  <div
-                    className="group relative overflow-hidden rounded-lg cursor-pointer"
-                    onClick={() =>
-                      setSelectedImage({ src: item.src!, alt: item.alt! })
-                    }
-                  >
-                    <Image
-                      src={item.src || "/placeholder.svg"}
-                      alt={item.alt || `Gallery image ${index + 1}`}
-                      width={300}
-                      height={300}
-                      className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                    } transition-all duration-500`}
+                >
+                  {item.M06_media_type === "image" ? (
+                    <div
+                      className="group relative overflow-hidden rounded-lg cursor-pointer"
+                      onClick={() =>
+                        setSelectedImage({
+                          src: item.M06_media_url,
+                          alt: `Gallery image ${index + 1}`,
+                        })
+                      }
+                    >
+                      <Image
+                        src={item.M06_media_url || "/placeholder.svg"}
+                        alt={`Gallery image ${index + 1}`}
+                        width={300}
+                        height={300}
+                        className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-yellow-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
+                  ) : (
+                    <VideoThumbnail
+                      videoSrc={item.M06_media_url}
+                      thumbnailSrc={item?.M06_thumbnail} // Fallback thumbnail since API doesn't provide one
+                      title={`Gallery video ${index + 1}`}
+                      onClick={() =>
+                        setSelectedVideo({
+                          src: item.M06_media_url,
+                          title: `Gallery video ${index + 1}`,
+                        })
+                      }
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-yellow-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-                ) : (
-                  <VideoThumbnail
-                    videoSrc={item.videoSrc!}
-                    thumbnailSrc={item.thumbnailSrc!}
-                    title={item.title!}
-                    onClick={() =>
-                      setSelectedVideo({
-                        src: item.videoSrc!,
-                        title: item.title!,
-                      })
-                    }
-                  />
-                )}
-              </div>
-            ))}
-          </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Get In Touch  */}
+      {/* Get In Touch */}
       <section
         id="contact-form"
         data-animate
         className={`md:py-20 py-10 px-4 transition-all duration-1000 ${isVisible["contact-form"]
-            ? "opacity-100 transform translate-y-0"
-            : "opacity-0 transform translate-y-8"
+          ? "opacity-100 transform translate-y-0"
+          : "opacity-0 transform translate-y-8"
           }`}
       >
         <div className="max-w-4xl mx-auto">
@@ -626,8 +649,8 @@ export default function HomePage() {
         id="map"
         data-animate
         className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["map"]
-            ? "opacity-100 transform translate-y-0"
-            : "opacity-0 transform translate-y-8"
+          ? "opacity-100 transform translate-y-0"
+          : "opacity-0 transform translate-y-8"
           }`}
       >
         <div className="max-w-6xl mx-auto">
@@ -728,13 +751,6 @@ export default function HomePage() {
         >
           <MessageCircle className="w-6 h-6" />
         </Button>
-        {/* <Button
-          size="lg"
-          className="flex-1 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300 mobile-text-base"
-          onClick={() => window.open('tel:+918714583859', '_self')}
-        >
-          <Phone className="w-6 h-6" />
-        </Button> */}
       </div>
     </div>
   );

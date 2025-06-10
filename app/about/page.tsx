@@ -26,7 +26,6 @@ const teamMembers = [
     image: "./assets/sales.jpeg",
     bio: "Shamnad leads our customer service team and ensures every customer has an amazing experience.",
   },
-
 ]
 
 const milestones = [
@@ -34,7 +33,6 @@ const milestones = [
   { year: "2019", event: "Expansion", description: "We expand the store in to the complete toy store" },
   { year: "2022", event: "Start Online", description: "we started online sales also" },
   { year: "2025", event: "Happy Customers", description: "We have 30000+ happy customers in 2025" },
-  // { year: "2023", event: "Award Winner", description: "Best Local Toy Store Award" },
 ]
 
 type SectionId = "brand-story" | "mission-vision" | "values" | "timeline" | "team" | "store-photos";
@@ -103,9 +101,8 @@ export default function AboutPage() {
                 We believe that play is not just fun—it's fundamental to a child's development. Every product we select
                 is chosen with care, ensuring it meets our high standards for safety, quality, and educational value.
               </p>
-
             </div>
-            <div className="relative ">
+            <div className="relative">
               <Image
                 src="./assets/shop.png"
                 alt="Our Story"
@@ -317,7 +314,7 @@ export default function AboutPage() {
                   } transition-all duration-500`}
               >
                 <Image
-                  src={`/placeholder.svg?height=300&width=400`}
+                  src={`/assets/shop_0${index}.jpeg`}
                   alt={`Store photo ${index}`}
                   width={400}
                   height={300}
