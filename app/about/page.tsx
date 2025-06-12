@@ -9,24 +9,24 @@ import Image from "next/image"
 
 const teamMembers = [
   {
-    name: "Emma Davis",
+    name: "Abdul Azeez P",
     role: "Founder & CEO",
-    image: "/placeholder.svg?height=300&width=300",
-    bio: "With 8 years in the toy industry, Junaid founded Cycles & Toys to bring quality and joy to families.",
+    image: "https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png",
+    bio: "With 8 years in the toy industry, Abdul Azeez founded Cycles & Toys to bring quality and joy to families.",
   },
   {
     name: "Junaid Babu TK",
     role: "Manager",
     image: "./assets/manager.jpeg",
-    bio: "With 8 years in the toy industry, Junaid founded Cycles & Toys to bring quality and joy to families.",
+    bio: "Junaid oversees daily operations and ensures our products meet the highest standards of quality and safety.",
   },
   {
     name: "Shamnad KP",
-    role: "Sales Excutive",
+    role: "Sales Executive",
     image: "./assets/sales.jpeg",
     bio: "Shamnad leads our customer service team and ensures every customer has an amazing experience.",
   },
-]
+];
 
 const milestones = [
   { year: "2017", event: "Store Founded", description: "We began with simple idea" },
