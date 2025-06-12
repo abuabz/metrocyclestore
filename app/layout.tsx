@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description: "Explore Metro Toy Store for premium cycles, educational toys, and fun essentials for kids of all ages.",
   applicationName: "Metro Toy Store",
   authors: [{ name: "Metro Toy Store Team", url: "https://metrotoystore.com" }],
-  keywords: ["toys", "kids cycles", "educational toys", "Metro Toy Store", "baby toys", "ride-ons"],
+  keywords: ["toys", "kids cycles", "educational toys", "Metro Toy Store", "baby toys", "ride-ons","padikkal","malappuram"],
   themeColor: "#ffffff",
   colorScheme: "light dark",
   creator: "Metro Toy Store",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     siteName: "Metro Toy Store",
     images: [
       {
-        url: "https://metrotoystore.com/Logomain.png", // replace with actual image path
+        url: "https://metrotoystore.com/Logomainblack.jpg", // replace with actual image path
         width: 1200,
         height: 630,
         alt: "Metro Toy Store",
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     title: "Metro Toy Store - Adventure Awaits!",
     description: "Cycles and educational toys crafted for children's growth and fun.",
     site: "@metrotoystore", // if you have a Twitter handle
-    images: ["https://metrotoystore.com/Logomain.png"], // replace with actual image path
+    images: ["https://metrotoystore.com/Logomainblack.jpg"], // replace with actual image path
   },
 
   alternates: {
