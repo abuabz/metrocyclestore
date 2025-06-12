@@ -19,9 +19,9 @@ export const metadata: Metadata = {
   publisher: "Metro Toy Store",
   metadataBase: new URL("https://metrotoystore.com"),
   icons: {
-    icon: "./Logomain.png", // or "/favicon.png" or "/favicon.svg"
-    shortcut: "./Logomain.png",
-    apple: "./Logomain.png", // if available
+    icon: "./LogomainFav.png", // or "/favicon.png" or "/favicon.svg"
+    shortcut: "./LogomainFav.png",
+    apple: "./LogomainFav.png", // if available
   },
   openGraph: {
     title: "Metro Toy Store - Adventure Awaits!",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     siteName: "Metro Toy Store",
     images: [
       {
-        url: "./Logomain.png", // replace with actual image path
+        url: "https://metrotoystore.com/Logomain.png", // replace with actual image path
         width: 1200,
         height: 630,
         alt: "Metro Toy Store",
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     title: "Metro Toy Store - Adventure Awaits!",
     description: "Cycles and educational toys crafted for children's growth and fun.",
     site: "@metrotoystore", // if you have a Twitter handle
-    images: ["./Logomain.png"], // replace with actual image path
+    images: ["https://metrotoystore.com/Logomain.png"], // replace with actual image path
   },
 
   alternates: {
