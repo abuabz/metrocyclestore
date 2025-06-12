@@ -18,7 +18,11 @@ export const metadata: Metadata = {
   creator: "Metro Toy Store",
   publisher: "Metro Toy Store",
   metadataBase: new URL("https://metrotoystore.com"),
-
+  icons: {
+    icon: "./Logomain.png", // or "/favicon.png" or "/favicon.svg"
+    shortcut: "./Logomain.png",
+    apple: "./Logomain.png", // if available
+  },
   openGraph: {
     title: "Metro Toy Store - Adventure Awaits!",
     description: "Discover our wide collection of cycles and toys for children of all ages.",
