@@ -192,6 +192,7 @@ export default function ProductsPage() {
     // Debounce the API call
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current)
+      setLoadingProducts(true) // Show loader during debounce
     }
     debounceTimer.current = setTimeout(() => {
       fetchProducts()
@@ -263,16 +264,94 @@ export default function ProductsPage() {
           display: flex;
           overflow-x: auto;
           gap: 0.5rem;
+          padding: 0.5rem 0;
         }
-        @media (min-width: 768px) {
-          .categories-container {
-            justify-content: flex-start;
+        .loader {
+          transform: rotateZ(45deg);
+          perspective: 1000px;
+          border-radius: 50%;
+          width: 48px;
+          height: 48px;
+          color: #fff;
+          margin: 0 auto;
+        }
+        .loader:before,
+        .loader:after {
+          content: '';
+          display: block;
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: inherit;
+          height: inherit;
+          border-radius: 50%;
+          transform: rotateX(70deg);
+          animation: 1s spin linear infinite;
+        }
+        .loader:after {
+          color: #ebb613;
+          transform: rotateY(70deg);
+          animation-delay: .4s;
+        }
+        
+        /* Products section loading container */
+        .products-loading-container {
+          // min-height: 400px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          // background: rgba(255, 255, 255, 0.5);
+          backdrop-filter: blur(3px);
+          border-radius: 12px;
+          margin: 2rem 0;
+        }
+        
+        .dark .products-loading-container {
+          background: rgba(0, 0, 0, 0.3);
+        }
+        
+        @keyframes rotate {
+          0% {
+            transform: translate(-50%, -50%) rotateZ(0deg);
+          }
+          100% {
+            transform: translate(-50%, -50%) rotateZ(360deg);
           }
         }
-        @media (max-width: 767px) {
-          .categories-container {
-            flex-wrap: wrap;
-            justify-content: center;
+        @keyframes rotateccw {
+          0% {
+            transform: translate(-50%, -50%) rotate(0deg);
+          }
+          100% {
+            transform: translate(-50%, -50%) rotate(-360deg);
+          }
+        }
+        @keyframes spin {
+          0%,
+          100% {
+            box-shadow: .2em 0px 0 0px currentcolor;
+          }
+          12% {
+            box-shadow: .2em .2em 0 0 currentcolor;
+          }
+          25% {
+            box-shadow: 0 .2em 0 0px currentcolor;
+          }
+          37% {
+            box-shadow: -.2em .2em 0 0 currentcolor;
+          }
+          50% {
+            box-shadow: -.2em 0 0 0 currentcolor;
+          }
+          62% {
+            box-shadow: -.2em -.2em 0 0 currentcolor;
+          }
+          75% {
+            box-shadow: 0px -.2em 0 0 currentcolor;
+          }
+          87% {
+            box-shadow: .2em -.2em 0 0 currentcolor;
           }
         }
       `}</style>
@@ -309,11 +388,13 @@ export default function ProductsPage() {
             </div>
             <div className="w-full md:w-1/2">
               {loadingCategories ? (
-                <p className="text-gray-600 dark:text-gray-400 text-center">Loading categories...</p>
+                <div className="text-center py-4">
+                  <span className="loader"></span>
+                </div>
               ) : categoryError ? (
                 <p className="text-red-500 text-center">{categoryError}</p>
               ) : (
-                <div className="categories-container scrollbar-hide py-2 px-2">
+                <div className="categories-container scrollbar-hide">
                   {categories.map((category) => (
                     <Button
                       key={category}
@@ -335,6 +416,8 @@ export default function ProductsPage() {
         </div>
       </section>
 
+
+
       {/* Products Grid */}
       <section
         id="products-grid"
@@ -344,65 +427,76 @@ export default function ProductsPage() {
         }`}
       >
         <div className="max-w-7xl mx-auto">
-          <div className="mb-6 text-center">
-            {loadingProducts ? (
-              <p className="text-gray-600 dark:text-gray-400 mobile-text-sm">Loading products...</p>
-            ) : productError ? (
-              <p className="text-red-500 mobile-text-sm">{productError}</p>
-            ) : (
-              <p className="text-gray-600 dark:text-gray-400 mobile-text-sm">
-                Showing {filteredProducts.length} of {totalProducts} products
-                {selectedCategory !== "All" && ` in ${selectedCategory}`}
-                {searchTerm && ` matching "${searchTerm}"`}
-              </p>
-            )}
-          </div>
+          {/* Only show product count when not loading */}
+          {!loadingProducts && (
+            <div className="mb-6 text-center">
+              {productError ? (
+                <p className="text-red-500 mobile-text-sm">{productError}</p>
+              ) : (
+                <p className="text-gray-600 dark:text-gray-400 mobile-text-sm">
+                  Showing {filteredProducts.length} of {totalProducts} products
+                  {selectedCategory !== "All" && ` in ${selectedCategory}`}
+                  {searchTerm && ` matching "${searchTerm}"`}
+                </p>
+              )}
+            </div>
+          )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map((product, index) => (
-              <Link key={product.id} href={`/products/${product.id}`}>
-                <Card
-                  className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 overflow-hidden cursor-pointer ${
-                    isVisible["products-grid"]
-                      ? `opacity-100 transform translate-y-0 transition-delay-[${index * 50}ms]`
-                      : "opacity-0 transform translate-y-8"
-                  }`}
-                >
-                  <CardContent className="p-0">
-                    <div className="relative overflow-hidden">
-                      <Image
-                        src={product.image || "/placeholder.svg"}
-                        alt={product.name}
-                        width={300}
-                        height={300}
-                        className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-base md:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 group-hover:text-yellow-500 transition-colors duration-300 line-clamp-2 mobile-text-sm">
-                        {product.name}
-                      </h3>
-                      <p className="line-clamp-2 overflow-hidden text-ellipsis">
-                        {product.description}
-                      </p>
-                      <div className="flex items-center justify-between mt-5">
-                        <div className="flex gap-2 items-center">
-                          <span className="text-xl flex items-center gap-3 md:text-2xl font-bold text-yellow-500 mobile-text-lg">
-                            ₹{product.price}
-                          </span>
-                          <span className="text-lg md:text-md text-gray-500 dark:text-gray-400 line-through mobile-text-base">
-                            ₹{product.originalPrice}
-                          </span>
-                        </div>
-                        <Badge className="bg-red-500 text-white">Save ₹{product.originalPrice - product.price}</Badge>
+          {/* Loading state for products */}
+          {loadingProducts ? (
+            <div className="products-loading-container">
+              <span className="loader"></span>
+              {/* <p className="mt-4 text-lg font-semibold text-gray-700 dark:text-gray-300">
+                Loading products...
+              </p> */}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredProducts.map((product, index) => (
+                <Link key={product.id} href={`/products/${product.id}`}>
+                  <Card
+                    className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 overflow-hidden cursor-pointer ${
+                      isVisible["products-grid"]
+                        ? `opacity-100 transform translate-y-0 transition-delay-[${index * 50}ms]`
+                        : "opacity-0 transform translate-y-8"
+                    }`}
+                  >
+                    <CardContent className="p-0">
+                      <div className="relative overflow-hidden">
+                        <Image
+                          src={product.image || "/placeholder.svg"}
+                          alt={product.name}
+                          width={300}
+                          height={300}
+                          className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
+                      <div className="p-4">
+                        <h3 className="text-base md:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 group-hover:text-yellow-500 transition-colors duration-300 line-clamp-2 mobile-text-sm">
+                          {product.name}
+                        </h3>
+                        <p className="line-clamp-2 overflow-hidden text-ellipsis">
+                          {product.description}
+                        </p>
+                        <div className="flex items-center justify-between mt-5">
+                          <div className="flex gap-2 items-center">
+                            <span className="text-xl flex items-center gap-3 md:text-2xl font-bold text-yellow-500 mobile-text-lg">
+                              ₹{product.price}
+                            </span>
+                            <span className="text-lg md:text-md text-gray-500 dark:text-gray-400 line-through mobile-text-base">
+                              ₹{product.originalPrice}
+                            </span>
+                          </div>
+                          <Badge className="bg-red-500 text-white">Save ₹{product.originalPrice - product.price}</Badge>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
 
           {filteredProducts.length === 0 && !loadingProducts && !productError && (
             <div className="text-center py-12">
