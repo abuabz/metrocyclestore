@@ -335,7 +335,7 @@ export default function HomePage() {
                   >
                     {slide.subtitle}
                   </p>
-                  <Button
+                  {/* <Button
                     size="lg"
                     className={`bg-gradient-to-r from-yellow-500 to-white-800 hover:from-yellow-600 hover:to-gray-50 px-8 py-4 text-lg text-black rounded-full transform transition-all duration-1000 delay-700 hover:scale-105 mobile-text-base ${index === currentSlide
                       ? "opacity-100 translate-y-0"
@@ -343,7 +343,7 @@ export default function HomePage() {
                       }`}
                   >
                     {slide.cta}
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             </div>
