@@ -51,6 +51,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://metrotoystore.com",
   },
+   other: {
+    "google-site-verification": "Hen8ccx2qHN1vNizAcnk-OR8ukf_h7trnTBR0_fQ5pI"
+  },
 }
 
 export default function RootLayout({
