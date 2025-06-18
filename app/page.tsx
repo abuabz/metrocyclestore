@@ -162,7 +162,7 @@ const services = [
   {
     icon: <Shield className="w-8 h-8" />,
     title: "Warranty",
-    description: "1-year warranty on all products",
+    description: "6 Month warranty on Limited products",
   },
 ];
 
