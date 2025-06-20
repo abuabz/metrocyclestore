@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { Star, Plus, Minus, ShoppingCart, Truck, Shield, RotateCcw, Award } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -162,6 +162,7 @@ const getAvailableOptions = (skuVariations: SkuVariation[]) => {
 export default function ProductDetailPage() {
   const params = useParams()
   const productId = params.id as string
+  const router = useRouter()
   const { addToCart, updateQuantity, removeFromCart, items } = useCart()
   const { toast } = useToast()
 
@@ -186,7 +187,7 @@ export default function ProductDetailPage() {
     [updateQuantity]
   )
 
-  // Fetch product data and variations
+  // Fetch product data
   const fetchProductData = async (skuId: string) => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/product-sku/${skuId}`)
@@ -462,6 +463,55 @@ export default function ProductDetailPage() {
     }
   }
 
+ const handleBuyNow = () => {
+  if (!product) return;
+
+  // Map selected variations to the format used in the cart
+  const variationDetails = variations.map((variation) => ({
+    name: variation.M08_name,
+    value:
+      variation.options.find((opt) => opt._id === selectedVariations[variation._id])?.M09_name || "",
+  }));
+
+  if (!product.inStock) {
+    // If product is out of stock, do nothing (button will be disabled)
+    return;
+  }
+
+  // Check if all variations are selected
+  const missingVariations = variations.filter(
+    (variation) => !selectedVariations[variation._id]
+  );
+  if (missingVariations.length > 0) {
+    toast({
+      description: `Please select a ${missingVariations[0].M08_name} option.`,
+      variant: "destructive",
+    });
+    return;
+  }
+
+  // Check if product is already in cart
+  const isCurrentlyInCart = items.some(
+    (item) =>
+      item.id === product.id &&
+      JSON.stringify(item.variations) === JSON.stringify(variationDetails)
+  );
+
+  if (!isCurrentlyInCart) {
+    // If product is not in cart, add it
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.images[0],
+      quantity: quantity,
+      variations: variationDetails,
+    });
+  }
+
+  // Navigate to cart regardless of whether it was just added or already in cart
+  router.push("/cart");
+};
   const getBadgeColor = (badge: string) => {
     switch (badge) {
       case "Best Seller":
@@ -559,8 +609,8 @@ export default function ProductDetailPage() {
                     key={index}
                     onClick={() => setSelectedImage(index)}
                     className={`relative overflow-hidden rounded-lg border-2 transition-all duration-300 ${selectedImage === index
-                        ? "border-yellow-500 scale-105"
-                        : "border-gray-200 dark:border-gray-700 hover:border-yellow-300"
+                      ? "border-yellow-500 scale-105"
+                      : "border-gray-200 dark:border-gray-700 hover:border-yellow-300"
                       }`}
                   >
                     <Image
@@ -625,8 +675,8 @@ export default function ProductDetailPage() {
                               onClick={() => handleVariationChange(variation._id, option._id)}
                               disabled={isDisabled}
                               className={`mobile-text-sm ${selectedVariations[variation._id] === option._id
-                                  ? "bg-yellow-500 text-white hover:bg-yellow-600"
-                                  : "border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                ? "bg-yellow-500 text-white hover:bg-yellow-600"
+                                : "border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
                                 } ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
                             >
                               {option.M09_name}
@@ -685,16 +735,28 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Add to Cart Button */}
-              <div className="space-y-3">
+              <div className="flex justify-center gap-3 md:gap-5 flex-col md:flex-row">
+                <Button
+                  onClick={handleBuyNow}
+                  disabled={!product.inStock}
+                  size="lg"
+                  className={`w-full py-4 text-base md:text-lg font-semibold rounded-lg transform hover:scale-105 transition-all duration-300 mobile-text-base ${!product.inStock
+                      ? "bg-red-100 text-red-600 hover:bg-red-100 cursor-not-allowed"
+                      : "bg-gradient-to-r from-yellow-500 to-white hover:from-yellow-600 hover:to-gray-300 text-black"
+                    }`}
+                >
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  Buy Now
+                </Button>
                 <Button
                   onClick={handleCartAction}
                   disabled={!product.inStock}
                   size="lg"
                   className={`w-full py-4 text-base md:text-lg font-semibold rounded-lg transform hover:scale-105 transition-all duration-300 mobile-text-base ${!product.inStock
-                      ? "bg-red-100 text-red-600 hover:bg-red-100 cursor-not-allowed"
-                      : isInCart
-                        ? "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white"
-                        : "bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white"
+                    ? "bg-red-100 text-red-600 hover:bg-red-100 cursor-not-allowed"
+                    : isInCart
+                      ? "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white"
+                      : "bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white"
                     }`}
                 >
                   <ShoppingCart className="w-5 h-5 mr-2" />
@@ -704,21 +766,6 @@ export default function ProductDetailPage() {
                       ? "Remove from Cart"
                       : `Add to Cart - ₹${(product.price * quantity).toFixed(2)}`}
                 </Button>
-
-                {/* <div className="grid grid-cols-3 gap-2 text-sm mobile-text-sm">
-                  <div className="flex items-center justify-center space-x-1 text-gray-600 dark:text-gray-400">
-                    <Truck className="w-4 h-4" />
-                    <span>Free Shipping</span>
-                  </div>
-                  <div className="flex items-center justify-center space-x-1 text-gray-600 dark:text-gray-400">
-                    <Shield className="w-4 h-4" />
-                    <span>1 Year Warranty</span>
-                  </div>
-                  <div className="flex items-center justify-center space-x-1 text-gray-600 dark:text-gray-400">
-                    <RotateCcw className="w-4 h-4" />
-                    <span>30 Day Returns</span>
-                  </div>
-                </div> */}
               </div>
             </div>
           </div>
@@ -740,8 +787,8 @@ export default function ProductDetailPage() {
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`pb-4 px-2 font-medium capitalize transition-all duration-300 mobile-text-sm ${activeTab === tab
-                    ? "text-yellow-600 dark:text-yellow-400 border-b-2 border-yellow-600 dark:border-yellow-400"
-                    : "text-gray-600 dark:text-gray-400 hover:text-yellow-600 dark:hover:text-yellow-400"
+                  ? "text-yellow-600 dark:text-yellow-400 border-b-2 border-yellow-600 dark:border-yellow-400"
+                  : "text-gray-600 dark:text-gray-400 hover:text-yellow-600 dark:hover:text-yellow-400"
                   }`}
               >
                 {tab}
