@@ -586,14 +586,14 @@ export default function ProductDetailPage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Product Images */}
-            <div className="space-y-4">
-              <div className="relative overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-lg">
+            <div className="space-y-4 flex flex-col justify-center items-center">
+              <div className="relative overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-lg w-[400px]">
                 <Image
                   src={product.images[selectedImage] || "/placeholder.svg"}
                   alt={product.name}
-                  width={600}
+                  width={400}
                   height={600}
-                  className="w-full h-96 object-cover"
+                  className="h-96 object-fit"
                 />
                 {product.badge && (
                   <Badge className={`absolute top-4 left-4 ${getBadgeColor(product.badge)} text-white border-0`}>
