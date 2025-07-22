@@ -467,8 +467,8 @@ export default function ProductsPage() {
                           src={product.image || "/placeholder.svg"}
                           alt={product.name}
                           width={300}
-                          height={300}
-                          className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                          height={400}
+                          className="w-full h-64 object-fit group-hover:scale-110 transition-transform duration-500"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </div>
@@ -481,14 +481,14 @@ export default function ProductsPage() {
                         </p>
                         <div className="flex items-center justify-between mt-5">
                           <div className="flex gap-2 items-center">
-                            <span className="text-xl flex items-center gap-3 md:text-2xl font-bold text-yellow-500 mobile-text-lg">
+                            <span className="text-lg flex items-center gap-3 md:text-lg font-bold text-yellow-500 mobile-text-lg">
                               ₹{product.price}
                             </span>
-                            <span className="text-lg md:text-md text-gray-500 dark:text-gray-400 line-through mobile-text-base">
+                            <span className="text-lg md:text-sm text-gray-500 dark:text-gray-400 line-through mobile-text-base">
                               ₹{product.originalPrice}
                             </span>
                           </div>
-                          <Badge className="bg-red-500 text-white">Save ₹{product.originalPrice - product.price}</Badge>
+                          <Badge className="bg-red-500 text-white ml-2 text-center">Save ₹{product.originalPrice - product.price}</Badge>
                         </div>
                       </div>
                     </CardContent>
