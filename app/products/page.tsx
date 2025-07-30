@@ -98,14 +98,26 @@ export default function ProductsPage() {
   const [isVisible, setIsVisible] = useState<Record<string, boolean>>({})
   const [loadingCategories, setLoadingCategories] = useState<boolean>(true)
   const [categoryError, setCategoryError] = useState<string | null>(null)
-  const [categoryMap, setCategoryMap] = useState<Map<string, string>>(new Map()) // Map category ID to name
-  const [categoryIdMap, setCategoryIdMap] = useState<Map<string, string>>(new Map()) // Map name to category ID
+  const [categoryMap, setCategoryMap] = useState<Map<string, string>>(new Map())
+  const [categoryIdMap, setCategoryIdMap] = useState<Map<string, string>>(new Map())
   const [loadingProducts, setLoadingProducts] = useState<boolean>(true)
   const [productError, setProductError] = useState<string | null>(null)
   const [totalProducts, setTotalProducts] = useState<number>(0)
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [totalPages, setTotalPages] = useState<number>(1)
+  const productsPerPage = 32
 
   // Ref to store the debounce timer
   const debounceTimer = useRef<NodeJS.Timeout | null>(null)
+
+  // Sync currentPage with URL query parameter
+  useEffect(() => {
+    const pageParam = searchParams.get("page")
+    const pageNumber = pageParam ? parseInt(pageParam, 10) : 1
+    if (!isNaN(pageNumber) && pageNumber !== currentPage) {
+      setCurrentPage(pageNumber)
+    }
+  }, [searchParams])
 
   // Fetch categories from API
   useEffect(() => {
@@ -142,7 +154,7 @@ export default function ProductsPage() {
     fetchCategories()
   }, [])
 
-  // Fetch products from API with debounced search
+  // Fetch products from API with debounced search and pagination
   useEffect(() => {
     const fetchProducts = async () => {
       setLoadingProducts(true)
@@ -151,6 +163,8 @@ export default function ProductsPage() {
         const categoryID = searchParams.get("categoryID")
         let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/product-sku`
         const queryParams = new URLSearchParams()
+        queryParams.append("page", currentPage.toString())
+        queryParams.append("limit", productsPerPage.toString())
         if (categoryID) {
           queryParams.append("categoryId", categoryID)
         }
@@ -170,20 +184,21 @@ export default function ProductsPage() {
             id: sku._id,
             name: sku.M06_product_sku_name,
             price: sku.M06_price,
-            category: "", // Not provided by API, will use client-side filtering
-            image: sku.M06_thumbnail_image,
-            rating: 5, // Static as not provided by API
-            reviews: 20, // Static as not provided by API
+            category: "",
+            image: sku.M06_thumbnail_image || "/placeholder.svg",
+            rating: 5,
+            reviews: 20,
             originalPrice: sku.M06_MRP,
-            description: sku.M06_description,
+            description: sku.M06_description || "No description available",
           }))
           setTotalProducts(data.data.pagination.totalItems)
+          setTotalPages(data.data.pagination.totalPages)
           setFilteredProducts(mappedProducts)
         } else {
           throw new Error(data.msg || 'API returned unsuccessful response')
         }
       } catch (err) {
-        setProductError(err instanceof Error ? err.message : 'An error occurred')
+        setProductError(err instanceof Error ? err.message : 'An error occurred while fetching products')
       } finally {
         setLoadingProducts(false)
       }
@@ -192,18 +207,18 @@ export default function ProductsPage() {
     // Debounce the API call
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current)
-      setLoadingProducts(true) // Show loader during debounce
+      setLoadingProducts(true)
     }
     debounceTimer.current = setTimeout(() => {
       fetchProducts()
-    }, 2000)
+    }, 500)
 
     return () => {
       if (debounceTimer.current) {
         clearTimeout(debounceTimer.current)
       }
     }
-  }, [searchParams, searchTerm])
+  }, [searchParams, searchTerm, currentPage])
 
   // Set active category based on URL query parameter
   useEffect(() => {
@@ -238,15 +253,28 @@ export default function ProductsPage() {
   // Handle category click to update URL and set active category
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category)
-    if (category === "All") {
-      // Remove categoryID from URL
-      router.push("/products")
-    } else {
-      // Add categoryID to URL
+    setCurrentPage(1)
+    const queryParams = new URLSearchParams()
+    if (category !== "All") {
       const categoryID = categoryIdMap.get(category)
       if (categoryID) {
-        router.push(`/products?categoryID=${categoryID}`)
+        queryParams.append("categoryID", categoryID)
       }
+    }
+    router.push(`/products?${queryParams.toString()}`)
+  }
+
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages && page !== currentPage) {
+      setCurrentPage(page)
+      const queryParams = new URLSearchParams()
+      const categoryID = searchParams.get("categoryID")
+      if (categoryID) {
+        queryParams.append("categoryID", categoryID)
+      }
+      queryParams.append("page", page.toString())
+      router.push(`/products?${queryParams.toString()}`)
     }
   }
 
@@ -257,8 +285,8 @@ export default function ProductsPage() {
           display: none;
         }
         .scrollbar-hide {
-          -ms-overflow-style: none; /* IE and Edge */
-          scrollbar-width: none; /* Firefox */
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
         .categories-container {
           display: flex;
@@ -293,24 +321,18 @@ export default function ProductsPage() {
           transform: rotateY(70deg);
           animation-delay: .4s;
         }
-        
-        /* Products section loading container */
         .products-loading-container {
-          // min-height: 400px;
           display: flex;
           align-items: center;
           justify-content: center;
           flex-direction: column;
-          // background: rgba(255, 255, 255, 0.5);
           backdrop-filter: blur(3px);
           border-radius: 12px;
           margin: 2rem 0;
         }
-        
         .dark .products-loading-container {
           background: rgba(0, 0, 0, 0.3);
         }
-        
         @keyframes rotate {
           0% {
             transform: translate(-50%, -50%) rotateZ(0deg);
@@ -416,8 +438,6 @@ export default function ProductsPage() {
         </div>
       </section>
 
-
-
       {/* Products Grid */}
       <section
         id="products-grid"
@@ -427,7 +447,7 @@ export default function ProductsPage() {
         }`}
       >
         <div className="max-w-7xl mx-auto">
-          {/* Only show product count when not loading */}
+          {/* Product count */}
           {!loadingProducts && (
             <div className="mb-6 text-center">
               {productError ? (
@@ -446,56 +466,93 @@ export default function ProductsPage() {
           {loadingProducts ? (
             <div className="products-loading-container">
               <span className="loader"></span>
-              {/* <p className="mt-4 text-lg font-semibold text-gray-700 dark:text-gray-300">
-                Loading products...
-              </p> */}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredProducts.map((product, index) => (
-                <Link key={product.id} href={`/products/${product.id}`}>
-                  <Card
-                    className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 overflow-hidden cursor-pointer ${
-                      isVisible["products-grid"]
-                        ? `opacity-100 transform translate-y-0 transition-delay-[${index * 50}ms]`
-                        : "opacity-0 transform translate-y-8"
-                    }`}
-                  >
-                    <CardContent className="p-0">
-                      <div className="relative overflow-hidden">
-                        <Image
-                          src={product.image || "/placeholder.svg"}
-                          alt={product.name}
-                          width={300}
-                          height={400}
-                          className="w-full h-64 object-fit group-hover:scale-110 transition-transform duration-500"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      </div>
-                      <div className="p-4">
-                        <h3 className="text-base md:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 group-hover:text-yellow-500 transition-colors duration-300 line-clamp-2 mobile-text-sm">
-                          {product.name}
-                        </h3>
-                        <p className="line-clamp-2 overflow-hidden text-ellipsis">
-                          {product.description}
-                        </p>
-                        <div className="flex items-center justify-between mt-5">
-                          <div className="flex gap-2 items-center">
-                            <span className="text-lg flex items-center gap-3 md:text-lg font-bold text-yellow-500 mobile-text-lg">
-                              ₹{product.price}
-                            </span>
-                            <span className="text-lg md:text-sm text-gray-500 dark:text-gray-400 line-through mobile-text-base">
-                              ₹{product.originalPrice}
-                            </span>
-                          </div>
-                          <Badge className="bg-red-500 text-white ml-2 text-center">Save ₹{product.originalPrice - product.price}</Badge>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredProducts.map((product, index) => (
+                  <Link key={product.id} href={`/products/${product.id}`}>
+                    <Card
+                      className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 overflow-hidden cursor-pointer ${
+                        isVisible["products-grid"]
+                          ? `opacity-100 transform translate-y-0 transition-delay-[${index * 50}ms]`
+                          : "opacity-0 transform translate-y-8"
+                      }`}
+                    >
+                      <CardContent className="p-0">
+                        <div className="relative overflow-hidden">
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            width={300}
+                            height={400}
+                            className="w-full h-64 object-fit group-hover:scale-110 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
+                        <div className="p-4">
+                          <h3 className="text-base md:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 group-hover:text-yellow-500 transition-colors duration-300 line-clamp-2 mobile-text-sm">
+                            {product.name}
+                          </h3>
+                          <p className="line-clamp-2 overflow-hidden text-ellipsis">
+                            {product.description}
+                          </p>
+                          <div className="flex items-center justify-between mt-5">
+                            <div className="flex gap-2 items-center">
+                              <span className="text-lg flex items-center gap-3 md:text-lg font-bold text-yellow-500 mobile-text-lg">
+                                ₹{product.price}
+                              </span>
+                              <span className="text-lg md:text-sm text-gray-500 dark:text-gray-400 line-through mobile-text-base">
+                                ₹{product.originalPrice}
+                              </span>
+                            </div>
+                            <Badge className="bg-red-500 text-white ml-2 text-center">
+                              Save ₹{product.originalPrice - product.price}
+                            </Badge>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="mt-8 flex justify-center items-center gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="border-yellow-200 dark:border-yellow-700 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20"
+                  >
+                    Previous
+                  </Button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "outline"}
+                      onClick={() => handlePageChange(page)}
+                      className={`${
+                        currentPage === page
+                          ? "bg-gradient-to-r from-yellow-500 to-white text-black"
+                          : "border-yellow-200 dark:border-yellow-700 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20"
+                      }`}
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                  <Button
+                    variant="outline"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="border-yellow-200 dark:border-yellow-700 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20"
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
+            </>
           )}
 
           {filteredProducts.length === 0 && !loadingProducts && !productError && (
@@ -507,7 +564,7 @@ export default function ProductsPage() {
                 No products found
               </h3>
               <p className="text-gray-500 dark:text-gray-500 mobile-text-sm">
-                Try adjusting your search or filter criteria
+                Try clearing your search term, selecting a different category, or checking your API data.
               </p>
             </div>
           )}
