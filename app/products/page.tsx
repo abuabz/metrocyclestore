@@ -145,7 +145,7 @@ export default function ProductsPage() {
           throw new Error(data.msg || 'API returned unsuccessful response')
         }
       } catch (err) {
-        setCategoryError(err instanceof Error ? err.message : 'An error occurred')
+        setCategoryError(err instanceof Error ? err.message : 'An error occurred while fetching categories')
       } finally {
         setLoadingCategories(false)
       }
@@ -174,21 +174,26 @@ export default function ProductsPage() {
         if (queryParams.toString()) {
           url += `?${queryParams.toString()}`
         }
+        console.log('Fetching products with URL:', url)
         const response = await fetch(url)
         if (!response.ok) {
-          throw new Error('Failed to fetch products')
+          throw new Error(`Failed to fetch products: ${response.status} ${response.statusText}`)
         }
         const data: ProductApiResponse = await response.json()
+        console.log('API response:', data)
         if (data.success) {
+          if (data.data.products_skus.length === 0) {
+            console.warn('No products returned in products_skus, but totalItems:', data.data.pagination.totalItems)
+          }
           const mappedProducts: Product[] = data.data.products_skus.map((sku) => ({
             id: sku._id,
-            name: sku.M06_product_sku_name,
-            price: sku.M06_price,
+            name: sku.M06_product_sku_name || "Unnamed Product",
+            price: sku.M06_price || 0,
             category: "",
             image: sku.M06_thumbnail_image || "/placeholder.svg",
             rating: 5,
             reviews: 20,
-            originalPrice: sku.M06_MRP,
+            originalPrice: sku.M06_MRP || sku.M06_price,
             description: sku.M06_description || "No description available",
           }))
           setTotalProducts(data.data.pagination.totalItems)
@@ -198,7 +203,9 @@ export default function ProductsPage() {
           throw new Error(data.msg || 'API returned unsuccessful response')
         }
       } catch (err) {
-        setProductError(err instanceof Error ? err.message : 'An error occurred while fetching products')
+        const errorMessage = err instanceof Error ? err.message : 'An error occurred while fetching products'
+        setProductError(errorMessage)
+        console.error('Product fetch error:', errorMessage)
       } finally {
         setLoadingProducts(false)
       }
@@ -564,7 +571,7 @@ export default function ProductsPage() {
                 No products found
               </h3>
               <p className="text-gray-500 dark:text-gray-500 mobile-text-sm">
-                Try clearing your search term, selecting a different category, or checking your API data.
+                No products were found for the selected category or search term. Try clearing your search term, selecting a different category, or verifying the API data for "Battery operated vehicles".
               </p>
             </div>
           )}
