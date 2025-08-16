@@ -73,6 +73,33 @@ interface GalleryApiResponse {
   data: GalleryItem[];
 }
 
+// Define interface for product category
+interface ProductCategory {
+  _id: string;
+  M04_category_name: string;
+  M04_image: string | null;
+  M04_is_active: number;
+  M04_deleted_at: string | null;
+  createdAt: string;
+  updatedAt: string;
+  M04_M04_parent_category_id: string | null;
+}
+
+interface CategoryApiResponse {
+  success: boolean;
+  msg: string;
+  data: {
+    productCategories: ProductCategory[];
+    pagination: {
+      currentPage: number;
+      totalPages: number;
+      totalItems: number;
+      limit: number;
+    };
+  };
+  statusCode: number;
+}
+
 // New Image Modal Component
 const ImageModal = ({
   isOpen,
@@ -181,9 +208,11 @@ export default function HomePage() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [featuredProducts, setFeaturedProducts] = useState<FeaturedProduct[]>([]);
-  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]); // State for gallery items
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [galleryError, setGalleryError] = useState<string | null>(null); // Separate error state for gallery
+  const [galleryError, setGalleryError] = useState<string | null>(null);
+  const [categoryError, setCategoryError] = useState<string | null>(null);
 
   // Fetch featured products from the API
   useEffect(() => {
@@ -222,7 +251,6 @@ export default function HomePage() {
         const result: GalleryApiResponse = await response.json();
 
         if (result.success) {
-          // Filter active items and take only the first 6
           const activeItems = result.data
             .filter((item) => item.M06_is_active === 1 && !item.M06_deleted_at)
             .slice(0, 6);
@@ -237,6 +265,33 @@ export default function HomePage() {
     };
 
     fetchGalleryItems();
+  }, []);
+
+  // Fetch categories from the API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/product-category?limit=30`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch product categories');
+        }
+        const data: CategoryApiResponse = await response.json();
+        if (data.success) {
+          const childCategories = data.data.productCategories.filter(
+            (category) => category.M04_M04_parent_category_id !== null
+          );
+          setCategories(childCategories);
+          setIsVisible((prev) => ({ ...prev, categories: true }));
+        } else {
+          throw new Error(data.msg || 'API returned unsuccessful response');
+        }
+      } catch (err: any) {
+        setCategoryError(err.message || 'Error fetching categories');
+        console.error("Error fetching categories:", err);
+      }
+    };
+
+    fetchCategories();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -301,12 +356,13 @@ export default function HomePage() {
         {heroSlides.map((slide, index) => (
           <div
             key={slide.id}
-            className={`absolute inset-0 transition-all duration-1000 ease-in-out ${index === currentSlide
-              ? "opacity-100 transform translate-x-0"
-              : index < currentSlide
+            className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
+              index === currentSlide
+                ? "opacity-100 transform translate-x-0"
+                : index < currentSlide
                 ? "opacity-0 transform -translate-x-full"
                 : "opacity-0 transform translate-x-full"
-              }`}
+            }`}
           >
             <div className="relative h-full">
               <Image
@@ -320,30 +376,23 @@ export default function HomePage() {
               <div className="absolute inset-0 flex items-center justify-center text-center text-white">
                 <div className="max-w-4xl px-4">
                   <h1
-                    className={`text-3xl md:text-5xl lg:text-7xl font-bold mb-6 transition-all duration-1000 delay-300 mobile-text-3xl ${index === currentSlide
-                      ? "opacity-100 transform translate-y-0"
-                      : "opacity-0 transform translate-y-8"
-                      }`}
+                    className={`text-3xl md:text-5xl lg:text-7xl font-bold mb-6 transition-all duration-1000 delay-300 mobile-text-3xl ${
+                      index === currentSlide
+                        ? "opacity-100 transform translate-y-0"
+                        : "opacity-0 transform translate-y-8"
+                    }`}
                   >
                     {slide.title}
                   </h1>
                   <p
-                    className={`text-lg md:text-xl lg:text-2xl mb-8 transition-all duration-1000 delay-500 mobile-text-lg ${index === currentSlide
-                      ? "opacity-100 transform translate-y-0"
-                      : "opacity-0 transform translate-y-8"
-                      }`}
+                    className={`text-lg md:text-xl lg:text-2xl mb-8 transition-all duration-1000 delay-500 mobile-text-lg ${
+                      index === currentSlide
+                        ? "opacity-100 transform translate-y-0"
+                        : "opacity-0 transform translate-y-8"
+                    }`}
                   >
                     {slide.subtitle}
                   </p>
-                  {/* <Button
-                    size="lg"
-                    className={`bg-gradient-to-r from-yellow-500 to-white-800 hover:from-yellow-600 hover:to-gray-50 px-8 py-4 text-lg text-black rounded-full transform transition-all duration-1000 delay-700 hover:scale-105 mobile-text-base ${index === currentSlide
-                      ? "opacity-100 translate-y-0"
-                      : "opacity-0 translate-y-8"
-                      }`}
-                  >
-                    {slide.cta}
-                  </Button> */}
                 </div>
               </div>
             </div>
@@ -368,10 +417,11 @@ export default function HomePage() {
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentSlide
-                ? "bg-white scale-125"
-                : "bg-white/50 hover:bg-white/75"
-                }`}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                index === currentSlide
+                  ? "bg-white scale-125"
+                  : "bg-white/50 hover:bg-white/75"
+              }`}
             />
           ))}
         </div>
@@ -381,21 +431,85 @@ export default function HomePage() {
       <section
         id="about-mini"
         data-animate
-        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${isVisible["about-mini"]
-          ? "opacity-100 transform translate-y-0"
-          : "opacity-0 transform translate-y-8"
-          }`}
+        className={`relative md:py-20 py-10 px-4 transition-all duration-1000 ${
+          isVisible["about-mini"]
+        ? "opacity-100 transform translate-y-0"
+        : "opacity-0 transform translate-y-8"
+        }`}
       >
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl md:text-4xl font-bold text-gray-800 dark:text-yellow-400 mb-6 bg-gradient-to-r from-yellow-500 to-red-500 bg-clip-text text-transparent mobile-text-2xl">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <Image
+        src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
+        alt="About background"
+        fill
+        className="object-cover opacity-30"
+        priority
+          />
+        </div>
+        <div className="relative z-10 flex justify-center">
+          <Card className="max-w-2xl w-full mx-auto bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-xl border-0 rounded-2xl p-8 flex flex-col items-center">
+        <CardContent className="p-0">
+          <h2 className="text-2xl md:text-4xl font-bold text-gray-800 dark:text-yellow-400 mb-4 bg-gradient-to-r from-yellow-500 to-red-500 bg-clip-text text-transparent mobile-text-2xl">
             Welcome to Cycles & Toys Paradise
           </h2>
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed mobile-text-base">
-            For over a decade, we've been bringing joy and adventure to families
-            through our carefully curated collection of premium cycles and
-            educational toys. Our mission is to inspire outdoor activities and
-            creative play for children of all ages.
+          <p className="text-lg md:text-xl text-gray-700 dark:text-gray-200 leading-relaxed mobile-text-base mb-2">
+            For over a decade, we've been bringing joy and adventure to families through our carefully curated collection of premium cycles and educational toys.
           </p>
+          <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 mobile-text-sm">
+            Our mission is to inspire outdoor activities and creative play for children of all ages.
+          </p>
+        </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* Categories */}
+      <section
+        id="categories"
+        data-animate
+        className={`py-8 px-2 transition-all duration-500 ${
+          isVisible["categories"]
+        ? "opacity-100 transform translate-y-0"
+        : "opacity-0 transform translate-y-4"
+        }`}
+      >
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 dark:text-gray-200 mb-6 mobile-text-xl">
+        Categories
+          </h2>
+          {categoryError ? (
+        <p className="text-center text-red-500 mb-4">{categoryError}</p>
+          ) : categories.length === 0 ? (
+        <p className="text-center text-gray-600 dark:text-gray-300">
+          Loading categories...
+        </p>
+          ) : (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {categories.map((category) => (
+            <Link
+          key={category._id}
+          href={`/products?categoryID=${category._id}`}
+          className="group"
+            >
+          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-300 rounded-lg overflow-hidden relative h-28 flex items-end justify-center">
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+            backgroundImage: `url(${category.M04_image || "/assets/placeholder.jpg"})`,
+            filter: "brightness(0.7)",
+              }}
+            />
+            <CardContent className="relative z-10 w-full flex justify-center items-center">
+              <span className="text-lg md:text-xl font-bold text-white text-center bg-black/40 px-2 py-1 rounded mobile-text-base">
+            {category.M04_category_name}
+              </span>
+            </CardContent>
+          </Card>
+            </Link>
+          ))}
+        </div>
+          )}
         </div>
       </section>
 
@@ -403,18 +517,17 @@ export default function HomePage() {
       <section
         id="featured-products"
         data-animate
-        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["featured-products"]
-          ? "opacity-100 transform translate-y-0"
-          : "opacity-0 transform translate-y-8"
-          }`}
+        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
+          isVisible["featured-products"]
+            ? "opacity-100 transform translate-y-0"
+            : "opacity-0 transform translate-y-8"
+        }`}
       >
         <div className="max-w-7xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-yellow-500 to-red-500 bg-clip-text text-transparent mobile-text-2xl">
             Featured Products
           </h2>
-          {error && (
-            <p className="text-center text-red-500 mb-4">{error}</p>
-          )}
+          {error && <p className="text-center text-red-500 mb-4">{error}</p>}
           {featuredProducts.length === 0 && !error && (
             <p className="text-center text-gray-600 dark:text-gray-300">
               Loading featured products...
@@ -425,10 +538,13 @@ export default function HomePage() {
               {featuredProducts.map((product, index) => (
                 <Link key={product.id} href={`/products/${product.id}`}>
                   <Card
-                    className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 overflow-hidden cursor-pointer flex flex-col h-full ${isVisible["featured-products"]
-                      ? `opacity-100 transform translate-y-0 transition-delay-[${index * 100}ms]`
-                      : "opacity-0 transform translate-y-8"
-                      }`}
+                    className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 overflow-hidden cursor-pointer flex flex-col h-full ${
+                      isVisible["featured-products"]
+                        ? `opacity-100 transform translate-y-0 transition-delay-[${
+                            index * 100
+                          }ms]`
+                        : "opacity-0 transform translate-y-8"
+                    }`}
                   >
                     <CardContent className="p-0 flex flex-col h-full">
                       <div className="relative overflow-hidden">
@@ -477,10 +593,11 @@ export default function HomePage() {
       <section
         id="services"
         data-animate
-        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${isVisible["services"]
-          ? "opacity-100 transform translate-y-0"
-          : "opacity-0 transform translate-y-8"
-          }`}
+        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${
+          isVisible["services"]
+            ? "opacity-100 transform translate-y-0"
+            : "opacity-0 transform translate-y-8"
+        }`}
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
@@ -490,10 +607,13 @@ export default function HomePage() {
             {services.map((service, index) => (
               <Card
                 key={index}
-                className={`text-center group hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-pink-50 dark:from-gray-800 dark:to-pink-900/20 ${isVisible["services"]
-                  ? `opacity-100 transform translate-y-0 transition-delay-[${index * 100}ms]`
-                  : "opacity-0 transform translate-y-8"
-                  }`}
+                className={`text-center group hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-pink-50 dark:from-gray-800 dark:to-pink-900/20 ${
+                  isVisible["services"]
+                    ? `opacity-100 transform translate-y-0 transition-delay-[${
+                        index * 100
+                      }ms]`
+                    : "opacity-0 transform translate-y-8"
+                }`}
               >
                 <CardContent className="p-8 cursor-pointer">
                   <div className="text-yellow-500 mb-4 group-hover:scale-110 transition-transform duration-300 flex justify-center">
@@ -516,10 +636,11 @@ export default function HomePage() {
       <section
         id="gallery"
         data-animate
-        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["gallery"]
-          ? "opacity-100 transform translate-y-0"
-          : "opacity-0 transform translate-y-8"
-          }`}
+        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
+          isVisible["gallery"]
+            ? "opacity-100 transform translate-y-0"
+            : "opacity-0 transform translate-y-8"
+        }`}
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
@@ -538,10 +659,13 @@ export default function HomePage() {
               {galleryItems.map((item, index) => (
                 <div
                   key={item._id}
-                  className={`${isVisible["gallery"]
-                    ? `opacity-100 transform scale-100 transition-delay-[${index * 100}ms]`
-                    : "opacity-0 transform scale-95"
-                    } transition-all duration-500`}
+                  className={`${
+                    isVisible["gallery"]
+                      ? `opacity-100 transform scale-100 transition-delay-[${
+                          index * 100
+                        }ms]`
+                      : "opacity-0 transform scale-95"
+                  } transition-all duration-500`}
                 >
                   {item.M06_media_type === "image" ? (
                     <div
@@ -565,7 +689,7 @@ export default function HomePage() {
                   ) : (
                     <VideoThumbnail
                       videoSrc={item.M06_media_url}
-                      thumbnailSrc={item?.M06_thumbnail} // Fallback thumbnail since API doesn't provide one
+                      thumbnailSrc={item?.M06_thumbnail}
                       title={`Gallery video ${index + 1}`}
                       onClick={() =>
                         setSelectedVideo({
@@ -586,10 +710,11 @@ export default function HomePage() {
       <section
         id="contact-form"
         data-animate
-        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${isVisible["contact-form"]
-          ? "opacity-100 transform translate-y-0"
-          : "opacity-0 transform translate-y-8"
-          }`}
+        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${
+          isVisible["contact-form"]
+            ? "opacity-100 transform translate-y-0"
+            : "opacity-0 transform translate-y-8"
+        }`}
       >
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
@@ -648,10 +773,11 @@ export default function HomePage() {
       <section
         id="map"
         data-animate
-        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["map"]
-          ? "opacity-100 transform translate-y-0"
-          : "opacity-0 transform translate-y-8"
-          }`}
+        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
+          isVisible["map"]
+            ? "opacity-100 transform translate-y-0"
+            : "opacity-0 transform translate-y-8"
+        }`}
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
@@ -747,7 +873,7 @@ export default function HomePage() {
         <Button
           size="lg"
           className="flex-1 bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300 mobile-text-base"
-          onClick={() => window.open('https://wa.me/+918714583859', '_blank')}
+          onClick={() => window.open("https://wa.me/+918714583859", "_blank")}
         >
           <MessageCircle className="w-6 h-6" />
         </Button>

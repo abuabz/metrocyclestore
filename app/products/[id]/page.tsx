@@ -706,7 +706,7 @@ export default function ProductDetailPage() {
                 )}
               </div>
 
-              <p className="pe-5 text-gray-200">
+              <p className="pe-5 text-gray-200 line-clamp-5 hover:line-clamp-none transition-all duration-300 mobile-text-sm">
                 {product?.description}
               </p>
 
