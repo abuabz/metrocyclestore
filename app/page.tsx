@@ -25,6 +25,7 @@ import Footer from "@/components/footer";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import SeasonalSaleModal from "@/components/SeasonalSaleModal";
 
 // Define interface for the featured product based on API response
 interface FeaturedProduct {
@@ -100,7 +101,7 @@ interface CategoryApiResponse {
   statusCode: number;
 }
 
-// New Image Modal Component
+// Image Modal Component
 const ImageModal = ({
   isOpen,
   onClose,
@@ -120,8 +121,22 @@ const ImageModal = ({
         <button
           onClick={onClose}
           className="absolute top-2 right-2 text-white bg-gray-800/70 hover:bg-gray-800 rounded-full p-2"
+          aria-label="Close modal"
         >
-          ✕
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
         </button>
         <Image
           src={imageSrc || "/placeholder.svg"}
@@ -168,6 +183,14 @@ const heroSlides = [
       "https://t3.ftcdn.net/jpg/02/68/62/42/360_F_268624278_8BbMAUszsyvayoNVnRvgfJoodkqLoxDn.jpg",
     cta: "Get Deals",
   },
+  {
+    id: 5,
+    title: "Safety First",
+    subtitle: "Helmets and safety gear for all ages",
+    image:
+      "https://images.pexels.com/photos/100582/pexels-photo-100582.jpeg?cs=srgb&dl=pexels-pixabay-100582.jpg&fm=jpg",
+    cta: "Shop Safety Gear",
+  },
 ];
 
 const services = [
@@ -193,6 +216,14 @@ const services = [
   },
 ];
 
+const saleData = {
+  imageSrc: "./assets/onamoffer.jpeg",
+  title: "Seasonal Sale Extravaganza!",
+  description: "Up to 40% Off on Cycles, Toys, and Safety Gear",
+  buttonLink: "/products",
+  buttonText: "Shop Now",
+};
+
 export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isVisible, setIsVisible] = useState<Record<string, boolean>>({});
@@ -204,6 +235,7 @@ export default function HomePage() {
     src: string;
     alt: string;
   } | null>(null);
+  const [isSaleModalOpen, setIsSaleModalOpen] = useState(true); // Auto-open modal
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -433,33 +465,32 @@ export default function HomePage() {
         data-animate
         className={`relative md:py-20 py-10 px-4 transition-all duration-1000 ${
           isVisible["about-mini"]
-        ? "opacity-100 transform translate-y-0"
-        : "opacity-0 transform translate-y-8"
+            ? "opacity-100 transform translate-y-0"
+            : "opacity-0 transform translate-y-8"
         }`}
       >
-        {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <Image
-        src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
-        alt="About background"
-        fill
-        className="object-cover opacity-30"
-        priority
+            src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
+            alt="About background"
+            fill
+            className="object-cover opacity-30"
+            priority
           />
         </div>
         <div className="relative z-10 flex justify-center">
           <Card className="max-w-2xl w-full mx-auto bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-xl border-0 rounded-2xl p-8 flex flex-col items-center">
-        <CardContent className="p-0">
-          <h2 className="text-2xl md:text-4xl font-bold text-gray-800 dark:text-yellow-400 mb-4 bg-gradient-to-r from-yellow-500 to-red-500 bg-clip-text text-transparent mobile-text-2xl">
-            Welcome to Cycles & Toys Paradise
-          </h2>
-          <p className="text-lg md:text-xl text-gray-700 dark:text-gray-200 leading-relaxed mobile-text-base mb-2">
-            For over a decade, we've been bringing joy and adventure to families through our carefully curated collection of premium cycles and educational toys.
-          </p>
-          <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 mobile-text-sm">
-            Our mission is to inspire outdoor activities and creative play for children of all ages.
-          </p>
-        </CardContent>
+            <CardContent className="p-0">
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-800 dark:text-yellow-400 mb-4 bg-gradient-to-r from-yellow-500 to-red-500 bg-clip-text text-transparent mobile-text-2xl">
+                Welcome to Cycles & Toys Paradise
+              </h2>
+              <p className="text-lg md:text-xl text-gray-700 dark:text-gray-200 leading-relaxed mobile-text-base mb-2">
+                For over a decade, we've been bringing joy and adventure to families through our carefully curated collection of premium cycles and educational toys.
+              </p>
+              <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 mobile-text-sm">
+                Our mission is to inspire outdoor activities and creative play for children of all ages.
+              </p>
+            </CardContent>
           </Card>
         </div>
       </section>
@@ -470,45 +501,45 @@ export default function HomePage() {
         data-animate
         className={`py-8 px-2 transition-all duration-500 ${
           isVisible["categories"]
-        ? "opacity-100 transform translate-y-0"
-        : "opacity-0 transform translate-y-4"
+            ? "opacity-100 transform translate-y-0"
+            : "opacity-0 transform translate-y-4"
         }`}
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 dark:text-gray-200 mb-6 mobile-text-xl">
-        Categories
+            Categories
           </h2>
           {categoryError ? (
-        <p className="text-center text-red-500 mb-4">{categoryError}</p>
+            <p className="text-center text-red-500 mb-4">{categoryError}</p>
           ) : categories.length === 0 ? (
-        <p className="text-center text-gray-600 dark:text-gray-300">
-          Loading categories...
-        </p>
+            <p className="text-center text-gray-600 dark:text-gray-300">
+              Loading categories...
+            </p>
           ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {categories.map((category) => (
-            <Link
-          key={category._id}
-          href={`/products?categoryID=${category._id}`}
-          className="group"
-            >
-          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-300 rounded-lg overflow-hidden relative h-28 flex items-end justify-center">
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{
-            backgroundImage: `url(${category.M04_image || "/assets/placeholder.jpg"})`,
-            filter: "brightness(0.7)",
-              }}
-            />
-            <CardContent className="relative z-10 w-full flex justify-center items-center">
-              <span className="text-lg md:text-xl font-bold text-white text-center bg-black/40 px-2 py-1 rounded mobile-text-base">
-            {category.M04_category_name}
-              </span>
-            </CardContent>
-          </Card>
-            </Link>
-          ))}
-        </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {categories.map((category) => (
+                <Link
+                  key={category._id}
+                  href={`/products?categoryID=${category._id}`}
+                  className="group"
+                >
+                  <Card className="border-0 shadow-sm hover:shadow-md transition-shadow duration-300 rounded-lg overflow-hidden relative h-28 flex items-end justify-center">
+                    <div
+                      className="absolute inset-0 bg-cover bg-center"
+                      style={{
+                        backgroundImage: `url(${category.M04_image || "/assets/placeholder.jpg"})`,
+                        filter: "brightness(0.7)",
+                      }}
+                    />
+                    <CardContent className="relative z-10 w-full flex justify-center items-center">
+                      <span className="text-lg md:text-xl font-bold text-white text-center bg-black/40 px-2 py-1 rounded mobile-text-base">
+                        {category.M04_category_name}
+                      </span>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
           )}
         </div>
       </section>
@@ -867,6 +898,11 @@ export default function HomePage() {
         onClose={() => setSelectedImage(null)}
         imageSrc={selectedImage?.src || ""}
         alt={selectedImage?.alt || ""}
+      />
+      <SeasonalSaleModal
+        isOpen={isSaleModalOpen}
+        onClose={() => setIsSaleModalOpen(false)}
+        saleData={saleData}
       />
 
       <div className="fixed bottom-6 right-6 flex flex-col space-y-3 z-50">
