@@ -388,13 +388,12 @@ export default function HomePage() {
         {heroSlides.map((slide, index) => (
           <div
             key={slide.id}
-            className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
-              index === currentSlide
+            className={`absolute inset-0 transition-all duration-1000 ease-in-out ${index === currentSlide
                 ? "opacity-100 transform translate-x-0"
                 : index < currentSlide
-                ? "opacity-0 transform -translate-x-full"
-                : "opacity-0 transform translate-x-full"
-            }`}
+                  ? "opacity-0 transform -translate-x-full"
+                  : "opacity-0 transform translate-x-full"
+              }`}
           >
             <div className="relative h-full">
               <Image
@@ -408,20 +407,18 @@ export default function HomePage() {
               <div className="absolute inset-0 flex items-center justify-center text-center text-white">
                 <div className="max-w-4xl px-4">
                   <h1
-                    className={`text-3xl md:text-5xl lg:text-7xl font-bold mb-6 transition-all duration-1000 delay-300 mobile-text-3xl ${
-                      index === currentSlide
+                    className={`text-3xl md:text-5xl lg:text-7xl font-bold mb-6 transition-all duration-1000 delay-300 mobile-text-3xl ${index === currentSlide
                         ? "opacity-100 transform translate-y-0"
                         : "opacity-0 transform translate-y-8"
-                    }`}
+                      }`}
                   >
                     {slide.title}
                   </h1>
                   <p
-                    className={`text-lg md:text-xl lg:text-2xl mb-8 transition-all duration-1000 delay-500 mobile-text-lg ${
-                      index === currentSlide
+                    className={`text-lg md:text-xl lg:text-2xl mb-8 transition-all duration-1000 delay-500 mobile-text-lg ${index === currentSlide
                         ? "opacity-100 transform translate-y-0"
                         : "opacity-0 transform translate-y-8"
-                    }`}
+                      }`}
                   >
                     {slide.subtitle}
                   </p>
@@ -449,11 +446,10 @@ export default function HomePage() {
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index === currentSlide
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentSlide
                   ? "bg-white scale-125"
                   : "bg-white/50 hover:bg-white/75"
-              }`}
+                }`}
             />
           ))}
         </div>
@@ -463,11 +459,10 @@ export default function HomePage() {
       <section
         id="about-mini"
         data-animate
-        className={`relative md:py-20 py-10 px-4 transition-all duration-1000 ${
-          isVisible["about-mini"]
+        className={`relative md:py-20 py-10 px-4 transition-all duration-1000 ${isVisible["about-mini"]
             ? "opacity-100 transform translate-y-0"
             : "opacity-0 transform translate-y-8"
-        }`}
+          }`}
       >
         <div className="absolute inset-0 z-0">
           <Image
@@ -499,11 +494,10 @@ export default function HomePage() {
       <section
         id="categories"
         data-animate
-        className={`py-8 px-2 transition-all duration-500 ${
-          isVisible["categories"]
+        className={`py-8 px-2 transition-all duration-500 ${isVisible["categories"]
             ? "opacity-100 transform translate-y-0"
             : "opacity-0 transform translate-y-4"
-        }`}
+          }`}
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 dark:text-gray-200 mb-6 mobile-text-xl">
@@ -548,11 +542,10 @@ export default function HomePage() {
       <section
         id="featured-products"
         data-animate
-        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
-          isVisible["featured-products"]
+        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["featured-products"]
             ? "opacity-100 transform translate-y-0"
             : "opacity-0 transform translate-y-8"
-        }`}
+          }`}
       >
         <div className="max-w-7xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-yellow-500 to-red-500 bg-clip-text text-transparent mobile-text-2xl">
@@ -569,46 +562,65 @@ export default function HomePage() {
               {featuredProducts.map((product, index) => (
                 <Link key={product.id} href={`/products/${product.id}`}>
                   <Card
-                    className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 overflow-hidden cursor-pointer flex flex-col h-full ${
-                      isVisible["featured-products"]
-                        ? `opacity-100 transform translate-y-0 transition-delay-[${
-                            index * 100
-                          }ms]`
+                    className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 overflow-hidden cursor-pointer flex flex-col h-full ${isVisible["featured-products"]
+                        ? `opacity-100 transform translate-y-0 transition-delay-[${index * 100
+                        }ms]`
                         : "opacity-0 transform translate-y-8"
-                    }`}
+                      }`}
                   >
                     <CardContent className="p-0 flex flex-col h-full">
-                      <div className="relative overflow-hidden">
-                        <Image
-                          src={product.image || "/placeholder.svg"}
-                          alt={product.name}
-                          width={300}
-                          height={400}
-                          className="w-full h-64 object-fit group-hover:scale-110 transition-transform duration-500"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      </div>
-                      <div className="p-6 flex flex-col flex-grow">
-                        <h3 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-yellow-200 mb-2 group-hover:text-yellow-500 transition-colors duration-300 mobile-text-base">
-                          {product.name}
-                        </h3>
-                        <div className="mb-4 h-12">
-                          <p className="dark:text-gray-300 text-gray-800 line-clamp-2 overflow-hidden text-ellipsis">
-                            {product.description}
-                          </p>
-                        </div>
-                        <div className="flex items-center justify-between mt-auto">
-                          <div className="flex gap-2 items-center">
-                            <span className="text-xl flex items-center gap-3 md:text-xl font-bold text-yellow-500 mobile-text-lg">
-                              ₹{product.price}
-                            </span>
-                            <span className="text-base md:text-base text-gray-500 dark:text-gray-400 line-through mobile-text-base">
-                              ₹{product.originalPrice}
-                            </span>
-                          </div>
-                          <Badge className="bg-red-500 text-white">
+                      {/* Responsive layout: image left, content right on mobile */}
+                      <div className="flex flex-row md:flex-col h-full">
+                        <div className="w-2/5 md:w-full flex-shrink-0 relative">
+                          {/* Save Button on image left top */}
+                          <Badge className="absolute top-2 left-2 z-10 bg-red-500 text-white px-3 py-1 rounded shadow">
                             Save ₹{product.originalPrice - product.price}
                           </Badge>
+                          <div className="relative h-full">
+                            <Image
+                              src={product.image || "/placeholder.svg"}
+                              alt={product.name}
+                              width={300}
+                              height={400}
+                              className="w-full h-40 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          </div>
+                        </div>
+                        <div className="w-3/5 md:w-full flex flex-col p-4 md:p-6 flex-grow">
+                          <h3 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-yellow-200 mb-2 group-hover:text-yellow-500 transition-colors duration-300 mobile-text-base">
+                            {product.name}
+                          </h3>
+                          <div className="flex items-center gap-1 mb-2">
+                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                            <Star className="w-4 h-4 text-yellow-400" style={{ fill: "url(#half)" }} />
+                            <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">4.5</span>
+                            {/* SVG gradient for half star */}
+                            <svg width="0" height="0">
+                              <linearGradient id="half">
+                                <stop offset="50%" stopColor="#facc15" />
+                                <stop offset="50%" stopColor="transparent" />
+                              </linearGradient>
+                            </svg>
+                          </div>
+                          <div className="mb-4 h-12">
+                            <p className="dark:text-gray-300 text-gray-800 line-clamp-2 overflow-hidden text-ellipsis">
+                              {product.description}
+                            </p>
+                          </div>
+                          <div className="flex items-center justify-between mt-auto">
+                            <div className="flex gap-2 items-center">
+                              <span className="text-xl flex items-center gap-3 md:text-xl font-bold text-yellow-500 mobile-text-lg">
+                                ₹{product.price}
+                              </span>
+                              <span className="text-base md:text-base text-gray-500 dark:text-gray-400 line-through mobile-text-base">
+                                ₹{product.originalPrice}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -624,11 +636,10 @@ export default function HomePage() {
       <section
         id="services"
         data-animate
-        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${
-          isVisible["services"]
+        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${isVisible["services"]
             ? "opacity-100 transform translate-y-0"
             : "opacity-0 transform translate-y-8"
-        }`}
+          }`}
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
@@ -638,13 +649,11 @@ export default function HomePage() {
             {services.map((service, index) => (
               <Card
                 key={index}
-                className={`text-center group hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-pink-50 dark:from-gray-800 dark:to-pink-900/20 ${
-                  isVisible["services"]
-                    ? `opacity-100 transform translate-y-0 transition-delay-[${
-                        index * 100
-                      }ms]`
+                className={`text-center group hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-pink-50 dark:from-gray-800 dark:to-pink-900/20 ${isVisible["services"]
+                    ? `opacity-100 transform translate-y-0 transition-delay-[${index * 100
+                    }ms]`
                     : "opacity-0 transform translate-y-8"
-                }`}
+                  }`}
               >
                 <CardContent className="p-8 cursor-pointer">
                   <div className="text-yellow-500 mb-4 group-hover:scale-110 transition-transform duration-300 flex justify-center">
@@ -667,11 +676,10 @@ export default function HomePage() {
       <section
         id="gallery"
         data-animate
-        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
-          isVisible["gallery"]
+        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["gallery"]
             ? "opacity-100 transform translate-y-0"
             : "opacity-0 transform translate-y-8"
-        }`}
+          }`}
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
@@ -690,13 +698,11 @@ export default function HomePage() {
               {galleryItems.map((item, index) => (
                 <div
                   key={item._id}
-                  className={`${
-                    isVisible["gallery"]
-                      ? `opacity-100 transform scale-100 transition-delay-[${
-                          index * 100
-                        }ms]`
+                  className={`${isVisible["gallery"]
+                      ? `opacity-100 transform scale-100 transition-delay-[${index * 100
+                      }ms]`
                       : "opacity-0 transform scale-95"
-                  } transition-all duration-500`}
+                    } transition-all duration-500`}
                 >
                   {item.M06_media_type === "image" ? (
                     <div
@@ -741,11 +747,10 @@ export default function HomePage() {
       <section
         id="contact-form"
         data-animate
-        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${
-          isVisible["contact-form"]
+        className={`md:py-20 py-10 px-4 transition-all duration-1000 ${isVisible["contact-form"]
             ? "opacity-100 transform translate-y-0"
             : "opacity-0 transform translate-y-8"
-        }`}
+          }`}
       >
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
@@ -804,11 +809,10 @@ export default function HomePage() {
       <section
         id="map"
         data-animate
-        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${
-          isVisible["map"]
+        className={`md:py-20 py-10 px-4 bg-white/50 dark:bg-gray-800/50 transition-all duration-1000 ${isVisible["map"]
             ? "opacity-100 transform translate-y-0"
             : "opacity-0 transform translate-y-8"
-        }`}
+          }`}
       >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mobile-text-2xl">
@@ -899,11 +903,11 @@ export default function HomePage() {
         imageSrc={selectedImage?.src || ""}
         alt={selectedImage?.alt || ""}
       />
-      <SeasonalSaleModal
+      {/* <SeasonalSaleModal
         isOpen={isSaleModalOpen}
         onClose={() => setIsSaleModalOpen(false)}
         saleData={saleData}
-      />
+      /> */}
 
       <div className="fixed bottom-6 right-6 flex flex-col space-y-3 z-50">
         <Button

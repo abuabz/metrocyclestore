@@ -480,44 +480,66 @@ export default function ProductsPage() {
                 {filteredProducts.map((product, index) => (
                   <Link key={product.id} href={`/products/${product.id}`}>
                     <Card
-                      className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 overflow-hidden cursor-pointer ${
-                        isVisible["products-grid"]
-                          ? `opacity-100 transform translate-y-0 transition-delay-[${index * 50}ms]`
-                          : "opacity-0 transform translate-y-8"
+                      className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 overflow-hidden cursor-pointer flex flex-col h-full ${
+                      isVisible["products-grid"]
+                        ? `opacity-100 transform translate-y-0 transition-delay-[${index * 50}ms]`
+                        : "opacity-0 transform translate-y-8"
                       }`}
                     >
-                      <CardContent className="p-0">
-                        <div className="relative overflow-hidden">
+                      <CardContent className="p-0 flex flex-col h-full">
+                      <div className="flex flex-row md:flex-col h-full">
+                        <div className="w-2/5 md:w-full flex-shrink-0 relative">
+                        <Badge className="absolute top-2 left-2 z-10 bg-red-500 text-white px-3 py-1 rounded shadow">
+                          Save ₹{product.originalPrice - product.price}
+                        </Badge>
+                        <div className="relative h-full">
                           <Image
-                            src={product.image}
-                            alt={product.name}
-                            width={300}
-                            height={400}
-                            className="w-full h-64 object-fit group-hover:scale-110 transition-transform duration-500"
+                          src={product.image || "/placeholder.svg"}
+                          alt={product.name}
+                          width={300}
+                          height={400}
+                          className="w-full h-40 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         </div>
-                        <div className="p-4">
-                          <h3 className="text-base md:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 group-hover:text-yellow-500 transition-colors duration-300 line-clamp-2 mobile-text-sm">
-                            {product.name}
-                          </h3>
-                          <p className="line-clamp-2 overflow-hidden text-ellipsis">
-                            {product.description}
+                        </div>
+                        <div className="w-3/5 md:w-full flex flex-col p-4 md:p-6 flex-grow">
+                        <h3 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-yellow-200 mb-2 group-hover:text-yellow-500 transition-colors duration-300 mobile-text-base">
+                          {product.name}
+                        </h3>
+                        {/* Rating stars */}
+                        <div className="flex items-center gap-1 mb-2">
+                          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                          <Star className="w-4 h-4 text-yellow-400" style={{ fill: "url(#half)" }} />
+                          <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">4.5</span>
+                          {/* SVG gradient for half star */}
+                          <svg width="0" height="0">
+                          <linearGradient id="half">
+                            <stop offset="50%" stopColor="#facc15" />
+                            <stop offset="50%" stopColor="transparent" />
+                          </linearGradient>
+                          </svg>
+                        </div>
+                        <div className="mb-4 h-12">
+                          <p className="dark:text-gray-300 text-gray-800 line-clamp-2 overflow-hidden text-ellipsis">
+                          {product.description}
                           </p>
-                          <div className="flex items-center justify-between mt-5">
-                            <div className="flex gap-2 items-center">
-                              <span className="text-lg flex items-center gap-3 md:text-lg font-bold text-yellow-500 mobile-text-lg">
-                                ₹{product.price}
-                              </span>
-                              <span className="text-lg md:text-sm text-gray-500 dark:text-gray-400 line-through mobile-text-base">
-                                ₹{product.originalPrice}
-                              </span>
-                            </div>
-                            <Badge className="bg-red-500 text-white ml-2 text-center">
-                              Save ₹{product.originalPrice - product.price}
-                            </Badge>
+                        </div>
+                        <div className="flex items-center justify-between mt-auto">
+                          <div className="flex gap-2 items-center">
+                          <span className="text-xl flex items-center gap-3 md:text-xl font-bold text-yellow-500 mobile-text-lg">
+                            ₹{product.price}
+                          </span>
+                          <span className="text-base md:text-base text-gray-500 dark:text-gray-400 line-through mobile-text-base">
+                            ₹{product.originalPrice}
+                          </span>
                           </div>
                         </div>
+                        </div>
+                      </div>
                       </CardContent>
                     </Card>
                   </Link>
