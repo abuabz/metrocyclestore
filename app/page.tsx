@@ -477,13 +477,13 @@ export default function HomePage() {
           <Card className="max-w-2xl w-full mx-auto bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-xl border-0 rounded-2xl p-8 flex flex-col items-center">
             <CardContent className="p-0">
               <h2 className="text-2xl md:text-4xl font-bold text-gray-800 dark:text-yellow-400 mb-4 bg-gradient-to-r from-yellow-500 to-red-500 bg-clip-text text-transparent mobile-text-2xl">
-                Welcome to Cycles & Toys Paradise
+               Hy all,
               </h2>
               <p className="text-lg md:text-xl text-gray-700 dark:text-gray-200 leading-relaxed mobile-text-base mb-2">
-                For over a decade, we've been bringing joy and adventure to families through our carefully curated collection of premium cycles and educational toys.
+                Elevate the way they play. We specialize in premium toys and gifts that bridge the gap between imagination and adventure. By focusing on outdoor activity and creative development, we help children of all ages trade screen time for dream time.
               </p>
               <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 mobile-text-sm">
-                Our mission is to inspire outdoor activities and creative play for children of all ages.
+                Discover high-quality playthings delivered straight to your door—because every child deserves a childhood full of magic.
               </p>
             </CardContent>
           </Card>

@@ -593,7 +593,7 @@ export default function ProductDetailPage() {
                   alt={product.name}
                   width={400}
                   height={600}
-                  className="h-96 object-fit"
+                  className="h-96 object-contain"
                 />
                 {product.badge && (
                   <Badge className={`absolute top-4 left-4 ${getBadgeColor(product.badge)} text-white border-0`}>
