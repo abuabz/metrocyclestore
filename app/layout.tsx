@@ -1,20 +1,24 @@
 import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import ToastProvider from "@/components/toast-provider"
+import { ProductProvider } from "@/context/product-context"
 
 const inter = Inter({ subsets: ["latin"] })
+
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
+  colorScheme: "light dark",
+}
 
 export const metadata: Metadata = {
   title: "Metrotoys - Cycles & Toys for Every Age",
   description: "Explore Metro Toy Store for premium cycles, educational toys, and fun essentials for kids of all ages.",
   applicationName: "Metro Toy Store",
   authors: [{ name: "Metro Toy Store Team", url: "https://metrotoystore.com" }],
-  keywords: ["toys", "kids cycles", "educational toys", "Metro Toy Store", "baby toys", "ride-ons","padikkal","malappuram"],
-  themeColor: "#ffffff",
-  colorScheme: "light dark",
+  keywords: ["toys", "kids cycles", "educational toys", "Metro Toy Store", "baby toys", "ride-ons", "padikkal", "malappuram"],
   creator: "Metro Toy Store",
   publisher: "Metro Toy Store",
   metadataBase: new URL("https://metrotoystore.com"),
@@ -51,7 +55,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://metrotoystore.com",
   },
-   other: {
+  other: {
     "google-site-verification": "Hen8ccx2qHN1vNizAcnk-OR8ukf_h7trnTBR0_fQ5pI"
   },
 }
@@ -70,8 +74,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <ToastProvider />
+          <ProductProvider>
+            {children}
+            <ToastProvider />
+          </ProductProvider>
         </ThemeProvider>
       </body>
     </html>

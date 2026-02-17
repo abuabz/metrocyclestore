@@ -1,16 +1,17 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Search, Filter, Star } from "lucide-react"
+import { Search, Filter, Star, ArrowRight, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import Header from "@/components/header"
+import Header from "@/components/light-header"
 import Footer from "@/components/footer"
 import Image from "next/image"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
+import ScrollReveal from "@/components/ui/scroll-reveal"
 
 // Define interfaces for category API response
 interface ProductCategory {
@@ -95,7 +96,6 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [searchTerm, setSearchTerm] = useState("")
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
-  const [isVisible, setIsVisible] = useState<Record<string, boolean>>({})
   const [loadingCategories, setLoadingCategories] = useState<boolean>(true)
   const [categoryError, setCategoryError] = useState<string | null>(null)
   const [categoryMap, setCategoryMap] = useState<Map<string, string>>(new Map())
@@ -110,12 +110,18 @@ export default function ProductsPage() {
   // Ref to store the debounce timer
   const debounceTimer = useRef<NodeJS.Timeout | null>(null)
 
-  // Sync currentPage with URL query parameter
+  // Sync currentPage and searchTerm with URL query parameter
   useEffect(() => {
     const pageParam = searchParams.get("page")
+    const searchParam = searchParams.get("search")
+
     const pageNumber = pageParam ? parseInt(pageParam, 10) : 1
     if (!isNaN(pageNumber) && pageNumber !== currentPage) {
       setCurrentPage(pageNumber)
+    }
+
+    if (searchParam !== null && searchParam !== searchTerm) {
+      setSearchTerm(searchParam)
     }
   }, [searchParams])
 
@@ -154,13 +160,15 @@ export default function ProductsPage() {
     fetchCategories()
   }, [])
 
-  // Fetch products from API with debounced search and pagination
+  // Fetch products from API with pagination
   useEffect(() => {
     const fetchProducts = async () => {
       setLoadingProducts(true)
       setProductError(null)
       try {
         const categoryID = searchParams.get("categoryID")
+        const search = searchParams.get("search")
+
         let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/product-sku`
         const queryParams = new URLSearchParams()
         queryParams.append("page", currentPage.toString())
@@ -168,8 +176,8 @@ export default function ProductsPage() {
         if (categoryID) {
           queryParams.append("categoryId", categoryID)
         }
-        if (searchTerm) {
-          queryParams.append("search", searchTerm)
+        if (search) {
+          queryParams.append("search", search)
         }
         if (queryParams.toString()) {
           url += `?${queryParams.toString()}`
@@ -180,11 +188,8 @@ export default function ProductsPage() {
           throw new Error(`Failed to fetch products: ${response.status} ${response.statusText}`)
         }
         const data: ProductApiResponse = await response.json()
-        console.log('API response:', data)
+
         if (data.success) {
-          if (data.data.products_skus.length === 0) {
-            console.warn('No products returned in products_skus, but totalItems:', data.data.pagination.totalItems)
-          }
           const mappedProducts: Product[] = data.data.products_skus.map((sku) => ({
             id: sku._id,
             name: sku.M06_product_sku_name || "Unnamed Product",
@@ -200,7 +205,12 @@ export default function ProductsPage() {
           setTotalPages(data.data.pagination.totalPages)
           setFilteredProducts(mappedProducts)
         } else {
-          throw new Error(data.msg || 'API returned unsuccessful response')
+          // Check if it's just no products found (which might return success: false or empty data)
+          // But based on previous code, empty array is handled in success block.
+          // If data.success is false, it might be an error or just no results.
+          setFilteredProducts([])
+          setTotalProducts(0)
+          setTotalPages(0)
         }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'An error occurred while fetching products'
@@ -211,21 +221,26 @@ export default function ProductsPage() {
       }
     }
 
-    // Debounce the API call
-    if (debounceTimer.current) {
-      clearTimeout(debounceTimer.current)
-      setLoadingProducts(true)
-    }
-    debounceTimer.current = setTimeout(() => {
-      fetchProducts()
-    }, 500)
+    fetchProducts()
+  }, [searchParams, currentPage])
 
-    return () => {
-      if (debounceTimer.current) {
-        clearTimeout(debounceTimer.current)
+  // Update URL when searchTerm changes (Debounced)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const currentSearch = searchParams.get("search") || ""
+      if (searchTerm !== currentSearch) {
+        const newParams = new URLSearchParams(searchParams.toString())
+        if (searchTerm) {
+          newParams.set("search", searchTerm)
+        } else {
+          newParams.delete("search")
+        }
+        newParams.set("page", "1") // Reset to page 1 on search change
+        router.push(`/products?${newParams.toString()}`)
       }
-    }
-  }, [searchParams, searchTerm, currentPage])
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [searchTerm, searchParams, router])
 
   // Set active category based on URL query parameter
   useEffect(() => {
@@ -238,29 +253,18 @@ export default function ProductsPage() {
     }
   }, [searchParams, categoryMap])
 
-  // Handle intersection observer for animations
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible((prev) => ({ ...prev, [entry.target.id]: true }))
-          }
-        })
-      },
-      { threshold: 0.1 },
-    )
-
-    const elements = document.querySelectorAll("[data-animate]")
-    elements.forEach((el) => observer.observe(el))
-
-    return () => observer.disconnect()
-  }, [])
-
   // Handle category click to update URL and set active category
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category)
-    setCurrentPage(1)
+    // Keep search term? Usually category selection acts as a filter on top or a reset.
+    // Let's reset search when changing category to be clean, or keep it.
+    // "search can all the things". Let's reset search to focus on category.
+    // Actually, usually users want "Mountain Bikes" -> then search "Trek".
+    // Or Search "Red" -> then click "Helmets".
+    // Let's Keep existing search params if possible? 
+    // The previous implementation cleared it. I will stick to clearing it for category switch unless user requested otherwise.
+    // But I will fix Pagination to keep search.
+
     const queryParams = new URLSearchParams()
     if (category !== "All") {
       const categoryID = categoryIdMap.get(category)
@@ -268,25 +272,22 @@ export default function ProductsPage() {
         queryParams.append("categoryID", categoryID)
       }
     }
+    // We clear search here to show all products in that category
+    setSearchTerm("")
     router.push(`/products?${queryParams.toString()}`)
   }
 
   // Handle page change
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages && page !== currentPage) {
-      setCurrentPage(page)
-      const queryParams = new URLSearchParams()
-      const categoryID = searchParams.get("categoryID")
-      if (categoryID) {
-        queryParams.append("categoryID", categoryID)
-      }
-      queryParams.append("page", page.toString())
+      const queryParams = new URLSearchParams(searchParams.toString())
+      queryParams.set("page", page.toString())
       router.push(`/products?${queryParams.toString()}`)
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20">
+    <div className="min-h-screen bg-white font-sans text-gray-900 selection:bg-yellow-200">
       <style jsx>{`
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
@@ -298,142 +299,79 @@ export default function ProductsPage() {
         .categories-container {
           display: flex;
           overflow-x: auto;
-          gap: 0.5rem;
-          padding: 0.5rem 0;
+          gap: 0.75rem;
+          padding: 0.5rem 0.25rem;
         }
         .loader {
-          transform: rotateZ(45deg);
-          perspective: 1000px;
-          border-radius: 50%;
           width: 48px;
           height: 48px;
-          color: #fff;
-          margin: 0 auto;
-        }
-        .loader:before,
-        .loader:after {
-          content: '';
-          display: block;
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: inherit;
-          height: inherit;
+          border: 5px solid #000;
+          border-bottom-color: #facc15;
           border-radius: 50%;
-          transform: rotateX(70deg);
-          animation: 1s spin linear infinite;
+          display: inline-block;
+          box-sizing: border-box;
+          animation: rotation 1s linear infinite;
         }
-        .loader:after {
-          color: #ebb613;
-          transform: rotateY(70deg);
-          animation-delay: .4s;
-        }
-        .products-loading-container {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-direction: column;
-          backdrop-filter: blur(3px);
-          border-radius: 12px;
-          margin: 2rem 0;
-        }
-        .dark .products-loading-container {
-          background: rgba(0, 0, 0, 0.3);
-        }
-        @keyframes rotate {
-          0% {
-            transform: translate(-50%, -50%) rotateZ(0deg);
-          }
-          100% {
-            transform: translate(-50%, -50%) rotateZ(360deg);
-          }
-        }
-        @keyframes rotateccw {
-          0% {
-            transform: translate(-50%, -50%) rotate(0deg);
-          }
-          100% {
-            transform: translate(-50%, -50%) rotate(-360deg);
-          }
-        }
-        @keyframes spin {
-          0%,
-          100% {
-            box-shadow: .2em 0px 0 0px currentcolor;
-          }
-          12% {
-            box-shadow: .2em .2em 0 0 currentcolor;
-          }
-          25% {
-            box-shadow: 0 .2em 0 0px currentcolor;
-          }
-          37% {
-            box-shadow: -.2em .2em 0 0 currentcolor;
-          }
-          50% {
-            box-shadow: -.2em 0 0 0 currentcolor;
-          }
-          62% {
-            box-shadow: -.2em -.2em 0 0 currentcolor;
-          }
-          75% {
-            box-shadow: 0px -.2em 0 0 currentcolor;
-          }
-          87% {
-            box-shadow: .2em -.2em 0 0 currentcolor;
-          }
+        @keyframes rotation {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
         }
       `}</style>
       <Header />
 
       {/* Hero Section */}
-      <section className="relative h-64 overflow-hidden">
-        <Image src="./assets/ourproducts.jpg" alt="Products Hero" fill className="object-cover " />
-        <div className="absolute inset-0 bg-gradient-to-r from-yellow-700/70 to-[#000000c7]" />
-        <div className="absolute inset-0 flex items-center justify-center text-center text-white">
-          <div className="max-w-4xl px-4">
-            <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 animate-fade-in-up mobile-text-2xl">
-              Our Products
+      <section className="relative pt-32 pb-12 px-4 bg-slate-50 overflow-hidden">
+        <div className="max-w-7xl mx-auto text-center relative z-10">
+          <ScrollReveal animation="fade-in-up">
+            <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 mb-6 px-4 py-1 text-sm">
+              Our Collection
+            </Badge>
+            <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 mb-6 leading-tight">
+              Explore Premium <span className="text-yellow-500">Toys & Cycles</span>
             </h1>
-            <p className="text-base md:text-lg lg:text-xl animate-fade-in-up animation-delay-300 mobile-text-base">
-              Discover our amazing collection of cycles, toys, and accessories
+            <p className="text-xl text-gray-500 mb-8 max-w-2xl mx-auto leading-relaxed">
+              Discover joy in every ride and play. Curated for safety, fun, and adventure.
             </p>
-          </div>
+          </ScrollReveal>
         </div>
+
+        {/* Abstract shapes */}
+        <div className="absolute top-20 left-10 w-64 h-64 bg-yellow-200/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-100/20 rounded-full blur-3xl" />
       </section>
 
       {/* Search and Filter */}
-      <section className="py-8 px-4 bg-white/50 dark:bg-gray-800/50">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row gap-4 items-center mb-8">
-            <div className="relative w-full md:w-1/2">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+      <section className="sticky top-20 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100 py-4 px-4 shadow-sm">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row gap-6 items-center">
+
+            {/* Search */}
+            <div className="relative w-full md:w-1/3">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
-                placeholder="Search products..."
+                placeholder="Search for toys, cycles..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 border-purple-200 dark:border-yellow-700 focus:border-yellow-500 focus:ring-yellow-500 rounded-lg h-12 bg-white dark:bg-gray-700 w-full"
+                className="pl-12 border-gray-200 focus:border-yellow-500 focus:ring-yellow-500 rounded-full h-12 bg-slate-50 w-full transition-all"
               />
             </div>
-            <div className="w-full md:w-1/2">
+
+            {/* Categories */}
+            <div className="w-full md:w-2/3 overflow-hidden">
               {loadingCategories ? (
-                <div className="text-center py-4">
-                  <span className="loader"></span>
-                </div>
+                <div className="h-12 w-full bg-slate-100 rounded-full animate-pulse" />
               ) : categoryError ? (
-                <p className="text-red-500 text-center">{categoryError}</p>
+                <p className="text-red-500 text-sm">{categoryError}</p>
               ) : (
                 <div className="categories-container scrollbar-hide">
                   {categories.map((category) => (
                     <Button
                       key={category}
-                      variant={selectedCategory === category ? "default" : "outline"}
                       onClick={() => handleCategoryClick(category)}
-                      className={`rounded-full px-6 py-2 transition-all duration-300 mobile-text-sm whitespace-nowrap ${
-                        selectedCategory === category
-                          ? "bg-gradient-to-r from-yellow-500 to-white text-black shadow-lg transform scale-105"
-                          : "border-yellow-200 dark:border-yellow-700 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 hover:border-yellow-300"
-                      }`}
+                      className={`rounded-full px-6 h-10 text-sm font-medium transition-all duration-300 whitespace-nowrap shadow-sm ${selectedCategory === category
+                        ? "bg-black text-white hover:bg-gray-800 hover:text-white transform scale-105"
+                        : "bg-white border border-gray-200 text-gray-600 hover:bg-yellow-50 hover:text-yellow-700 hover:border-yellow-200"
+                        }`}
                     >
                       {category}
                     </Button>
@@ -446,156 +384,139 @@ export default function ProductsPage() {
       </section>
 
       {/* Products Grid */}
-      <section
-        id="products-grid"
-        data-animate
-        className={`py-12 px-4 transition-all duration-1000 ${
-          isVisible["products-grid"] ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-8"
-        }`}
-      >
+      <section className="py-12 px-4 bg-white min-h-[60vh]">
         <div className="max-w-7xl mx-auto">
           {/* Product count */}
           {!loadingProducts && (
-            <div className="mb-6 text-center">
-              {productError ? (
-                <p className="text-red-500 mobile-text-sm">{productError}</p>
-              ) : (
-                <p className="text-gray-600 dark:text-gray-400 mobile-text-sm">
-                  Showing {filteredProducts.length} of {totalProducts} products
-                  {selectedCategory !== "All" && ` in ${selectedCategory}`}
-                  {searchTerm && ` matching "${searchTerm}"`}
-                </p>
-              )}
+            <div className="mb-8 flex justify-between items-end border-b border-gray-100 pb-4">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {selectedCategory === "All" ? "All Products" : selectedCategory}
+                </h2>
+                {searchTerm && <p className="text-sm text-gray-500 mt-1">Found results for "{searchTerm}"</p>}
+              </div>
+              <p className="text-sm font-medium text-gray-500">
+                <span className="text-black font-bold">{filteredProducts.length}</span> results
+              </p>
             </div>
           )}
 
           {/* Loading state for products */}
           {loadingProducts ? (
-            <div className="products-loading-container">
-              <span className="loader"></span>
+            <div className="flex flex-col items-center justify-center py-20">
+              <span className="loader mb-4"></span>
+              <p className="text-gray-500 animate-pulse">Loading products...</p>
+            </div>
+          ) : productError ? (
+            <div className="text-center py-20">
+              <p className="text-red-500 bg-red-50 px-6 py-4 rounded-xl inline-block">{productError}</p>
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredProducts.map((product, index) => (
-                  <Link key={product.id} href={`/products/${product.id}`}>
-                    <Card
-                      className={`group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 overflow-hidden cursor-pointer flex flex-col h-full ${
-                      isVisible["products-grid"]
-                        ? `opacity-100 transform translate-y-0 transition-delay-[${index * 50}ms]`
-                        : "opacity-0 transform translate-y-8"
-                      }`}
-                    >
-                      <CardContent className="p-0 flex flex-col h-full">
-                      <div className="flex flex-row md:flex-col h-full">
-                        <div className="w-2/5 md:w-full flex-shrink-0 relative">
-                        <Badge className="absolute top-2 left-2 z-10 bg-red-500 text-white px-3 py-1 rounded shadow">
-                          Save ₹{product.originalPrice - product.price}
-                        </Badge>
-                        <div className="relative h-full">
-                          <Image
-                          src={product.image || "/placeholder.svg"}
-                          alt={product.name}
-                          width={300}
-                          height={400}
-                          className="w-full h-40 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        </div>
-                        </div>
-                        <div className="w-3/5 md:w-full flex flex-col p-4 md:p-6 flex-grow">
-                        <h3 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-yellow-200 mb-2 group-hover:text-yellow-500 transition-colors duration-300 mobile-text-base">
-                          {product.name}
-                        </h3>
-                        {/* Rating stars */}
-                        <div className="flex items-center gap-1 mb-2">
-                          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                          <Star className="w-4 h-4 text-yellow-400" style={{ fill: "url(#half)" }} />
-                          <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">4.5</span>
-                          {/* SVG gradient for half star */}
-                          <svg width="0" height="0">
-                          <linearGradient id="half">
-                            <stop offset="50%" stopColor="#facc15" />
-                            <stop offset="50%" stopColor="transparent" />
-                          </linearGradient>
-                          </svg>
-                        </div>
-                        <div className="mb-4 h-12">
-                          <p className="dark:text-gray-300 text-gray-800 line-clamp-2 overflow-hidden text-ellipsis">
-                          {product.description}
-                          </p>
-                        </div>
-                        <div className="flex items-center justify-between mt-auto">
-                          <div className="flex gap-2 items-center">
-                          <span className="text-xl flex items-center gap-3 md:text-xl font-bold text-yellow-500 mobile-text-lg">
-                            ₹{product.price}
-                          </span>
-                          <span className="text-base md:text-base text-gray-500 dark:text-gray-400 line-through mobile-text-base">
-                            ₹{product.originalPrice}
-                          </span>
+              {filteredProducts.length > 0 ? (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+                  {filteredProducts.map((product, index) => (
+                    <ScrollReveal key={product.id} animation="fade-in-up" delay={index * 50} className="h-full" enableReAnimate={false}>
+                      <Link href={`/products/${product.id}`} className="block h-full">
+                        <Card className="border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 h-full overflow-hidden bg-white group rounded-3xl">
+                          <div className="relative h-40 md:h-64 bg-gray-50 p-4 md:p-6 flex items-center justify-center overflow-hidden">
+                            <Image
+                              src={product.image || "/placeholder.svg"}
+                              alt={product.name}
+                              fill
+                              className="object-contain p-2 md:p-4 group-hover:scale-110 transition-transform duration-500"
+                            />
+                            {product.originalPrice > product.price && (
+                              <Badge className="absolute top-3 left-3 bg-red-500 text-white rounded-md px-1.5 py-0.5 md:px-2 md:py-1 text-[10px] md:text-xs font-bold uppercase tracking-wider shadow-sm">
+                                Sale
+                              </Badge>
+                            )}
+                            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              <Button size="icon" variant="secondary" className="rounded-full h-8 w-8 hover:bg-yellow-400 hover:text-black transition-colors shadow-md">
+                                <ArrowRight className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                        </div>
-                      </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))}
-              </div>
+
+                          <CardContent className="p-3 md:p-5">
+                            <div className="flex justify-between items-start mb-1 md:mb-2">
+                              <h3 className="text-sm md:text-lg font-bold text-gray-900 line-clamp-1 group-hover:text-yellow-600 transition-colors w-full pr-1 md:pr-2" title={product.name}>
+                                {product.name}
+                              </h3>
+                              <div className="flex items-center gap-0.5 text-yellow-400 text-[10px] md:text-xs font-bold shrink-0 mt-0.5 md:mt-1">
+                                <Star className="w-2.5 h-2.5 md:w-3 md:h-3 fill-current" /> 4.5
+                              </div>
+                            </div>
+
+                            <p className="hidden md:block text-gray-500 text-xs mb-4 line-clamp-2 h-10 leading-relaxed">
+                              {product.description}
+                            </p>
+
+                            <div className="flex items-center justify-between mt-auto border-t border-gray-50 pt-2 md:pt-3">
+                              <div className="flex flex-col">
+                                {product.originalPrice > product.price && (
+                                  <span className="text-[10px] md:text-xs text-gray-400 line-through">₹{product.originalPrice}</span>
+                                )}
+                                <span className="text-sm md:text-lg font-extrabold text-gray-900">₹{product.price}</span>
+                              </div>
+                              <Button size="sm" className="bg-black text-white hover:bg-yellow-500 hover:text-black rounded-lg px-2 md:px-4 h-7 md:h-9 text-[10px] md:text-xs font-bold transition-all shadow-lg shadow-gray-200">
+                                Buy Now
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    </ScrollReveal>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-20 bg-slate-50 rounded-3xl">
+                  <div className="text-gray-300 mb-6">
+                    <Search className="w-20 h-20 mx-auto" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                    No products found
+                  </h3>
+                  <p className="text-gray-500 max-w-md mx-auto">
+                    We couldn't find any products matching your criteria. Try selecting a different category or clearing your search.
+                  </p>
+                  <Button
+                    onClick={() => { setSelectedCategory("All"); setSearchTerm(""); }}
+                    className="mt-6 bg-yellow-400 text-black hover:bg-yellow-500 rounded-full px-8 py-2 font-bold"
+                  >
+                    Clear Filters
+                  </Button>
+                </div>
+              )}
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="mt-8 flex justify-center items-center gap-2">
+                <div className="mt-16 flex justify-center items-center gap-2">
                   <Button
                     variant="outline"
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="border-yellow-200 dark:border-yellow-700 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20"
+                    className="rounded-full border-gray-200 text-gray-900 font-bold hover:bg-black hover:text-white hover:border-black disabled:opacity-50 transition-all duration-300"
                   >
                     Previous
                   </Button>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "default" : "outline"}
-                      onClick={() => handlePageChange(page)}
-                      className={`${
-                        currentPage === page
-                          ? "bg-gradient-to-r from-yellow-500 to-white text-black"
-                          : "border-yellow-200 dark:border-yellow-700 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20"
-                      }`}
-                    >
-                      {page}
-                    </Button>
-                  ))}
+
+                  {/* Simple pagination logic for display */}
+                  <div className="px-4 font-bold text-gray-900">
+                    Page {currentPage} of {totalPages}
+                  </div>
+
                   <Button
                     variant="outline"
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="border-yellow-200 dark:border-yellow-700 text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20"
+                    className="rounded-full bg-black text-white font-bold hover:bg-yellow-500 hover:text-black border-black hover:border-yellow-500 disabled:opacity-50 transition-all duration-300"
                   >
                     Next
                   </Button>
                 </div>
               )}
             </>
-          )}
-
-          {filteredProducts.length === 0 && !loadingProducts && !productError && (
-            <div className="text-center py-12">
-              <div className="text-gray-400 mb-4">
-                <Search className="w-16 h-16 mx-auto" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2 mobile-text-lg">
-                No products found
-              </h3>
-              <p className="text-gray-500 dark:text-gray-500 mobile-text-sm">
-                No products were found for the selected category or search term. Try clearing your search term, selecting a different category, or verifying the API data for "Battery operated vehicles".
-              </p>
-            </div>
           )}
         </div>
       </section>

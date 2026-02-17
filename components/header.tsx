@@ -1,18 +1,19 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Menu, X, ShoppingCart, Search, Phone, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ThemeToggle } from "@/components/theme-toggle"
 import Link from "next/link"
 import { useCart } from "@/hooks/use-cart"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { useProductContext } from "@/context/product-context"
 
 const navigation = [
   { name: "Home", href: "/" },
   { name: "About", href: "/about" },
-  { name: "Products", href: "/categories" },
+  { name: "Products", href: "/products" },
   { name: "Services", href: "/services" },
   { name: "Contact", href: "/contact" },
 ]
@@ -20,16 +21,54 @@ const navigation = [
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [showSuggestions, setShowSuggestions] = useState(false)
+
   const { getCartCount } = useCart()
+  const { products } = useProductContext()
   const pathname = usePathname()
+  const router = useRouter()
+  const searchRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10)
     }
     window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
   }, [])
+
+  const handleSearch = (e?: React.FormEvent) => {
+    e?.preventDefault()
+    if (searchQuery.trim()) {
+      router.push(`/products?search=${encodeURIComponent(searchQuery)}`)
+      setIsMenuOpen(false)
+      setShowSuggestions(false)
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch()
+    }
+  }
+
+  const filteredSuggestions = searchQuery.trim()
+    ? products.filter(product =>
+      product.M01_name.toLowerCase().includes(searchQuery.toLowerCase())
+    ).slice(0, 5)
+    : []
 
   return (
     <header
@@ -110,12 +149,56 @@ export default function Header() {
       >
         <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-700">
           <div className="px-4 py-4 space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <div className="relative" ref={searchRef}>
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 cursor-pointer"
+                onClick={() => handleSearch()}
+              />
               <Input
                 placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value)
+                  setShowSuggestions(true)
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                onKeyDown={handleKeyDown}
                 className="pl-10 w-full rounded-full border-gray-200 dark:border-gray-700 focus:border-purple-500 bg-white dark:bg-gray-800"
               />
+              {/* Suggestions Dropdown */}
+              {showSuggestions && searchQuery.trim() && filteredSuggestions.length > 0 && (
+                <div className="absolute top-12 left-0 right-0 z-50 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden py-2">
+                  {filteredSuggestions.map((product) => (
+                    <Link
+                      key={product.M01_id}
+                      href={`/products/${product.M01_id}`}
+                      onClick={() => {
+                        setShowSuggestions(false)
+                        setSearchQuery("")
+                        setIsMenuOpen(false)
+                      }}
+                      className="flex items-center px-4 py-2 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="w-8 h-8 relative rounded overflow-hidden flex-shrink-0 mr-3">
+                        <img
+                          src={`${process.env.NEXT_PUBLIC_API_BASE_URL}/${product.M01_image_url}`}
+                          alt={product.M01_name}
+                          className="object-cover w-full h-full"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">{product.M01_name}</p>
+                      </div>
+                    </Link>
+                  ))}
+                  <button
+                    onClick={() => handleSearch()}
+                    className="w-full text-center text-xs text-yellow-600 font-medium py-2 border-t border-gray-50 hover:bg-gray-50 mt-1"
+                  >
+                    View all results
+                  </button>
+                </div>
+              )}
             </div>
             <nav className="space-y-2">
               {navigation.map((item) => (
