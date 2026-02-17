@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -473,17 +473,89 @@ export default function HomePage() {
     }
   };
 
+  const heroRef = useRef<HTMLElement>(null);
+  const spotlightRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!heroRef.current || !spotlightRef.current) return;
+    // Disable mouse tracking logic on mobile to avoid conflict with auto-animation
+    if (window.innerWidth < 768) return;
+
+    const rect = heroRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    spotlightRef.current.style.maskImage = `radial-gradient(circle 300px at ${x}px ${y}px, black, transparent)`;
+    spotlightRef.current.style.webkitMaskImage = `radial-gradient(circle 300px at ${x}px ${y}px, black, transparent)`;
+  };
+
+  useEffect(() => {
+    let animationFrameId: number;
+    const startTime = Date.now();
+
+    const animate = () => {
+      // Only animate on mobile
+      if (!spotlightRef.current || !heroRef.current || window.innerWidth >= 768) {
+        animationFrameId = requestAnimationFrame(animate);
+        return;
+      }
+
+      const elapsed = Date.now() - startTime;
+      const rect = heroRef.current.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+
+      // Smooth organic movement
+      const x = (width / 2) + (width * 0.25) * Math.sin(elapsed * 0.001);
+      const y = (height / 2) + (height * 0.15) * Math.cos(elapsed * 0.0013);
+
+      spotlightRef.current.style.maskImage = `radial-gradient(circle 250px at ${x}px ${y}px, black, transparent)`;
+      spotlightRef.current.style.webkitMaskImage = `radial-gradient(circle 250px at ${x}px ${y}px, black, transparent)`;
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-gray-900 selection:bg-yellow-200">
       <Header />
 
       {/* Hero Section - Split Layout for Modern Look */}
       <section
+        ref={heroRef}
+        onMouseMove={handleMouseMove}
         className="relative w-full h-[100dvh] flex overflow-hidden bg-white pt-20 md:pt-0"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
+        {/* Static Background */}
+        <div
+          className="absolute inset-0 z-0 opacity-5 pointer-events-none"
+          style={{
+            backgroundImage: "url('/footerlogobg.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center"
+          }}
+        />
+        {/* Spotlight Background */}
+        <div
+          ref={spotlightRef}
+          className="absolute inset-0 z-0 opacity-25 md:opacity-15 pointer-events-none transition-opacity duration-300"
+          style={{
+            backgroundImage: "url('/footerlogobg.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            maskImage: "radial-gradient(circle 300px at -1000px -1000px, black, transparent)",
+            WebkitMaskImage: "radial-gradient(circle 300px at -1000px -1000px, black, transparent)"
+          }}
+        />
+
         {heroSlides.map((slide, index) => (
           <div
             key={slide.id}
@@ -491,7 +563,7 @@ export default function HomePage() {
               }`}
           >
             {/* Left Content - Text at Bottom on Mobile */}
-            <div className="w-full md:w-1/2 flex flex-col justify-end md:justify-center px-6 md:px-20 pb-16 pt-4 md:py-0 bg-white z-10 order-2 md:order-1">
+            <div className="w-full md:w-1/2 flex flex-col justify-end md:justify-center px-6 md:px-20 pb-16 pt-4 md:py-0 z-10 order-2 md:order-1">
               <div className={`transition-opacity duration-1000 ease-in-out ${index === currentSlide ? "opacity-100" : "opacity-0"}`}>
                 <h2 className="text-yellow-500 font-bold uppercase tracking-widest text-xs md:text-sm mb-2 md:mb-4">
                   Metro Toys & Cycles
@@ -573,26 +645,6 @@ export default function HomePage() {
 
       </section>
 
-      {/* Services Section - Individual Cards */}
-      <section className="py-12 bg-slate-50 border-b border-gray-100">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {services.map((service, index) => (
-              <ScrollReveal key={index} animation="fade-in-up" delay={index * 100} className="h-full">
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center space-x-4 h-full group">
-                  <div className="bg-yellow-50 p-3 rounded-full text-yellow-600 shrink-0 group-hover:bg-yellow-500 group-hover:text-white transition-colors duration-300">
-                    {service.icon}
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900 group-hover:text-yellow-600 transition-colors">{service.title}</h3>
-                    <p className="text-sm text-gray-500">{service.description}</p>
-                  </div>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Categories Section - Clean Grid */}
       <section className="py-20 px-4 bg-slate-50" id="categories">
@@ -706,6 +758,27 @@ export default function HomePage() {
                 View All Products <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section - Individual Cards */}
+      <section className="py-12 bg-slate-50 border-b border-gray-100">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {services.map((service, index) => (
+              <ScrollReveal key={index} animation="fade-in-up" delay={index * 100} className="h-full">
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center space-x-4 h-full group">
+                  <div className="bg-yellow-50 p-3 rounded-full text-yellow-600 shrink-0 group-hover:bg-yellow-500 group-hover:text-white transition-colors duration-300">
+                    {service.icon}
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 group-hover:text-yellow-600 transition-colors">{service.title}</h3>
+                    <p className="text-sm text-gray-500">{service.description}</p>
+                  </div>
+                </div>
+              </ScrollReveal>
+            ))}
           </div>
         </div>
       </section>
