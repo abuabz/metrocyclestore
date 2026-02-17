@@ -72,7 +72,9 @@ export default function ScrollReveal({
                 transform: getTransformStyle(),
                 transition: `opacity ${duration}ms cubic-bezier(0.2, 0.8, 0.2, 1), transform ${duration}ms cubic-bezier(0.2, 0.8, 0.2, 1)`,
                 transitionDelay: `${isVisible ? delay : 0}ms`, // Only delay entry, exit should be instant or fast
-                willChange: "opacity, transform", // Optimize for GPU
+                // Removed will-change to prevent memory issues and layer glitches on completion
+                backfaceVisibility: "hidden", // Fix for potential flickering
+                WebkitFontSmoothing: "antialiased",
             }}
         >
             {children}

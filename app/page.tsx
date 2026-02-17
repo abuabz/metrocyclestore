@@ -491,9 +491,30 @@ export default function HomePage() {
   useEffect(() => {
     let animationFrameId: number;
     const startTime = Date.now();
+    let isIntersecting = true; // Default to true initially
+
+    // Intersection Observer to pause animation when off-screen prevents scroll guttering/stutter
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isIntersecting = entry.isIntersecting;
+      },
+      { threshold: 0 }
+    );
+
+    if (heroRef.current) {
+      observer.observe(heroRef.current);
+    }
 
     const animate = () => {
-      // Only animate on mobile
+      // Only animate on mobile AND when visible
+      if (!isIntersecting) {
+        // If not visible, just verify periodically or wait for observer (observer callback handles state)
+        // We still need the loop to resume, or restart it on intersection. 
+        // Simpler: Keep loop but skip heavy work.
+        animationFrameId = requestAnimationFrame(animate);
+        return;
+      }
+
       if (!spotlightRef.current || !heroRef.current || window.innerWidth >= 768) {
         animationFrameId = requestAnimationFrame(animate);
         return;
@@ -504,9 +525,9 @@ export default function HomePage() {
       const width = rect.width;
       const height = rect.height;
 
-      // Smooth organic movement
-      const x = (width / 2) + (width * 0.25) * Math.sin(elapsed * 0.001);
-      const y = (height / 2) + (height * 0.15) * Math.cos(elapsed * 0.0013);
+      // Smooth organic movement - slightly slower for smoother feel
+      const x = (width / 2) + (width * 0.25) * Math.sin(elapsed * 0.0008);
+      const y = (height / 2) + (height * 0.15) * Math.cos(elapsed * 0.0011);
 
       spotlightRef.current.style.maskImage = `radial-gradient(circle 250px at ${x}px ${y}px, black, transparent)`;
       spotlightRef.current.style.webkitMaskImage = `radial-gradient(circle 250px at ${x}px ${y}px, black, transparent)`;
@@ -518,6 +539,7 @@ export default function HomePage() {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      observer.disconnect();
     };
   }, []);
 
@@ -546,13 +568,14 @@ export default function HomePage() {
         {/* Spotlight Background */}
         <div
           ref={spotlightRef}
-          className="absolute inset-0 z-0 opacity-25 md:opacity-15 pointer-events-none transition-opacity duration-300"
+          className="absolute inset-0 z-0 opacity-30 md:opacity-15 pointer-events-none transition-opacity duration-300"
           style={{
             backgroundImage: "url('/footerlogobg.png')",
             backgroundSize: "cover",
             backgroundPosition: "center",
             maskImage: "radial-gradient(circle 300px at -1000px -1000px, black, transparent)",
-            WebkitMaskImage: "radial-gradient(circle 300px at -1000px -1000px, black, transparent)"
+            WebkitMaskImage: "radial-gradient(circle 300px at -1000px -1000px, black, transparent)",
+            willChange: "mask-image" // Hint to browser for optimization
           }}
         />
 
