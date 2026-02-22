@@ -817,7 +817,7 @@ export default function HomePage() {
                 Glimpses of joy from our happy customers and store events.
               </p>
             </div>
-            <Link href="https://instagram.com" target="_blank" className="hidden md:flex items-center gap-2 text-gray-900 font-semibold hover:text-yellow-600 transition-colors group">
+            <Link href="https://www.instagram.com/metro.toys_/" target="_blank" className="hidden md:flex items-center gap-2 text-gray-900 font-semibold hover:text-yellow-600 transition-colors group">
               <span className="border-b-2 border-transparent group-hover:border-yellow-500 transition-all">View on Instagram</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
@@ -869,7 +869,7 @@ export default function HomePage() {
 
             {/* View More Card */}
             <ScrollReveal animation="fade-in-up" delay={400} className="col-span-1 row-span-1 flex h-full">
-              <Link href="https://instagram.com" target="_blank" className="w-full h-full">
+              <Link href="https://www.instagram.com/metro.toys_/" target="_blank" className="w-full h-full">
                 <div className="w-full h-full bg-yellow-400 rounded-3xl flex flex-col items-center justify-center p-6 text-center cursor-pointer hover:bg-yellow-500 transition-colors group relative overflow-hidden">
                   <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                   <div className="relative z-10 p-2 bg-white rounded-full text-yellow-600 mb-2 group-hover:scale-110 transition-transform">
@@ -882,7 +882,7 @@ export default function HomePage() {
           </div>
 
           <div className="mt-8 text-center md:hidden">
-            <Link href="https://instagram.com" target="_blank">
+            <Link href="https://www.instagram.com/metro.toys_/" target="_blank">
               <Button className="w-full bg-black text-white hover:bg-yellow-500 hover:text-black font-bold py-6 rounded-full text-lg transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                 <Instagram className="w-5 h-5 mr-2" />
                 View All on Instagram
