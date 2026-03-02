@@ -179,6 +179,7 @@ export default function ProductDetailPage() {
   const [selectedVariations, setSelectedVariations] = useState<Record<string, string>>({})
   const [availableCombinations, setAvailableCombinations] = useState<AvailableCombination[]>([])
   const [availableOptions, setAvailableOptions] = useState<Record<string, Set<string>>>({})
+  const [isExpanded, setIsExpanded] = useState(false)
 
   // Debounced function to update cart quantity
   const debouncedUpdateCartQuantity = useCallback(
@@ -705,9 +706,23 @@ export default function ProductDetailPage() {
                   )}
                 </div>
 
-                <p className="text-slate-600 text-sm leading-relaxed line-clamp-3">
-                  {product?.description}
-                </p>
+
+                <div className="mt-4 text-slate-600 text-sm leading-relaxed">
+                  {isExpanded || !product?.description || product.description.length <= 150 ? (
+                    <span>{product?.description}</span>
+                  ) : (
+                    <span>{product.description.substring(0, 150)}...</span>
+                  )}
+                  {product?.description && product.description.length > 150 && (
+                    <button
+                      onClick={() => setIsExpanded(!isExpanded)}
+                      className="text-yellow-600 font-bold hover:text-yellow-700 transition-colors ml-2"
+                    >
+                      {isExpanded ? "Read Less" : "Read More"}
+                    </button>
+                  )}
+                </div>
+
               </div>
 
               {/* Quantity and Actions */}
