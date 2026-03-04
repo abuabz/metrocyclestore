@@ -399,10 +399,10 @@ export default function HomePage() {
         }
         const data: CategoryApiResponse = await response.json();
         if (data.success) {
-          const childCategories = data.data.productCategories.filter(
-            (category) => category.M04_M04_parent_category_id !== null
+          const parentCategories = data.data.productCategories.filter(
+            (category) => category.M04_M04_parent_category_id === null
           );
-          setCategories(childCategories);
+          setCategories(parentCategories);
         } else {
           throw new Error(data.msg || 'API returned unsuccessful response');
         }

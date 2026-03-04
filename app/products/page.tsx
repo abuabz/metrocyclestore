@@ -92,20 +92,42 @@ interface Product {
 export default function ProductsPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [categories, setCategories] = useState<string[]>(["All"])
-  const [selectedCategory, setSelectedCategory] = useState("All")
+  const [allCategories, setAllCategories] = useState<ProductCategory[]>([])
+  const [parentCategories, setParentCategories] = useState<ProductCategory[]>([])
+
+  const [selectedParentId, setSelectedParentId] = useState<string | null>(null)
+  const [selectedSubId, setSelectedSubId] = useState<string | null>(null)
+
   const [searchTerm, setSearchTerm] = useState("")
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [loadingCategories, setLoadingCategories] = useState<boolean>(true)
   const [categoryError, setCategoryError] = useState<string | null>(null)
-  const [categoryMap, setCategoryMap] = useState<Map<string, string>>(new Map())
-  const [categoryIdMap, setCategoryIdMap] = useState<Map<string, string>>(new Map())
   const [loadingProducts, setLoadingProducts] = useState<boolean>(true)
   const [productError, setProductError] = useState<string | null>(null)
   const [totalProducts, setTotalProducts] = useState<number>(0)
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [totalPages, setTotalPages] = useState<number>(1)
+  const [showCategoryBar, setShowCategoryBar] = useState(true)
+  const [lastScrollY, setLastScrollY] = useState(0)
   const productsPerPage = 32
+
+  // Add scroll listener for hiding/showing category bar
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      if (currentScrollY > lastScrollY && currentScrollY > 150) {
+        // Scrolling down
+        setShowCategoryBar(false)
+      } else if (currentScrollY < lastScrollY) {
+        // Scrolling up
+        setShowCategoryBar(true)
+      }
+      setLastScrollY(currentScrollY)
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [lastScrollY])
 
   // Ref to store the debounce timer
   const debounceTimer = useRef<NodeJS.Timeout | null>(null)
@@ -129,24 +151,17 @@ export default function ProductsPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/product-category?limit=30`)
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/product-category?limit=100`)
         if (!response.ok) {
           throw new Error('Failed to fetch product categories')
         }
         const data: CategoryApiResponse = await response.json()
         if (data.success) {
-          const childCategories = data.data.productCategories.filter(
-            (category) => category.M04_M04_parent_category_id !== null
-          )
-          const map = new Map<string, string>()
-          const idMap = new Map<string, string>()
-          childCategories.forEach((category) => {
-            map.set(category._id, category.M04_category_name)
-            idMap.set(category.M04_category_name, category._id)
-          })
-          setCategoryMap(map)
-          setCategoryIdMap(idMap)
-          setCategories(["All", ...childCategories.map((cat) => cat.M04_category_name)])
+          const fetchedCategories = data.data.productCategories
+          setAllCategories(fetchedCategories)
+
+          const parents = fetchedCategories.filter(cat => cat.M04_M04_parent_category_id === null)
+          setParentCategories(parents)
         } else {
           throw new Error(data.msg || 'API returned unsuccessful response')
         }
@@ -245,34 +260,46 @@ export default function ProductsPage() {
   // Set active category based on URL query parameter
   useEffect(() => {
     const categoryID = searchParams.get("categoryID")
-    if (categoryID && categoryMap.has(categoryID)) {
-      const categoryName = categoryMap.get(categoryID)!
-      setSelectedCategory(categoryName)
+    if (categoryID) {
+      const parent = parentCategories.find((c) => c._id === categoryID)
+      if (parent) {
+        setSelectedParentId(parent._id)
+        setSelectedSubId(null)
+      } else {
+        const sub = allCategories.find((c) => c._id === categoryID)
+        if (sub) {
+          setSelectedParentId(sub.M04_M04_parent_category_id)
+          setSelectedSubId(sub._id)
+        } else {
+          setSelectedParentId(null)
+          setSelectedSubId(null)
+        }
+      }
     } else {
-      setSelectedCategory("All")
+      setSelectedParentId(null)
+      setSelectedSubId(null)
     }
-  }, [searchParams, categoryMap])
+  }, [searchParams, allCategories, parentCategories])
 
-  // Handle category click to update URL and set active category
-  const handleCategoryClick = (category: string) => {
-    setSelectedCategory(category)
-    // Keep search term? Usually category selection acts as a filter on top or a reset.
-    // Let's reset search when changing category to be clean, or keep it.
-    // "search can all the things". Let's reset search to focus on category.
-    // Actually, usually users want "Mountain Bikes" -> then search "Trek".
-    // Or Search "Red" -> then click "Helmets".
-    // Let's Keep existing search params if possible? 
-    // The previous implementation cleared it. I will stick to clearing it for category switch unless user requested otherwise.
-    // But I will fix Pagination to keep search.
+  // Handle parent category click
+  const handleParentCategoryClick = (categoryId: string | null) => {
+    setSelectedParentId(categoryId)
+    setSelectedSubId(null)
 
     const queryParams = new URLSearchParams()
-    if (category !== "All") {
-      const categoryID = categoryIdMap.get(category)
-      if (categoryID) {
-        queryParams.append("categoryID", categoryID)
-      }
+    if (categoryId !== null) {
+      queryParams.append("categoryID", categoryId)
     }
-    // We clear search here to show all products in that category
+    setSearchTerm("")
+    router.push(`/products?${queryParams.toString()}`)
+  }
+
+  // Handle sub category click
+  const handleSubCategoryClick = (subCategoryId: string) => {
+    setSelectedSubId(subCategoryId)
+
+    const queryParams = new URLSearchParams()
+    queryParams.append("categoryID", subCategoryId)
     setSearchTerm("")
     router.push(`/products?${queryParams.toString()}`)
   }
@@ -319,29 +346,10 @@ export default function ProductsPage() {
       `}</style>
       <Header />
 
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-12 px-4 bg-slate-50 overflow-hidden">
-        <div className="max-w-7xl mx-auto text-center relative z-10">
-          <ScrollReveal animation="fade-in-up">
-            <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 mb-6 px-4 py-1 text-sm">
-              Our Collection
-            </Badge>
-            <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 mb-6 leading-tight">
-              Explore Premium <span className="text-yellow-500">Toys & Cycles</span>
-            </h1>
-            <p className="text-xl text-gray-500 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Discover joy in every ride and play. Curated for safety, fun, and adventure.
-            </p>
-          </ScrollReveal>
-        </div>
 
-        {/* Abstract shapes */}
-        <div className="absolute top-20 left-10 w-64 h-64 bg-yellow-200/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-100/20 rounded-full blur-3xl" />
-      </section>
 
       {/* Search and Filter */}
-      <section className="sticky top-20 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100 py-4 px-4 shadow-sm">
+      <section className={`sticky top-20 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100 py-4 px-4 shadow-sm transition-all duration-300 ${showCategoryBar ? 'translate-y-0' : '-translate-y-[150%] opacity-0 pointer-events-none'}`}>
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row gap-6 items-center">
 
@@ -363,19 +371,58 @@ export default function ProductsPage() {
               ) : categoryError ? (
                 <p className="text-red-500 text-sm">{categoryError}</p>
               ) : (
-                <div className="categories-container scrollbar-hide">
-                  {categories.map((category) => (
+                <div className="flex flex-col gap-3">
+                  {/* Parent Categories */}
+                  <div className="categories-container scrollbar-hide">
                     <Button
-                      key={category}
-                      onClick={() => handleCategoryClick(category)}
-                      className={`rounded-full px-6 h-10 text-sm font-medium transition-all duration-300 whitespace-nowrap shadow-sm ${selectedCategory === category
+                      onClick={() => handleParentCategoryClick(null)}
+                      className={`rounded-full px-6 h-10 text-sm font-medium transition-all duration-300 whitespace-nowrap shadow-sm ${selectedParentId === null
                         ? "bg-black text-white hover:bg-gray-800 hover:text-white transform scale-105"
                         : "bg-white border border-gray-200 text-gray-600 hover:bg-yellow-50 hover:text-yellow-700 hover:border-yellow-200"
                         }`}
                     >
-                      {category}
+                      All
                     </Button>
-                  ))}
+                    {parentCategories.map((category) => (
+                      <Button
+                        key={category._id}
+                        onClick={() => handleParentCategoryClick(category._id)}
+                        className={`rounded-full px-6 h-10 text-sm font-medium transition-all duration-300 whitespace-nowrap shadow-sm ${selectedParentId === category._id
+                          ? "bg-black text-white hover:bg-gray-800 hover:text-white transform scale-105"
+                          : "bg-white border border-gray-200 text-gray-600 hover:bg-yellow-50 hover:text-yellow-700 hover:border-yellow-200"
+                          }`}
+                      >
+                        {category.M04_category_name}
+                      </Button>
+                    ))}
+                  </div>
+
+                  {/* Sub Categories (Only show if a parent is selected and has children) */}
+                  {selectedParentId && allCategories.filter(c => c.M04_M04_parent_category_id === selectedParentId).length > 0 && (
+                    <div className="categories-container scrollbar-hide">
+                      <Button
+                        onClick={() => handleParentCategoryClick(selectedParentId)}
+                        className={`rounded-full px-5 h-8 text-xs font-medium transition-all duration-300 whitespace-nowrap shadow-sm ${selectedSubId === null
+                          ? "bg-yellow-400 text-black hover:bg-yellow-500 transform scale-105 border-0"
+                          : "bg-white border border-gray-200 text-gray-500 hover:bg-gray-50"
+                          }`}
+                      >
+                        All in {parentCategories.find(c => c._id === selectedParentId)?.M04_category_name}
+                      </Button>
+                      {allCategories.filter(c => c.M04_M04_parent_category_id === selectedParentId).map((subCat) => (
+                        <Button
+                          key={subCat._id}
+                          onClick={() => handleSubCategoryClick(subCat._id)}
+                          className={`rounded-full px-5 h-8 text-xs font-medium transition-all duration-300 whitespace-nowrap shadow-sm ${selectedSubId === subCat._id
+                            ? "bg-yellow-400 text-black hover:bg-yellow-500 transform scale-105 border-0"
+                            : "bg-white border border-gray-200 text-gray-500 hover:bg-gray-50"
+                            }`}
+                        >
+                          {subCat.M04_category_name}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -391,7 +438,11 @@ export default function ProductsPage() {
             <div className="mb-8 flex justify-between items-end border-b border-gray-100 pb-4">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">
-                  {selectedCategory === "All" ? "All Products" : selectedCategory}
+                  {selectedSubId
+                    ? allCategories.find((c) => c._id === selectedSubId)?.M04_category_name
+                    : selectedParentId
+                      ? parentCategories.find((c) => c._id === selectedParentId)?.M04_category_name
+                      : "All Products"}
                 </h2>
                 {searchTerm && <p className="text-sm text-gray-500 mt-1">Found results for "{searchTerm}"</p>}
               </div>
@@ -481,7 +532,7 @@ export default function ProductsPage() {
                     We couldn't find any products matching your criteria. Try selecting a different category or clearing your search.
                   </p>
                   <Button
-                    onClick={() => { setSelectedCategory("All"); setSearchTerm(""); }}
+                    onClick={() => { handleParentCategoryClick(null); setSearchTerm(""); }}
                     className="mt-6 bg-yellow-400 text-black hover:bg-yellow-500 rounded-full px-8 py-2 font-bold"
                   >
                     Clear Filters
