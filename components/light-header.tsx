@@ -173,7 +173,7 @@ export default function LightHeader() {
                             </Button>
                         </Link>
 
-                        <Link href="tel:+918714583859" className="hidden sm:block">
+                        <Link href="tel:+918714722927" className="hidden sm:block">
                             <Button className="bg-black hover:bg-gray-800 text-white rounded-full px-5 h-10 text-xs font-bold shadow-lg transition-transform hover:scale-105">
                                 Call Now
                             </Button>
@@ -227,7 +227,7 @@ export default function LightHeader() {
                             </Link>
                         ))}
 
-                        <Link href="tel:+918714583859" onClick={() => setIsMenuOpen(false)}>
+                        <Link href="tel:+918714722927" onClick={() => setIsMenuOpen(false)}>
                             <Button className="w-full mt-4 bg-black text-white rounded-xl py-6 font-bold">
                                 Call Now
                             </Button>

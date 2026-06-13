@@ -105,7 +105,7 @@ ${discount > 0 ? `• Discount (${(discount * 100).toFixed(0)}%): -₹${discount
 
     // Optionally, open WhatsApp with the order summary
     const whatsappMessage = encodeURIComponent(orderSummary)
-    const whatsappUrl = `https://wa.me/918714583859?text=${whatsappMessage}`
+    const whatsappUrl = `https://wa.me/918714722927?text=${whatsappMessage}`
     window.open(whatsappUrl, "_blank")
   }
 

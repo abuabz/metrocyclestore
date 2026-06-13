@@ -86,7 +86,7 @@ export default function ContactPage() {
     setIsSubmitting(true)
 
     // Construct WhatsApp message with form data
-    const phoneNumber = "+918714583859"
+    const phoneNumber = "+918714722927"
     const message = `🌟 New Contact Form Submission 🌟%0A` +
       `👤 Name:    ${encodeURIComponent(formData.name)}%0A` +
       `✉️ Email:   ${encodeURIComponent(formData.email)}%0A` +
@@ -148,7 +148,7 @@ export default function ContactPage() {
               <Button
                 size="lg"
                 className="bg-white text-black hover:bg-yellow-400 hover:text-black rounded-full px-8 py-6 text-lg font-bold shadow-lg transition-all duration-300 hover:scale-105 min-w-[180px]"
-                onClick={() => window.open('tel:+918714583859', '_self')}
+                onClick={() => window.open('tel:+918714722927', '_self')}
               >
                 <Phone className="w-5 h-5 mr-2" />
                 Call Now
@@ -157,7 +157,7 @@ export default function ContactPage() {
                 size="lg"
                 variant="outline"
                 className="border-white/20 bg-white/5 text-white hover:bg-white hover:text-black hover:border-white rounded-full px-8 py-6 text-lg font-bold backdrop-blur-sm transition-all duration-300 min-w-[180px]"
-                onClick={() => window.open('https://wa.me/+918714583859', '_blank')}
+                onClick={() => window.open('https://wa.me/+918714722927', '_blank')}
               >
                 <MessageCircle className="w-5 h-5 mr-2" />
                 WhatsApp Us

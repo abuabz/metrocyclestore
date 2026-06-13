@@ -191,7 +191,7 @@ export default function ServicesPage() {
       if (result.success) {
         const contactId = result.data.contactId
         const whatsappMessage = `New service Request\nContact ID: *${contactId}*`
-        const whatsappUrl = `https://wa.me/918714583859?text=${encodeURIComponent(whatsappMessage)}`
+        const whatsappUrl = `https://wa.me/918714722927?text=${encodeURIComponent(whatsappMessage)}`
         window.open(whatsappUrl, "_blank")
 
         setFormData({

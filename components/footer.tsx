@@ -117,7 +117,7 @@ export default function Footer() {
                   <Instagram className="w-4 h-4" />
                 </Button>
               </Link>
-              <Link href="https://wa.me/+918714583859" target="_blank">
+              <Link href="https://wa.me/+918714722927" target="_blank">
                 <Button
                   variant="outline"
                   size="icon"
@@ -183,7 +183,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center space-x-3 text-sm text-slate-600">
                 <Phone className="w-5 h-5 text-yellow-500 shrink-0" />
-                <a href="tel:+918714583859" className="hover:text-slate-900 transition-colors">+91 87145 83859</a>
+                <a href="tel:+918714722927" className="hover:text-slate-900 transition-colors">+91 87145 83859</a>
               </div>
               <div className="flex items-center space-x-3 text-sm text-slate-600">
                 <Mail className="w-5 h-5 text-yellow-500 shrink-0" />

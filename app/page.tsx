@@ -420,7 +420,7 @@ export default function HomePage() {
     const whatsappMessage = encodeURIComponent(
       `New Contact Form Submission\nName: ${name}\nEmail: ${email}\nMessage: ${message}`
     );
-    const whatsappUrl = `https://wa.me/+918714583859?text=${whatsappMessage}`;
+    const whatsappUrl = `https://wa.me/+918714722927?text=${whatsappMessage}`;
 
     try {
       window.open(whatsappUrl, "_blank");
@@ -1007,7 +1007,7 @@ export default function HomePage() {
         <Button
           size="icon"
           className="h-14 w-14 rounded-full bg-green-500 hover:bg-green-600 text-white shadow-2xl transition-transform hover:scale-110"
-          onClick={() => window.open("https://wa.me/+918714583859", "_blank")}
+          onClick={() => window.open("https://wa.me/+918714722927", "_blank")}
         >
           <MessageCircle className="w-7 h-7" />
         </Button>
