@@ -1,11 +1,10 @@
 "use client"
-import React, { useEffect, useState, useRef } from "react"
+import React, { useState, useRef } from "react"
 import { Plus, Edit, Trash2, Search, Loader2, X, Upload } from "lucide-react"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 
 export default function AdminProducts() {
-  const [products, setProducts] = useState<any[]>([])
-  const [categories, setCategories] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+  const queryClient = useQueryClient()
   
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -36,37 +35,25 @@ export default function AdminProducts() {
   
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    fetchProducts()
-    fetchCategories()
-  }, [])
-
-  const fetchProducts = async () => {
-    setLoading(true)
-    try {
+  const { data: products = [], isLoading: loading } = useQuery({
+    queryKey: ['admin-products'],
+    queryFn: async () => {
       const res = await fetch("/api/v1/customer/product-sku")
       const json = await res.json()
-      if (json.success) {
-        setProducts(json.data.products_skus || [])
-      }
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setLoading(false)
+      if (!json.success) throw new Error("Failed to fetch products")
+      return json.data.products_skus || []
     }
-  }
+  })
 
-  const fetchCategories = async () => {
-    try {
+  const { data: categories = [] } = useQuery({
+    queryKey: ['admin-categories'],
+    queryFn: async () => {
       const res = await fetch("/api/v1/customer/product-category")
       const json = await res.json()
-      if (json.success) {
-        setCategories(json.data.productCategories || [])
-      }
-    } catch (error) {
-      console.error(error)
+      if (!json.success) throw new Error("Failed to fetch categories")
+      return json.data.productCategories || []
     }
-  }
+  })
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -204,7 +191,7 @@ export default function AdminProducts() {
       if (data.success) {
         setIsModalOpen(false)
         showToast(editingId ? "Product updated successfully!" : "Product created successfully!", "success")
-        fetchProducts()
+        queryClient.invalidateQueries({ queryKey: ['admin-products'] })
       } else {
         showToast(data.message, "error")
       }
@@ -223,7 +210,7 @@ export default function AdminProducts() {
       const data = await res.json()
       if (data.success) {
         showToast("Product deleted successfully!", "success")
-        fetchProducts()
+        queryClient.invalidateQueries({ queryKey: ['admin-products'] })
       } else {
         showToast(data.message, "error")
       }

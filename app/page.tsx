@@ -32,6 +32,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import SeasonalSaleModal from "@/components/SeasonalSaleModal";
 import ScrollReveal from "@/components/ui/scroll-reveal";
+import { useQuery } from '@tanstack/react-query';
 
 // Define interface for the featured product based on API response
 interface FeaturedProduct {
@@ -330,90 +331,60 @@ export default function HomePage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const [featuredProducts, setFeaturedProducts] = useState<FeaturedProduct[]>([]);
-  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
-  const [categories, setCategories] = useState<ProductCategory[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [galleryError, setGalleryError] = useState<string | null>(null);
-  const [categoryError, setCategoryError] = useState<string | null>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const { data: dynamicServices = [] } = useQuery({
+    queryKey: ['services'],
+    queryFn: async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/v1/customer/services`);
+      const json = await res.json();
+      return json.success ? json.data : [];
+    }
+  });
 
-  useEffect(() => {
-    const fetchFeaturedProducts = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/featured-products`);
-        const result: ApiResponse = await response.json();
+  // TanStack Query for Featured Products
+  const { data: featuredProducts = [], error } = useQuery({
+    queryKey: ['featuredProducts'],
+    queryFn: async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/v1/customer/featured-products`);
+      const json = await res.json();
+      if (!json.success) throw new Error(json.msg || "Failed");
+      return json.data.products_skus.slice(0, 4).map((sku: any) => ({
+        id: sku._id,
+        name: sku.M06_product_sku_name,
+        price: sku.M06_price,
+        originalPrice: sku.M06_MRP,
+        image: sku.M06_thumbnail_image,
+        description: sku.M06_description,
+      }));
+    }
+  });
 
-        if (result.success) {
-          const products = result.data.products_skus.slice(0, 4).map((sku) => ({
-            id: sku._id,
-            name: sku.M06_product_sku_name,
-            price: sku.M06_price,
-            originalPrice: sku.M06_MRP,
-            image: sku.M06_thumbnail_image,
-            description: sku.M06_description,
-          }));
-          setFeaturedProducts(products);
-        } else {
-          throw new Error(result.msg || "Failed to fetch featured products");
-        }
-      } catch (err: any) {
-        setError(err.message || "Error fetching featured products");
-        console.error("Error fetching featured products:", err);
-      }
-    };
+  // TanStack Query for Categories
+  const { data: categories = [], error: categoryError } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/v1/customer/product-category?limit=30`);
+      const json = await res.json();
+      if (!json.success) throw new Error(json.msg || "Failed");
+      return json.data.productCategories.filter(
+        (category: any) => category.M04_M04_parent_category_id === null
+      );
+    }
+  });
 
-    fetchFeaturedProducts();
-  }, []);
-
-  useEffect(() => {
-    const fetchGalleryItems = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/gallery`);
-        const result: GalleryApiResponse = await response.json();
-
-        if (result.success) {
-          const activeItems = result.data
-            .filter((item) => item.M06_is_active === 1 && !item.M06_deleted_at)
-            .slice(0, 6);
-          setGalleryItems(activeItems);
-        } else {
-          throw new Error(result.msg || "Failed to fetch gallery items");
-        }
-      } catch (err: any) {
-        setGalleryError(err.message || "Error fetching gallery items");
-        console.error("Error fetching gallery items:", err);
-      }
-    };
-
-    fetchGalleryItems();
-  }, []);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/product-category?limit=30`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch product categories');
-        }
-        const data: CategoryApiResponse = await response.json();
-        if (data.success) {
-          const parentCategories = data.data.productCategories.filter(
-            (category) => category.M04_M04_parent_category_id === null
-          );
-          setCategories(parentCategories);
-        } else {
-          throw new Error(data.msg || 'API returned unsuccessful response');
-        }
-      } catch (err: any) {
-        setCategoryError(err.message || 'Error fetching categories');
-        console.error("Error fetching categories:", err);
-      }
-    };
-
-    fetchCategories();
-  }, []);
+  // TanStack Query for Gallery Items
+  const { data: galleryItems = [], error: galleryError } = useQuery({
+    queryKey: ['galleryItems'],
+    queryFn: async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/v1/customer/gallery`);
+      const json = await res.json();
+      if (!json.success) throw new Error(json.msg || "Failed");
+      return json.data
+        .filter((item: any) => item.M06_is_active === 1 && !item.M06_deleted_at)
+        .slice(0, 6);
+    }
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -696,7 +667,7 @@ export default function HomePage() {
                     <div className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 text-center flex flex-col items-center h-full border border-gray-100 hover:border-yellow-200">
                       <div className="relative w-24 h-24 mb-4 rounded-xl overflow-hidden bg-white group-hover:scale-110 transition-transform duration-300">
                         <Image
-                          src={category.M04_image || "/assets/placeholder.jpg"}
+                          src={category.M04_image || "https://imgs.search.brave.com/uEhPIf4ViqOgxwRsIccKJkCgbc5RDvIhdV05iNFZ5NE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/aWNvbnM4LmNvbS9l/eHRlcm5hbC13YW5p/Y29uLWxpbmVhbC1j/b2xvci13YW5pY29u/LzEyMDAvZXh0ZXJu/YWwtdG95cy1raW5k/ZXJnYXJ0ZW4td2Fu/aWNvbi1saW5lYWwt/Y29sb3Itd2FuaWNv/bi5qcGc"}
                           alt={category.M04_category_name}
                           fill
                           className="object-cover"
@@ -789,11 +760,15 @@ export default function HomePage() {
       <section className="py-12 bg-slate-50 border-b border-gray-100">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {services.map((service, index) => (
-              <ScrollReveal key={index} animation="fade-in-up" delay={index * 100} className="h-full">
+            {(dynamicServices.length > 0 ? dynamicServices : services).map((service, index) => (
+              <ScrollReveal key={service._id || index} animation="fade-in-up" delay={index * 100} className="h-full">
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center space-x-4 h-full group">
-                  <div className="bg-yellow-50 p-3 rounded-full text-yellow-600 shrink-0 group-hover:bg-yellow-500 group-hover:text-white transition-colors duration-300">
-                    {service.icon}
+                  <div className="bg-yellow-50 p-3 rounded-full text-yellow-600 shrink-0 group-hover:bg-yellow-500 group-hover:text-white transition-colors duration-300 w-12 h-12 flex items-center justify-center overflow-hidden">
+                    {service.image ? (
+                      <img src={service.image} alt={service.title} className="w-full h-full object-contain" />
+                    ) : (
+                      service.icon
+                    )}
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-900 group-hover:text-yellow-600 transition-colors">{service.title}</h3>

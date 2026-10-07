@@ -113,12 +113,12 @@ export default function ServicesPage() {
 
   const [productImages, setProductImages] = useState<ImageData[]>([])
   const [warrantyImages, setWarrantyImages] = useState<ImageData[]>([])
-  const [toastMessage, setToastMessage] = useState<string | null>(null)
+  const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' } | null>(null)
 
-  const showToast = (message: string) => {
-    setToastMessage(message)
+  const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+    setToast({ message, type })
     setTimeout(() => {
-      setToastMessage(null)
+      setToast(null)
     }, 3000)
   }
 
@@ -189,10 +189,7 @@ export default function ServicesPage() {
       const result = await response.json()
 
       if (result.success) {
-        const contactId = result.data.contactId
-        const whatsappMessage = `New service Request\nContact ID: *${contactId}*`
-        const whatsappUrl = `https://wa.me/918714722927?text=${encodeURIComponent(whatsappMessage)}`
-        window.open(whatsappUrl, "_blank")
+        showToast("Service request submitted successfully! We'll contact you soon.", "success")
 
         setFormData({
           M07_name: "",
@@ -207,7 +204,7 @@ export default function ServicesPage() {
         throw new Error(result.msg || "Failed to create contact")
       }
     } catch (error: any) {
-      showToast(error.message || "Something went wrong. Please try again.")
+      showToast(error.message || "Something went wrong. Please try again.", "error")
     }
   }
 
@@ -216,15 +213,15 @@ export default function ServicesPage() {
       <Header />
 
       {/* Custom Toast */}
-      {toastMessage && (
+      {toast && (
         <div className="fixed top-5 right-5 z-50 max-w-sm animate-in slide-in-from-right-5 fade-in duration-300">
-          <div className="bg-red-500 text-white px-4 py-3 rounded-xl shadow-xl flex items-center justify-between">
+          <div className={`${toast.type === 'success' ? 'bg-emerald-500' : 'bg-red-500'} text-white px-4 py-3 rounded-xl shadow-xl flex items-center justify-between`}>
             <div className="flex items-center">
-              <span className="font-semibold">Error</span>
-              <span className="ml-2">{toastMessage}</span>
+              <span className="font-semibold">{toast.type === 'success' ? 'Success' : 'Error'}</span>
+              <span className="ml-2">{toast.message}</span>
             </div>
             <button
-              onClick={() => setToastMessage(null)}
+              onClick={() => setToast(null)}
               className="text-white hover:text-gray-200 ml-4"
             >
               ✕
@@ -376,8 +373,9 @@ export default function ServicesPage() {
                         value={formData.M07_name}
                         onChange={handleInputChange}
                         placeholder="John Doe"
-                        className="h-14 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:ring-yellow-500 focus:border-yellow-500 transition-all font-medium"
+                        className="h-14 rounded-xl border-gray-200 bg-white text-gray-900 focus:bg-white focus:ring-yellow-500 focus:border-yellow-500 transition-all font-medium shadow-sm"
                         required
+                        minLength={3}
                       />
                     </div>
                     <div className="space-y-2">
@@ -388,8 +386,10 @@ export default function ServicesPage() {
                         onChange={handleInputChange}
                         type="tel"
                         placeholder="+91 98765 43210"
-                        className="h-14 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:ring-yellow-500 focus:border-yellow-500 transition-all font-medium"
+                        className="h-14 rounded-xl border-gray-200 bg-white text-gray-900 focus:bg-white focus:ring-yellow-500 focus:border-yellow-500 transition-all font-medium shadow-sm"
                         required
+                        pattern="[0-9+\s-]{10,15}"
+                        title="Please enter a valid phone number"
                       />
                     </div>
                   </div>
@@ -402,14 +402,14 @@ export default function ServicesPage() {
                         value={formData.M07_place}
                         onChange={handleInputChange}
                         placeholder="e.g. Kozhikode"
-                        className="h-14 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:ring-yellow-500 focus:border-yellow-500 transition-all font-medium"
+                        className="h-14 rounded-xl border-gray-200 bg-white text-gray-900 focus:bg-white focus:ring-yellow-500 focus:border-yellow-500 transition-all font-medium shadow-sm"
                         required
                       />
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-bold text-gray-900 ml-1">District</label>
                       <Select onValueChange={handleDistrictChange} value={formData.M07_district} required>
-                        <SelectTrigger className="h-14 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:ring-yellow-500 focus:border-yellow-500 transition-all font-medium">
+                        <SelectTrigger className="h-14 rounded-xl border-gray-200 bg-white text-gray-900 focus:bg-white focus:ring-yellow-500 focus:border-yellow-500 transition-all font-medium shadow-sm">
                           <SelectValue placeholder="Select District" />
                         </SelectTrigger>
                         <SelectContent className="max-h-60 rounded-xl">
@@ -430,8 +430,10 @@ export default function ServicesPage() {
                       value={formData.M07_pincode}
                       onChange={handleInputChange}
                       placeholder="673xxx"
-                      className="h-14 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:ring-yellow-500 focus:border-yellow-500 transition-all font-medium"
+                      className="h-14 rounded-xl border-gray-200 bg-white text-gray-900 focus:bg-white focus:ring-yellow-500 focus:border-yellow-500 transition-all font-medium shadow-sm"
                       required
+                      pattern="[0-9]{6}"
+                      title="Please enter a valid 6-digit pincode"
                     />
                   </div>
 

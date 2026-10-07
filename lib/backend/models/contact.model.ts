@@ -65,4 +65,4 @@ const ContactSchema: Schema<IContact> = new Schema(
     }
 );
 
-export const Contact = mongoose.model<IContact>("M07_contact", ContactSchema);
+export const Contact = mongoose.models.M07_contact || mongoose.model<IContact>("M07_contact", ContactSchema);

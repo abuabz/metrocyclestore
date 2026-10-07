@@ -1,5 +1,7 @@
+"use client"
 import React from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { 
   LayoutDashboard, 
   Package, 
@@ -9,7 +11,10 @@ import {
   Bell, 
   Search,
   LogOut,
-  Bike
+  Bike,
+  Star,
+  Wrench,
+  MessageSquare
 } from "lucide-react"
 
 export default function AdminLayout({
@@ -17,6 +22,8 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
+  const pathname = usePathname()
+
   return (
     <div className="flex h-screen bg-slate-50">
       {/* Sidebar - Glassmorphism Aesthetic */}
@@ -27,17 +34,25 @@ export default function AdminLayout({
         </div>
 
         <nav className="flex-1 px-4 py-6 space-y-2">
-          <Link href="/admin" className="flex items-center px-4 py-3 bg-indigo-500/10 text-indigo-400 rounded-xl transition-all duration-300 hover:bg-indigo-500/20 group">
+          <Link href="/admin" className={`flex items-center px-4 py-3 rounded-xl transition-all duration-300 group ${pathname === "/admin" ? "bg-indigo-500/10 text-indigo-400" : "hover:bg-slate-800 hover:text-white"}`}>
             <LayoutDashboard className="w-5 h-5 mr-3 transition-transform group-hover:scale-110" />
             <span className="font-medium">Dashboard</span>
           </Link>
-          <Link href="/admin/products" className="flex items-center px-4 py-3 rounded-xl transition-all duration-300 hover:bg-slate-800 hover:text-white group">
+          <Link href="/admin/products" className={`flex items-center px-4 py-3 rounded-xl transition-all duration-300 group ${pathname.startsWith("/admin/products") ? "bg-indigo-500/10 text-indigo-400" : "hover:bg-slate-800 hover:text-white"}`}>
             <Package className="w-5 h-5 mr-3 transition-transform group-hover:scale-110" />
             <span className="font-medium">Products</span>
           </Link>
-          <Link href="/admin/categories" className="flex items-center px-4 py-3 rounded-xl transition-all duration-300 hover:bg-slate-800 hover:text-white group">
+          <Link href="/admin/featured" className={`flex items-center px-4 py-3 rounded-xl transition-all duration-300 group ${pathname.startsWith("/admin/featured") ? "bg-indigo-500/10 text-indigo-400" : "hover:bg-slate-800 hover:text-white"}`}>
+            <Star className={`w-5 h-5 mr-3 transition-transform group-hover:scale-110 ${!pathname.startsWith("/admin/featured") && "text-yellow-400"}`} />
+            <span className="font-medium">Featured</span>
+          </Link>
+          <Link href="/admin/categories" className={`flex items-center px-4 py-3 rounded-xl transition-all duration-300 group ${pathname.startsWith("/admin/categories") ? "bg-indigo-500/10 text-indigo-400" : "hover:bg-slate-800 hover:text-white"}`}>
             <ShoppingCart className="w-5 h-5 mr-3 transition-transform group-hover:scale-110" />
             <span className="font-medium">Categories</span>
+          </Link>
+          <Link href="/admin/requests" className={`flex items-center px-4 py-3 rounded-xl transition-all duration-300 group ${pathname.startsWith("/admin/requests") ? "bg-indigo-500/10 text-indigo-400" : "hover:bg-slate-800 hover:text-white"}`}>
+            <MessageSquare className="w-5 h-5 mr-3 transition-transform group-hover:scale-110" />
+            <span className="font-medium">Service Requests</span>
           </Link>
         </nav>
 

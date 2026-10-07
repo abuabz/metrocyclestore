@@ -60,6 +60,8 @@ export const metadata: Metadata = {
   },
 }
 
+import Providers from "./providers"
+
 export default function RootLayout({
   children,
 }: {
@@ -68,17 +70,19 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ProductProvider>
-            {children}
-            <ToastProvider />
-          </ProductProvider>
-        </ThemeProvider>
+        <Providers>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ProductProvider>
+              {children}
+              <ToastProvider />
+            </ProductProvider>
+          </ThemeProvider>
+        </Providers>
       </body>
     </html>
   )

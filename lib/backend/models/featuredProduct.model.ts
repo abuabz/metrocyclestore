@@ -23,5 +23,5 @@ const FeaturedProductSchema: Schema<IFeaturedProduct> = new Schema(
     }
 );
 
-export const FeaturedProductModel: Model<IFeaturedProduct> = mongoose.model<IFeaturedProduct>("P01_featured_products", FeaturedProductSchema);
+export const FeaturedProductModel: Model<IFeaturedProduct> = mongoose.models.P01_featured_products || mongoose.model<IFeaturedProduct>("P01_featured_products", FeaturedProductSchema);
 
