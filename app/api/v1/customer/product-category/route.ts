@@ -10,10 +10,20 @@ export async function GET() {
     // Import Product dynamically or at the top if needed. Let's just import it at the top.
     // Wait, to avoid import issues here, I will just require it:
     const { Product } = await import("@/lib/backend/models/product.model");
+    const { ProductSKU } = await import("@/lib/backend/models/productSKU.model");
     
     const categoriesWithCounts = await Promise.all(
       categories.map(async (cat) => {
-        const count = await Product.countDocuments({ M05_M04_product_category: cat._id, M05_deleted_at: null });
+        // Find all base products for this category
+        const products = await Product.find({ M05_M04_product_category: cat._id, M05_deleted_at: null }, '_id');
+        const productIds = products.map(p => p._id);
+        
+        // Count all SKUs belonging to these products
+        const count = await ProductSKU.countDocuments({ 
+          M06_M05_product_id: { $in: productIds }, 
+          M06_deleted_at: null 
+        });
+        
         return {
           ...cat,
           productCount: count
