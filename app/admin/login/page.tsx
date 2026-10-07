@@ -25,8 +25,8 @@ export default function AdminLogin() {
       const data = await res.json()
 
       if (data.success) {
-        router.push("/admin")
-        router.refresh()
+        // Use window.location.href for a hard redirect to ensure the new cookie is sent to middleware
+        window.location.href = "/admin"
       } else {
         setError(data.message || "Invalid credentials")
       }
