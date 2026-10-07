@@ -1,25 +1,56 @@
 "use client"
 import React from "react"
 import { 
-  TrendingUp, 
-  DollarSign, 
-  ShoppingBag, 
-  ArrowUpRight,
-  ArrowDownRight
+  Package, 
+  ShoppingCart, 
+  MessageSquare,
+  Star,
+  Loader2
 } from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
+import Link from "next/link"
 
 export default function AdminDashboard() {
-  const kpis = [
-    { title: "Total Revenue", value: "₹4,25,000", icon: DollarSign, trend: "+12.5%", isPositive: true },
-    { title: "Active Orders", value: "84", icon: ShoppingBag, trend: "+4.2%", isPositive: true },
-    { title: "Conversion Rate", value: "3.2%", icon: TrendingUp, trend: "-1.1%", isPositive: false },
-  ]
+  const { data: products = [], isLoading: loadingProducts } = useQuery({
+    queryKey: ['admin-products'],
+    queryFn: async () => {
+      const res = await fetch("/api/v1/customer/product-sku")
+      const json = await res.json()
+      return json.success ? json.data.products_skus : []
+    }
+  })
 
-  const recentOrders = [
-    { id: "#ORD-001", customer: "Rahul Sharma", product: "Metro Aero Speed", date: "Oct 06, 2026", amount: "₹18,999", status: "Delivered" },
-    { id: "#ORD-002", customer: "Priya Patel", product: "Eco-Charge X1", date: "Oct 05, 2026", amount: "₹32,999", status: "Processing" },
-    { id: "#ORD-003", customer: "Amit Singh", product: "Junior Trailblazer", date: "Oct 05, 2026", amount: "₹5,200", status: "Shipped" },
-    { id: "#ORD-004", customer: "Neha Gupta", product: "Metro Thunderbolt", date: "Oct 04, 2026", amount: "₹12,499", status: "Delivered" },
+  const { data: categories = [], isLoading: loadingCategories } = useQuery({
+    queryKey: ['admin-categories'],
+    queryFn: async () => {
+      const res = await fetch("/api/v1/customer/product-category")
+      const json = await res.json()
+      return json.success ? json.data.productCategories : []
+    }
+  })
+
+  const { data: requests = [], isLoading: loadingRequests } = useQuery({
+    queryKey: ['admin-contacts'],
+    queryFn: async () => {
+      const res = await fetch("/api/admin/contacts")
+      const json = await res.json()
+      return json.success ? json.data : []
+    }
+  })
+
+  const { data: featured = [], isLoading: loadingFeatured } = useQuery({
+    queryKey: ['admin-featured'],
+    queryFn: async () => {
+      const res = await fetch("/api/admin/featured")
+      const json = await res.json()
+      return json.success ? json.data : []
+    }
+  })
+
+  const kpis = [
+    { title: "Total Products", value: loadingProducts ? "..." : products.length, icon: Package, href: "/admin/products", color: "text-indigo-500", bg: "bg-indigo-50" },
+    { title: "Categories", value: loadingCategories ? "..." : categories.length, icon: ShoppingCart, href: "/admin/categories", color: "text-emerald-500", bg: "bg-emerald-50" },
+    { title: "Service Requests", value: loadingRequests ? "..." : requests.length, icon: MessageSquare, href: "/admin/requests", color: "text-amber-500", bg: "bg-amber-50" },
   ]
 
   return (
@@ -32,64 +63,86 @@ export default function AdminDashboard() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {kpis.map((kpi, index) => (
-          <div key={index} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+          <Link href={kpi.href} key={index} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 block cursor-pointer">
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-sm font-medium text-slate-500">{kpi.title}</p>
-                <h3 className="text-3xl font-bold text-slate-900 mt-2">{kpi.value}</h3>
+                <h3 className="text-4xl font-black text-slate-900 mt-2">{kpi.value}</h3>
               </div>
-              <div className="p-3 bg-indigo-50 text-indigo-500 rounded-xl">
-                <kpi.icon className="w-6 h-6" />
+              <div className={`p-4 rounded-2xl ${kpi.bg} ${kpi.color}`}>
+                <kpi.icon className="w-8 h-8" />
               </div>
             </div>
-            <div className="mt-4 flex items-center">
-              <span className={`flex items-center text-sm font-semibold ${kpi.isPositive ? 'text-emerald-500' : 'text-red-500'}`}>
-                {kpi.isPositive ? <ArrowUpRight className="w-4 h-4 mr-1" /> : <ArrowDownRight className="w-4 h-4 mr-1" />}
-                {kpi.trend}
-              </span>
-              <span className="text-slate-400 text-sm ml-2">vs last month</span>
+            <div className="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center text-sm font-semibold text-slate-400 hover:text-slate-600">
+              View details &rarr;
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 
-      {/* Recent Orders Table */}
+      {/* Featured Products Table */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
-          <h2 className="text-xl font-bold text-slate-900">Recent Orders</h2>
-          <button className="text-indigo-500 font-medium hover:text-indigo-600 transition-colors text-sm">View All</button>
+          <div className="flex items-center gap-2">
+            <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+            <h2 className="text-xl font-bold text-slate-900">Featured Products</h2>
+          </div>
+          <Link href="/admin/featured" className="text-indigo-500 font-bold hover:text-indigo-600 transition-colors text-sm">Manage Featured</Link>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 text-slate-500 text-sm uppercase tracking-wider">
-                <th className="px-6 py-4 font-medium">Order ID</th>
-                <th className="px-6 py-4 font-medium">Customer</th>
-                <th className="px-6 py-4 font-medium">Product</th>
-                <th className="px-6 py-4 font-medium">Date</th>
-                <th className="px-6 py-4 font-medium">Amount</th>
-                <th className="px-6 py-4 font-medium">Status</th>
+                <th className="px-6 py-4 font-bold">Image</th>
+                <th className="px-6 py-4 font-bold">Product Name</th>
+                <th className="px-6 py-4 font-bold">Category</th>
+                <th className="px-6 py-4 font-bold">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {recentOrders.map((order, idx) => (
-                <tr key={idx} className="hover:bg-slate-50/50 transition-colors group">
-                  <td className="px-6 py-4 text-sm font-bold text-slate-900">{order.id}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600">{order.customer}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600">{order.product}</td>
-                  <td className="px-6 py-4 text-sm text-slate-500">{order.date}</td>
-                  <td className="px-6 py-4 text-sm font-semibold text-slate-900">{order.amount}</td>
-                  <td className="px-6 py-4 text-sm">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold
-                      ${order.status === 'Delivered' ? 'bg-emerald-100 text-emerald-700' : 
-                        order.status === 'Processing' ? 'bg-amber-100 text-amber-700' : 
-                        'bg-blue-100 text-blue-700'}
-                    `}>
-                      {order.status}
-                    </span>
+              {loadingFeatured ? (
+                <tr>
+                  <td colSpan={4} className="px-6 py-12 text-center text-slate-400">
+                    <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-indigo-500" />
+                    Loading featured products...
                   </td>
                 </tr>
-              ))}
+              ) : featured.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-6 py-12 text-center text-slate-400 font-medium">
+                    No featured products found. Add some from the Featured tab.
+                  </td>
+                </tr>
+              ) : (
+                featured.map((item: any, idx: number) => {
+                  const product = item.M06_product_sku_id || {};
+                  const category = product.M06_M05_product_id?.M05_M04_product_category?.M04_category_name || "Unknown";
+                  
+                  return (
+                    <tr key={idx} className="hover:bg-slate-50/50 transition-colors group">
+                      <td className="px-6 py-3">
+                        <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden border border-slate-200">
+                          {product.M06_thumbnail_image ? (
+                            <img src={product.M06_thumbnail_image} alt={product.M06_product_sku_name} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-[10px] text-slate-400">No Img</div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-sm font-extrabold text-slate-900">{product.M06_product_sku_name || "Unknown Product"}</p>
+                        <p className="text-xs text-slate-500 mt-1">{product.M06_sku || "N/A"}</p>
+                      </td>
+                      <td className="px-6 py-4 text-sm font-semibold text-slate-600">{category}</td>
+                      <td className="px-6 py-4 text-sm">
+                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700 border border-yellow-200 shadow-sm">
+                          Featured
+                        </span>
+                      </td>
+                    </tr>
+                  )
+                })
+              )}
             </tbody>
           </table>
         </div>

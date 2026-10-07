@@ -14,44 +14,53 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: "Metrotoys - Cycles & Toys for Every Age",
-  description: "Explore Metro Toy Store for premium cycles, educational toys, and fun essentials for kids of all ages.",
-  applicationName: "Metro Toy Store",
-  authors: [{ name: "Metro Toy Store Team", url: "https://metrotoystore.com" }],
-  keywords: ["toys", "kids cycles", "educational toys", "Metro Toy Store", "baby toys", "ride-ons", "padikkal", "malappuram"],
-  creator: "Metro Toy Store",
-  publisher: "Metro Toy Store",
+  title: "Metro Cycles & Toys | Premium Cycles & Battery Operated Vehicles in Kerala",
+  description: "Your ultimate destination for premium cycles, battery-operated vehicles, and educational toys in Padikkal, Kerala. We offer expert services, repair, and a huge collection for all ages.",
+  applicationName: "Metro Cycles & Toys",
+  authors: [{ name: "Metro Cycles Team", url: "https://metrotoystore.com" }],
+  keywords: [
+    "battery operated vehicle in kerala", 
+    "cycles in kerala", 
+    "kids cycles padikkal", 
+    "electric toy cars kerala",
+    "premium bicycles kerala",
+    "cycle repair padikkal",
+    "Metro Toy Store", 
+    "educational toys kerala",
+    "malappuram cycle store",
+    "padikkal toys"
+  ],
+  creator: "Metro Cycles & Toys",
+  publisher: "Metro Cycles & Toys",
   metadataBase: new URL("https://metrotoystore.com"),
   icons: {
-    icon: "./LogomainFav.png", // or "/favicon.png" or "/favicon.svg"
+    icon: "./LogomainFav.png",
     shortcut: "./LogomainFav.png",
-    apple: "./LogomainFav.png", // if available
+    apple: "./LogomainFav.png",
   },
   openGraph: {
-    title: "Metro Toy Store - Adventure Awaits!",
-    description: "Discover our wide collection of cycles and toys for children of all ages.",
+    title: "Metro Cycles & Toys | Battery Operated Vehicles & Cycles in Kerala",
+    description: "Discover our wide collection of premium cycles and battery-operated vehicles for children of all ages. Located in Padikkal, Kerala.",
     url: "https://metrotoystore.com",
-    siteName: "Metro Toy Store",
+    siteName: "Metro Cycles & Toys",
     images: [
       {
-        url: "https://metrotoystore.com/Logomainblack.jpg", // replace with actual image path
+        url: "https://metrotoystore.com/Logomainblack.jpg",
         width: 1200,
         height: 630,
-        alt: "Metro Toy Store",
+        alt: "Metro Cycles & Toys Store in Padikkal, Kerala",
       },
     ],
     type: "website",
-    locale: "en_US",
+    locale: "en_IN",
   },
-
   twitter: {
     card: "summary_large_image",
-    title: "Metro Toy Store - Adventure Awaits!",
-    description: "Cycles and educational toys crafted for children's growth and fun.",
-    site: "@metrotoystore", // if you have a Twitter handle
-    images: ["https://metrotoystore.com/Logomainblack.jpg"], // replace with actual image path
+    title: "Metro Cycles & Toys | Padikkal, Kerala",
+    description: "Premium cycles, battery-operated vehicles, and toys in Padikkal, Kerala.",
+    site: "@metrotoystore",
+    images: ["https://metrotoystore.com/Logomainblack.jpg"],
   },
-
   alternates: {
     canonical: "https://metrotoystore.com",
   },
@@ -83,6 +92,37 @@ export default function RootLayout({
             </ProductProvider>
           </ThemeProvider>
         </Providers>
+        
+        {/* Local Business SEO Schema Markup */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Store",
+              "name": "Metro Cycles & Toys",
+              "image": "https://metrotoystore.com/Logomainblack.jpg",
+              "description": "Your ultimate destination for premium cycles, battery-operated vehicles, and educational toys in Padikkal, Kerala.",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Padikkal",
+                "addressRegion": "Kerala",
+                "addressCountry": "IN"
+              },
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": "11.1154", // Estimated for Padikkal/Malappuram area
+                "longitude": "75.8752"
+              },
+              "url": "https://metrotoystore.com",
+              "telephone": "+918714722927",
+              "priceRange": "₹₹",
+              "sameAs": [
+                "https://www.instagram.com/metro_toys_padikkal/"
+              ]
+            })
+          }}
+        />
       </body>
     </html>
   )
