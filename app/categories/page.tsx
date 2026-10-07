@@ -39,7 +39,7 @@ export default function Page() {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/product-category?limit=30`)
+                const response = await fetch(`/api/v1/customer/product-category?limit=30`)
                 if (!response.ok) {
                     throw new Error('Failed to fetch product categories')
                 }

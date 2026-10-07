@@ -151,7 +151,7 @@ export default function ProductsPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/product-category?limit=100`)
+        const response = await fetch(`/api/v1/customer/product-category?limit=100`)
         if (!response.ok) {
           throw new Error('Failed to fetch product categories')
         }
@@ -184,7 +184,7 @@ export default function ProductsPage() {
         const categoryID = searchParams.get("categoryID")
         const search = searchParams.get("search")
 
-        let url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/product-sku`
+        let url = `/api/v1/customer/product-sku`
         const queryParams = new URLSearchParams()
         queryParams.append("page", currentPage.toString())
         queryParams.append("limit", productsPerPage.toString())

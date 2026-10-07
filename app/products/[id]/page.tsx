@@ -192,7 +192,7 @@ export default function ProductDetailPage() {
   // Fetch product data
   const fetchProductData = async (skuId: string) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/product-sku/${skuId}`)
+      const response = await fetch(`/api/v1/customer/product-sku/${skuId}`)
       if (!response.ok) {
         throw new Error('Failed to fetch product')
       }
@@ -241,7 +241,7 @@ export default function ProductDetailPage() {
 
         // Fetch variations
         const variationResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/variation-by-product-id/${productData.productId}`
+          `/api/v1/customer/variation-by-product-id/${productData.productId}`
         )
         if (!variationResponse.ok) {
           throw new Error('Failed to fetch variations')
@@ -255,7 +255,7 @@ export default function ProductDetailPage() {
 
         // Fetch SKU variations and create available combinations
         const skuVariationResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/customer/skus-variation-by-product-id/${productData.productId}`
+          `/api/v1/customer/skus-variation-by-product-id/${productData.productId}`
         )
         if (!skuVariationResponse.ok) {
           throw new Error('Failed to fetch SKU variations')

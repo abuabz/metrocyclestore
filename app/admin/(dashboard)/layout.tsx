@@ -1,7 +1,7 @@
 "use client"
 import React from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { 
   LayoutDashboard, 
   Package, 
@@ -23,6 +23,7 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
+  const router = useRouter()
 
   return (
     <div className="flex h-screen bg-slate-50">
@@ -61,7 +62,21 @@ export default function AdminLayout({
             <Settings className="w-5 h-5 mr-3 transition-transform group-hover:scale-110" />
             <span className="font-medium">Settings</span>
           </Link>
-          <button className="w-full flex items-center px-4 py-3 rounded-xl transition-all duration-300 hover:bg-red-500/10 hover:text-red-400 group mt-2 text-left">
+          <button 
+            onClick={async () => {
+              try {
+                // Call the backend API to clear the HTTP-only admin_token cookie
+                await fetch('/api/admin/logout', { method: 'POST' });
+              } catch (e) {
+                console.error("Logout failed", e);
+              }
+              // Clear any local storage auth tokens if they exist just in case
+              localStorage.removeItem('adminToken');
+              // Redirect to main storefront
+              router.push('/');
+            }}
+            className="w-full flex items-center px-4 py-3 rounded-xl transition-all duration-300 hover:bg-red-500/10 hover:text-red-400 group mt-2 text-left"
+          >
             <LogOut className="w-5 h-5 mr-3 transition-transform group-hover:scale-110" />
             <span className="font-medium">Logout</span>
           </button>
