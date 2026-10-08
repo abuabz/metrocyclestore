@@ -15,15 +15,15 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer();
     let buffer = Buffer.from(bytes);
 
-    // Optimize image using sharp (convert to WebP for high quality & low size)
+    // Optimize image using sharp
     try {
       const sharp = (await import("sharp")).default;
       buffer = await sharp(buffer)
-        .resize({ width: 1200, withoutEnlargement: true }) // Resize if larger than 1200px wide
-        .webp({ quality: 80 }) // 80% quality webp preserves visual quality but slashes file size
+        .resize({ width: 1200, withoutEnlargement: true })
+        .webp({ quality: 80 })
         .toBuffer();
     } catch (err) {
-      console.error("Sharp optimization failed, saving original buffer:", err);
+      console.error("Sharp optimization failed:", err);
     }
 
     // Save to public/uploads
@@ -32,15 +32,17 @@ export async function POST(request: Request) {
       await mkdir(uploadDir, { recursive: true });
     }
 
-    // Generate unique filename with .webp extension
     const baseName = file.name.replace(/\.[^/.]+$/, "").replace(/\s+/g, '_');
     const filename = `${Date.now()}-${baseName}.webp`;
     const filePath = path.join(uploadDir, filename);
 
     await writeFile(filePath, buffer);
 
-    // Return the public URL path
-    return NextResponse.json({ success: true, url: `/uploads/${filename}` });
+    // Use absolute URL from environment variable
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+    const absoluteUrl = `${baseUrl}/uploads/${filename}`;
+
+    return NextResponse.json({ success: true, url: absoluteUrl });
   } catch (error: any) {
     console.error("Upload error:", error);
     return NextResponse.json({ success: false, message: "Failed to upload file." }, { status: 500 });
